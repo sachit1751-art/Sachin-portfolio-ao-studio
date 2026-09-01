@@ -1,15 +1,12 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { PaperState } from './types';
-import { PaperIntro } from './components/PaperIntro/PaperIntro';
 import { PortfolioContainer } from './components/Portfolio/PortfolioContainer';
 import { Header } from './components/Portfolio/Header';
-import { DoomTransition } from './structure-room/DoomTransition';
-import { StructureRoom } from './structure-room/StructureRoom';
-import { MoodTransition } from './components/MoodGame/MoodTransition';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { initSecurity } from './utils/security';
 
 // Lazy-load heavy components not needed on initial render
+const LazyPaperIntro = lazy(() => import('./components/PaperIntro/PaperIntro').then(m => ({ default: m.PaperIntro })));
 const LazyStructureRoom = lazy(() => import('./structure-room/StructureRoom').then(m => ({ default: m.StructureRoom })));
 const LazyDoomTransition = lazy(() => import('./structure-room/DoomTransition').then(m => ({ default: m.DoomTransition })));
 const LazyMoodTransition = lazy(() => import('./components/MoodGame/MoodTransition').then(m => ({ default: m.MoodTransition })));
@@ -29,9 +26,9 @@ export default function App() {
       initSecurity();
     }
   }, []);
-  const [paperState, setPaperState] = useState<PaperState>('crumpled');
+  const [paperState, setPaperState] = useState<PaperState>('opened');
   const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('cotton');
-  const [showContent, setShowContent] = useState(false);
+  const [showContent, setShowContent] = useState(true);
   const [showTransition, setShowTransition] = useState(false);
   const [showStructureRoom, setShowStructureRoom] = useState(false);
   const [showMoodTransition, setShowMoodTransition] = useState(false);
@@ -49,12 +46,8 @@ export default function App() {
 
   useEffect(() => {
     if (paperState === 'opened') {
-      const timer = setTimeout(() => {
-        setShowContent(true);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-    if (paperState === 'crumpled' && !showMoodGame) {
+      setShowContent(true);
+    } else if (paperState === 'crumpled' && !showMoodGame) {
       setShowContent(false);
     }
   }, [paperState, showMoodGame]);
@@ -93,20 +86,22 @@ export default function App() {
         </a>
       )}
 
-      {/* 3D Paper Scene */}
+      {/* 3D Paper Scene - Lazy loaded in background */}
       <div className="fixed inset-0 z-10">
-        <PaperIntro
-          paperState={paperState}
-          setPaperState={setPaperState}
-          theme={theme}
-          setTheme={setTheme}
-          onOpenComplete={() => {
-            setShowContent(true);
-          }}
-          showMoodGame={showMoodGame}
-          setShowMoodGame={setShowMoodGame}
-          onMoodUnlocked={handleMoodUnlocked}
-        />
+        <Suspense fallback={null}>
+          <LazyPaperIntro
+            paperState={paperState}
+            setPaperState={setPaperState}
+            theme={theme}
+            setTheme={setTheme}
+            onOpenComplete={() => {
+              setShowContent(true);
+            }}
+            showMoodGame={showMoodGame}
+            setShowMoodGame={setShowMoodGame}
+            onMoodUnlocked={handleMoodUnlocked}
+          />
+        </Suspense>
       </div>
 
       {/* Portfolio Content */}

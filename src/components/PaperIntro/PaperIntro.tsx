@@ -110,15 +110,18 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      <video
-        ref={videoRef}
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700"
-        style={{ opacity: paperState === 'crumpled' ? 1 : 0 }}
-        src="/scrapbook-bg.mp4"
-      />
+      {paperState === 'crumpled' && (
+        <video
+          ref={videoRef}
+          loop
+          muted
+          playsInline
+          preload="none"
+          className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700"
+          style={{ opacity: paperState === 'crumpled' ? 1 : 0 }}
+          src="/scrapbook-bg.mp4"
+        />
+      )}
 
       <div className="absolute inset-0 z-10">
         <PaperScene

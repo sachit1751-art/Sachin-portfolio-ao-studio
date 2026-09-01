@@ -1,5 +1,6 @@
-import { ArrowDownRight, Mail, Phone } from 'lucide-react';
+import { ArrowDownRight, Mail } from 'lucide-react';
 import { WordReveal } from '../UI/TextReveal';
+import { TypewriterEffect } from '../UI/TypewriterEffect';
 import { QuoteRoll } from '../UI/QuoteRoll';
 import { GitHubIcon } from '../UI/Icons';
 
@@ -38,12 +39,12 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
       <div className="mb-10">
-        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[110px] leading-[1.3] font-handwriting font-bold tracking-tight mb-6 py-4" style={{ color: 'var(--c-heading)' }}>
-          <span className="block">
-            <WordReveal text="AI & Web" baseDelay={0.1} />
+        <h1 className="text-5xl sm:text-7xl md:text-[80px] lg:text-[100px] leading-[1.3] font-handwriting font-bold tracking-tight mb-6 py-4 flex flex-col" style={{ color: 'var(--c-heading)' }}>
+          <span className="block min-h-[1.3em]">
+            <TypewriterEffect text="AI & Web" delay={0.2} hideCursorOnComplete={true} />
           </span>
-          <span className="block">
-            <WordReveal text="Developer" baseDelay={0.25} />
+          <span className="block min-h-[1.3em]">
+            <TypewriterEffect text="Developer." delay={1.0} />
           </span>
         </h1>
         <p className="max-w-[520px] leading-relaxed text-lg sm:text-xl font-body" style={{ color: 'var(--c-heading)' }}>
@@ -102,21 +103,9 @@ export const Hero: React.FC<HeroProps> = ({
           >
             <Mail className="w-4 h-4" />
           </a>
-          <a
-            href="tel:+917042846390"
-            aria-label="Phone"
-            className="w-10 h-10 flex items-center justify-center rounded-full hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] cursor-pointer transition-colors"
-            style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
-          >
-            <Phone className="w-4 h-4" />
-          </a>
         </div>
 
         <div className="flex flex-wrap items-center gap-4 text-sm font-mono" style={{ color: 'var(--c-body)' }}>
-          <span className="flex items-center gap-1.5">
-            <Phone className="w-3 h-3" />
-            +91 7042846390
-          </span>
           <span className="flex items-center gap-1.5">
             <Mail className="w-3 h-3" />
             sachit1751@gmail.com
