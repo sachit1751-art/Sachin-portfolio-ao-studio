@@ -46,7 +46,7 @@ export const Hero: React.FC<HeroProps> = ({
             <WordReveal text="Developer" baseDelay={0.25} />
           </span>
         </h1>
-        <p className="max-w-[520px] leading-relaxed text-lg sm:text-xl font-body" style={{ color: 'var(--c-body)' }}>
+        <p className="max-w-[520px] leading-relaxed text-lg sm:text-xl font-body" style={{ color: 'var(--c-heading)' }}>
           <WordReveal
             text="I build full-stack web applications, architect AI integrations, and automate workflows."
             baseDelay={0.4}
@@ -80,7 +80,7 @@ export const Hero: React.FC<HeroProps> = ({
             rel="noreferrer"
             aria-label="GitHub"
             className="w-10 h-10 flex items-center justify-center rounded-full hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] cursor-pointer transition-colors"
-            style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
+            style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
           >
             <GitHubIcon className="w-4 h-4" />
           </a>
@@ -90,7 +90,7 @@ export const Hero: React.FC<HeroProps> = ({
             rel="noreferrer"
             aria-label="LinkedIn"
             className="w-10 h-10 flex items-center justify-center rounded-full hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] cursor-pointer transition-colors"
-            style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
+            style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           </a>
@@ -98,7 +98,7 @@ export const Hero: React.FC<HeroProps> = ({
             href="mailto:sachit1751@gmail.com"
             aria-label="Email"
             className="w-10 h-10 flex items-center justify-center rounded-full hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] cursor-pointer transition-colors"
-            style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
+            style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
           >
             <Mail className="w-4 h-4" />
           </a>
@@ -106,12 +106,13 @@ export const Hero: React.FC<HeroProps> = ({
             href="tel:+917042846390"
             aria-label="Phone"
             className="w-10 h-10 flex items-center justify-center rounded-full hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] cursor-pointer transition-colors"
-            style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
+            style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
           >
             <Phone className="w-4 h-4" />
           </a>
         </div>
-        <div className="flex flex-wrap items-center gap-4 text-sm font-mono" style={{ color: 'var(--c-muted)' }}>
+
+        <div className="flex flex-wrap items-center gap-4 text-sm font-mono" style={{ color: 'var(--c-body)' }}>
           <span className="flex items-center gap-1.5">
             <Phone className="w-3 h-3" />
             +91 7042846390
@@ -137,7 +138,7 @@ export const Hero: React.FC<HeroProps> = ({
             <h3 className="hero-card-title text-lg font-bold font-handwriting" style={{ color: 'var(--c-heading)' }}>
               Web Development
             </h3>
-            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-muted)' }}>
+            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-body)' }}>
               React · TypeScript · Vite
             </p>
           </div>
@@ -156,7 +157,7 @@ export const Hero: React.FC<HeroProps> = ({
             <h3 className="hero-card-title text-lg font-bold font-handwriting" style={{ color: 'var(--c-heading)' }}>
               AI & Automation
             </h3>
-            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-muted)' }}>
+            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-body)' }}>
               Claude API · MCP · Prompt Engineering
             </p>
           </div>
@@ -175,7 +176,7 @@ export const Hero: React.FC<HeroProps> = ({
             <h3 className="hero-card-title text-lg font-bold font-handwriting" style={{ color: 'var(--c-heading)' }}>
               UI / UX
             </h3>
-            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-muted)' }}>
+            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-body)' }}>
               Interface · Interaction · Design
             </p>
           </div>

@@ -1,5 +1,4 @@
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion } from 'motion/react';
 
 interface ScrollTextPathProps {
   text: string;
@@ -7,18 +6,8 @@ interface ScrollTextPathProps {
 }
 
 export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
-  // Moves the text along the path backwards as you scroll down
-  const startOffset = useTransform(scrollYProgress, [0, 1], ["0%", "-50%"]);
-
   return (
     <div 
-      ref={containerRef} 
       className={`w-full overflow-hidden flex items-center justify-center py-16 sm:py-24 pointer-events-none ${className}`}
       style={{ opacity: 0.8 }}
     >
@@ -36,7 +25,8 @@ export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) =>
         <text className="font-handwriting text-2xl sm:text-3xl tracking-widest uppercase" style={{ fill: 'var(--c-subtle)' }}>
           <motion.textPath
             href="#wavy-path"
-            startOffset={startOffset}
+            animate={{ startOffset: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 20 }}
           >
             {/* Repeat the text to ensure it covers the path even when shifting */}
             {`${text} • `.repeat(8)}

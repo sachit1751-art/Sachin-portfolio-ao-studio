@@ -1,6 +1,7 @@
 import { PaperTheme } from '../../types';
 import { Hero } from './Hero';
 import { ScrollTextPath } from '../UI/ScrollTextPath';
+import { BackgroundTextPath } from '../UI/BackgroundTextPath';
 import { About } from './About';
 import { Philosophy } from './Philosophy';
 import { Projects } from './Projects';
@@ -33,6 +34,7 @@ export const PortfolioContainer: React.FC<PortfolioContainerProps> = ({
       data-theme={theme}
       className="relative w-full min-h-screen transition-colors duration-500"
     >
+      <BackgroundTextPath />
       <div
         id="physical-paper-sheet"
         className="relative w-full max-w-[min(82vw,1100px)] mx-auto overflow-x-hidden py-10 sm:py-14 md:py-20 px-6 sm:px-10 md:px-14"
