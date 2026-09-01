@@ -8,7 +8,7 @@ import { ScrollReveal } from '../UI/ScrollReveal';
 const projects: Project[] = [
   {
     id: 'sky-roms',
-    title: 'Custom ROM Manager',
+    title: 'SKY ROMs',
     category: 'Android Platform',
     year: '2025',
     description:
