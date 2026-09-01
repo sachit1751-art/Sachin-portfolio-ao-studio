@@ -1,6 +1,16 @@
 import { ArrowDownRight, Mail, Phone } from 'lucide-react';
 import { WordReveal } from '../UI/TextReveal';
+import { QuoteRoll } from '../UI/QuoteRoll';
 import { GitHubIcon } from '../UI/Icons';
+
+const DEV_QUOTES = [
+  '"Simplicity is the ultimate sophistication." • Da Vinci',
+  '"Talk is cheap. Show me the code." • Linus Torvalds',
+  '"Make it work, make it right, make it fast." • Kent Beck',
+  '"Code is read much more often than it is written." • Guido van Rossum',
+  '"First, solve the problem. Then, write the code." • John Johnson',
+  '"Any fool can write code that a computer can understand." • Martin Fowler'
+];
 
 interface HeroProps {
   onExploreProjects: () => void;
@@ -15,8 +25,8 @@ export const Hero: React.FC<HeroProps> = ({
     <section id="hero" className="relative mb-28 pt-2 pb-6">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-10 pb-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
         <div className="inline-flex items-center gap-2 text-sm font-handwriting animate-line-reveal lr-delay-1" style={{ color: 'var(--c-subtle)' }}>
-          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--c-dot)' }} />
-          <WordReveal text="&quot;Simplicity is the ultimate sophistication.&quot; • Da Vinci" baseDelay={0.2} />
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--c-dot)' }} />
+          <QuoteRoll quotes={DEV_QUOTES} interval={4000} />
         </div>
 
         <div className="flex items-center gap-3 animate-line-reveal lr-delay-2" style={{ color: 'var(--c-muted)' }}>

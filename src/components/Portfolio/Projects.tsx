@@ -4,103 +4,67 @@ import { Project } from '../../types';
 import { X, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { WordReveal, LineReveal, CharReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
-import { GitHubIcon } from '../UI/Icons';
 
 const projects: Project[] = [
   {
-    id: 'nexus-agent',
-    title: 'AI Agent Orchestrator',
-    category: 'AI & Systems',
-    year: '2026',
-    description:
-      'A multi-agent framework for executing complex reasoning, tool execution, and code synthesis across AI models.',
-    longDescription:
-      'A multi-agent orchestration framework designed for complex developer workflows. It coordinates specialized agents for planning, tool invocation, web search grounding, and self-healing code synthesis.\n\nKey Features:\n• Directed acyclic graph (DAG) execution engine with state checkpointing.\n• Multi-model routing (Gemini 2.0 Flash for rapid planning, Claude 3.7 for deep reasoning).\n• Sandboxed code execution runtime with automated validation.\n• Real-time streaming telemetry and interactive execution visualizer.',
-    tags: ['TypeScript', 'Node.js', 'Gemini API', 'Claude API', 'LangGraph', 'Redis'],
-    featured: true,
-  },
-  {
-    id: 'cinegrid-3d',
-    title: '3D Media Canvas',
-    category: 'Creative Web & 3D',
-    year: '2025',
-    description:
-      'WebGL-powered 3D spatial interface for exploring curated cinematic archives with real-time audio visualization.',
-    longDescription:
-      'A bespoke 3D interactive web environment inspired by tactile paper and cinematic film strips. Users can manipulate media tiles in a simulated physical space with custom GLSL shaders and spatialized sound.\n\nKey Features:\n• Custom vertex and fragment shaders for procedural paper grain and crumple physics.\n• 60 FPS continuous animation pipeline with optimized instanced mesh rendering.\n• Dynamic audio-reactive spatial soundscape connected via Web Audio API.',
-    tags: ['Three.js', 'WebGL', 'GLSL Shaders', 'GSAP', 'React', 'Web Audio'],
-    featured: true,
-  },
-  {
-    id: 'omniflow-collab',
-    title: 'Real-Time Architecture Modeler',
-    category: 'Full Stack & WebSockets',
-    year: '2025',
-    description:
-      'Low-latency infinite canvas for collaborative system architecture design with conflict resolution and AI diagram generation.',
-    longDescription:
-      'A real-time collaborative workspace engineered for distributed engineering teams to map microservices, cloud topologies, and sequence diagrams simultaneously.\n\nKey Features:\n• CRDT conflict-free replicated data types (Yjs) guaranteeing sub-50ms synchronization.\n• Natural language architecture diagram generator utilizing Gemini function calling.\n• Live multiplayer cursor tracking and interactive node connection snapping.',
-    tags: ['React', 'TypeScript', 'WebSockets', 'CRDTs / Yjs', 'Canvas API', 'Gemini API'],
-    featured: true,
-  },
-  {
     id: 'sky-roms',
-    title: 'Custom OS Manager',
-    category: 'Systems',
+    title: 'Custom ROM Manager',
+    category: 'Android Platform',
     year: '2025',
     description:
-      'Discovery & management platform indexing hundreds of device trees with automated checksum validation.',
+      'Android Custom ROM Discovery & Management Platform for finding, downloading, and managing custom ROMs.',
     longDescription:
-      'A comprehensive discovery and management portal for the enthusiast community. It helps developers navigate OS compatibility, compare benchmark scores, and verify package integrity.\n\nKey Features:\n• Real-time device compatibility checks and automated SHA256 build verification.\n• Comparative kernel benchmark analytics with interactive hardware performance charts.\n• Instant search and tag filtering across vendor trees and maintainer releases.',
-    tags: ['React', 'TypeScript', 'Supabase', 'PostgreSQL', 'Tailwind CSS', 'Vite'],
+      'SKY ROMs is an Android Custom ROM Discovery & Management Platform. It helps users discover, compare, and manage custom ROMs for their Android devices.\n\nKey Features: ROM discovery, device compatibility checks, ROM comparisons, download management, user reviews, community features.\n\nTech Stack: React, TypeScript, Vite, Supabase, Tailwind CSS.',
+    tags: ['React', 'TypeScript', 'Vite', 'Supabase', 'Tailwind CSS'],
+    demoUrl: 'https://sky-roms.vercel.app',
     featured: true,
   },
   {
-    id: 'pulsedb-wasm',
-    title: 'Embedded Time-Series Engine',
-    category: 'WebAssembly',
-    year: '2025',
-    description:
-      'High-throughput aggregation engine compiled to WebAssembly, processing massive telemetry events directly in the browser.',
-    longDescription:
-      'Enables zero-roundtrip telemetry exploration and live metric analysis inside web dashboards without overloading backend databases.\n\nKey Features:\n• SIMD-accelerated time-window rollups executing in background Web Workers.\n• Columnar memory layout with delta-of-delta compression achieving 85% memory footprint reduction.\n• Zero-dependency TypeScript SDK with fluent SQL-like aggregation query builder.',
-    tags: ['Rust', 'WebAssembly', 'TypeScript', 'Web Workers', 'Performance'],
-    featured: false,
-  },
-  {
-    id: 'promptvault-mcp',
-    title: 'Enterprise Prompt Cache',
-    category: 'AI Infrastructure',
-    year: '2025',
-    description:
-      'Model Context Protocol (MCP) server providing vector-indexed prompt caching and schema-enforced tool execution for LLM agents.',
-    longDescription:
-      'An enterprise-ready Model Context Protocol (MCP) server that sits between LLM applications and upstream model providers to optimize latency and token spend.\n\nKey Features:\n• Semantic similarity caching using vector embeddings to eliminate redundant LLM inference calls.\n• Strict JSON schema validation and type coercion for agent tool execution.\n• Prompt caching optimization designed around large context windows.',
-    tags: ['Python', 'FastAPI', 'MCP Protocol', 'Qdrant DB', 'Docker'],
-    featured: false,
-  },
-  {
-    id: 'documind-ai',
-    title: 'Multimodal Document Parser',
+    id: 'doc-summarizer',
+    title: 'AI Document Summarizer',
     category: 'AI Tool',
     year: '2025',
     description:
-      'Deep document parser and visual question-answering pipeline analyzing complex charts and tables using Vision models.',
+      'AI-powered tool that uses Claude API to summarize documents with intelligent prompt engineering.',
     longDescription:
-      'An end-to-end intelligent document processing system that extracts structured knowledge from unstructured PDFs, scanned receipts, and technical manuals.\n\nKey Features:\n• Multimodal visual document chunking preserving spatial context of tables and diagrams.\n• Hybrid sparse/dense vector search for grounded source citations.\n• Exportable structured data extraction into CSV, JSON, and database entities.',
-    tags: ['Python', 'Gemini Vision', 'LangChain', 'FastAPI', 'Vector Search'],
-    featured: false,
+      'A document summarizer powered by Anthropic Claude API. It processes documents and generates concise summaries using advanced prompt engineering techniques and prompt caching.\n\nKey Features: Document upload, AI-powered summarization, multiple summary formats, prompt caching for efficiency.\n\nTech Stack: Python, Anthropic Claude API, Prompt Engineering, Prompt Caching.',
+    tags: ['Python', 'Claude API', 'Prompt Engineering', 'Prompt Caching'],
+    featured: true,
   },
   {
     id: 'schedule-planner',
-    title: 'Task & Webhook Dispatcher',
+    title: 'Schedule Automation',
     category: 'Automation',
     year: '2025',
     description:
-      'Fault-tolerant background cron and notification engine for managing tasks, sending webhook alerts, and syncing calendars.',
+      'Automated schedule planner and notification engine for managing tasks and sending alerts.',
     longDescription:
-      'An automated event dispatcher built for high-reliability task execution and scheduled alert deliveries across multiple channels.\n\nKey Features:\n• Distributed task queue with exponential backoff retries and dead-letter queue management.\n• Webhook dispatchers for Slack, Telegram, and Discord notifications.\n• Calendar synchronizer with recurring rule evaluation.',
-    tags: ['Python', 'Node.js', 'Redis', 'REST APIs', 'Automation'],
+      'An automated schedule planner that helps organize tasks and sends notifications. Built with workflow automation and backend integration.\n\nKey Features: Task scheduling, automated notifications, recurring events, calendar integration.\n\nTech Stack: Python, Node.js, REST APIs.',
+    tags: ['Python', 'Node.js', 'REST APIs', 'Automation'],
+    featured: true,
+  },
+  {
+    id: 'music-streaming',
+    title: 'Music Player',
+    category: 'Open Source',
+    year: '2025',
+    description:
+      'Open-source web music streaming application for playing and discovering music.',
+    longDescription:
+      'An open-source web music streaming application. Users can browse, search, and stream music through a clean web interface.\n\nKey Features: Music streaming, search, playlists, responsive design.\n\nTech Stack: JavaScript, HTML, CSS, REST APIs.',
+    tags: ['JavaScript', 'HTML', 'CSS', 'REST APIs'],
+    featured: false,
+  },
+  {
+    id: 'mcp-tool',
+    title: 'AI Integrations',
+    category: 'AI Tool',
+    year: '2025',
+    description:
+      'Tool for integrating and working with Model Context Protocol (MCP) architectures.',
+    longDescription:
+      'An AI-powered tool for integrating Model Context Protocol (MCP) architectures. Built as part of the Anthropic Developer curriculum completion.\n\nKey Features: MCP integration, Claude API workflows, prompt caching.\n\nTech Stack: Python, Anthropic Claude API, MCP.',
+    tags: ['Python', 'Claude API', 'MCP', 'Prompt Caching'],
     featured: false,
   },
 ];
@@ -108,7 +72,7 @@ const projects: Project[] = [
 const featuredProjects = projects.filter((p) => p.featured);
 const otherProjects = projects.filter((p) => !p.featured);
 
-const displayFeatured = featuredProjects.slice(0, 4);
+const displayFeatured = featuredProjects.slice(0, 3);
 
 export const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -182,39 +146,39 @@ export const Projects = () => {
             >
               <div
                 role="button"
-              tabIndex={0}
-              onClick={() => setSelectedProject(project)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
-              className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
-            >
-              <div className="flex items-center justify-between text-sm font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
-                <span>{project.category}</span>
-                <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                  0{idx + 1}
-                </span>
+                tabIndex={0}
+                onClick={() => setSelectedProject(project)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
+                className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
+              >
+                <div className="flex items-center justify-between text-sm font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
+                  <span>{project.category}</span>
+                  <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
+                    0{idx + 1}
+                  </span>
+                </div>
+
+                <h3 className="font-handwriting text-3xl font-bold transition-colors mb-2 flex items-center justify-between" style={{ color: 'var(--c-heading)' }}>
+                  <WordReveal text={project.title} baseDelay={0.2 + idx * 0.12} />
+                  <ArrowUpRight className="w-5 h-5 transition-transform" style={{ color: 'var(--c-subtle)' }} />
+                </h3>
+
+                <p className="text-base sm:text-lg leading-relaxed mb-4 font-body" style={{ color: 'var(--c-body)' }}>
+                  <WordReveal text={project.description} baseDelay={0.4 + idx * 0.12} />
+                </p>
               </div>
 
-              <h3 className="font-handwriting text-3xl font-bold transition-colors mb-2 flex items-center justify-between" style={{ color: 'var(--c-heading)' }}>
-                <WordReveal text={project.title} baseDelay={0.2 + idx * 0.12} />
-                <ArrowUpRight className="w-5 h-5 transition-transform" style={{ color: 'var(--c-subtle)' }} />
-              </h3>
-
-              <p className="text-base sm:text-lg leading-relaxed mb-4 font-body" style={{ color: 'var(--c-body)' }}>
-                <WordReveal text={project.description} baseDelay={0.4 + idx * 0.12} />
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-1.5 pt-3" style={{ borderTop: '1px solid var(--c-border)' }}>
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider"
-                  style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+              <div className="flex flex-wrap gap-1.5 pt-3" style={{ borderTop: '1px solid var(--c-border)' }}>
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider"
+                    style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </LineReveal>
           </motion.div>
         ))}
@@ -238,29 +202,29 @@ export const Projects = () => {
                 style={{ border: '1px solid var(--c-border)' }}
               >
                 <div className="flex items-center justify-between text-sm font-handwriting mb-2" style={{ color: 'var(--c-subtle)' }}>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0 bg-[var(--c-subtle)]" />
-                  <span>{project.category}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full flex-shrink-0 bg-[var(--c-subtle)]" />
+                    <span>{project.category}</span>
+                  </div>
+                  <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
+                    {String(otherProjects.length - idx).padStart(2, '0')}
+                  </span>
                 </div>
-                <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                  {String(otherProjects.length - idx).padStart(2, '0')}
-                </span>
-              </div>
 
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => setSelectedProject(project)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
-                className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded"
-              >
-                <h4 className="font-handwriting text-xl font-bold mb-1" style={{ color: 'var(--c-heading)' }}>
-                  {project.title}
-                </h4>
-                <p className="text-sm leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
-                  {project.description}
-                </p>
-              </div>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedProject(project)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
+                  className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded"
+                >
+                  <h4 className="font-handwriting text-xl font-bold mb-1" style={{ color: 'var(--c-heading)' }}>
+                    {project.title}
+                  </h4>
+                  <p className="text-sm leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
+                    {project.description}
+                  </p>
+                </div>
               </LineReveal>
             </motion.div>
           ))}
@@ -339,6 +303,17 @@ export const Projects = () => {
               >
                 Close View
               </button>
+              {selectedProject.demoUrl && (
+                <a
+                  href={selectedProject.demoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="jellyfish-btn px-5 py-3 bg-transparent font-handwriting text-lg flex items-center gap-1.5"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Live Demo</span>
+                </a>
+              )}
             </div>
           </div>
         </div>

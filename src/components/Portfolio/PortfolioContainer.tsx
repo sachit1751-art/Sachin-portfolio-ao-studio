@@ -1,5 +1,6 @@
 import { PaperTheme } from '../../types';
 import { Hero } from './Hero';
+import { ScrollTextPath } from '../UI/ScrollTextPath';
 import { About } from './About';
 import { Philosophy } from './Philosophy';
 import { Projects } from './Projects';
@@ -41,6 +42,8 @@ export const PortfolioContainer: React.FC<PortfolioContainerProps> = ({
             onExploreProjects={() => scrollToSection('projects')}
             onContactClick={() => scrollToSection('contact')}
           />
+
+          <ScrollTextPath text="Building • Creating • Designing • Coding" className="-my-8" />
 
           <About />
 
