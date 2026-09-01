@@ -16,7 +16,7 @@ export const Hero: React.FC<HeroProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-4 mb-10 pb-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
         <div className="inline-flex items-center gap-2 text-sm font-handwriting animate-line-reveal lr-delay-1" style={{ color: 'var(--c-subtle)' }}>
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--c-dot)' }} />
-          <WordReveal text="Available for select projects • 2026" baseDelay={0.2} />
+          <WordReveal text="&quot;Simplicity is the ultimate sophistication.&quot; • Da Vinci" baseDelay={0.2} />
         </div>
 
         <div className="flex items-center gap-3 animate-line-reveal lr-delay-2" style={{ color: 'var(--c-muted)' }}>

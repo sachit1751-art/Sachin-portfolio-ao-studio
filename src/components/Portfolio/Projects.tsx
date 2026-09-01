@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Project } from '../../types';
 import { X, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { WordReveal, LineReveal, CharReveal } from '../UI/TextReveal';
@@ -165,17 +166,22 @@ export const Projects = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {displayFeatured.map((project, idx) => (
-          <LineReveal
+          <motion.div
             key={project.id}
-            delay={0.2 + idx * 0.15}
-            className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer"
-            style={{
-              backgroundColor: 'var(--c-bg)',
-              border: '1px solid var(--c-border)',
-            }}
+            whileHover={{ y: -8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="h-full"
           >
-            <div
-              role="button"
+            <LineReveal
+              delay={0.2 + idx * 0.15}
+              className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full"
+              style={{
+                backgroundColor: 'var(--c-bg)',
+                border: '1px solid var(--c-border)',
+              }}
+            >
+              <div
+                role="button"
               tabIndex={0}
               onClick={() => setSelectedProject(project)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
@@ -209,7 +215,8 @@ export const Projects = () => {
                 </span>
               ))}
             </div>
-          </LineReveal>
+            </LineReveal>
+          </motion.div>
         ))}
       </div>
 
@@ -219,13 +226,18 @@ export const Projects = () => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {otherProjects.map((project, idx) => (
-            <LineReveal
+            <motion.div
               key={project.id}
-              delay={0.3 + idx * 0.1}
-              className="p-5 flex flex-col justify-between min-h-[140px]"
-              style={{ border: '1px solid var(--c-border)' }}
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="h-full"
             >
-              <div className="flex items-center justify-between text-sm font-handwriting mb-2" style={{ color: 'var(--c-subtle)' }}>
+              <LineReveal
+                delay={0.3 + idx * 0.1}
+                className="p-5 flex flex-col justify-between min-h-[140px] h-full"
+                style={{ border: '1px solid var(--c-border)' }}
+              >
+                <div className="flex items-center justify-between text-sm font-handwriting mb-2" style={{ color: 'var(--c-subtle)' }}>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full flex-shrink-0 bg-[var(--c-subtle)]" />
                   <span>{project.category}</span>
@@ -249,7 +261,8 @@ export const Projects = () => {
                   {project.description}
                 </p>
               </div>
-            </LineReveal>
+              </LineReveal>
+            </motion.div>
           ))}
         </div>
       </div>
