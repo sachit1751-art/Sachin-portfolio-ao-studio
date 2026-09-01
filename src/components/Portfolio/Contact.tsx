@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Mail, Check, Copy, Send } from 'lucide-react';
+import { animate } from 'animejs';
 import { CharReveal, WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 import { GitHubIcon } from '../UI/Icons';
@@ -30,24 +31,22 @@ export const Contact = () => {
     }
   };
 
-  const handleSocialHover = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSocialHover = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     const el = e.currentTarget;
-    const { animate } = await import('animejs');
     animate(el, {
-      scale: 1.25,
-      rotate: [0, -12, 12, -6, 0],
+      scale: (target, i) => 1.25,
+      rotate: (_, i) => [0, -12, 12, -6, 0],
       duration: 600,
       ease: 'outElastic(1, .45)',
     });
   }, []);
 
-  const handleSocialLeave = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSocialLeave = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     const el = e.currentTarget;
-    const { animate } = await import('animejs');
     animate(el, {
       scale: 1,
       rotate: 0,
-      duration: 400,
+      duration: 300,
       ease: 'outQuad',
     });
   }, []);
@@ -129,7 +128,7 @@ export const Contact = () => {
         <div className="md:col-span-7 space-y-6">
           <LineReveal delay={0.2}>
             {isSuccess ? (
-              <div className="p-8 text-center flex flex-col items-center justify-center space-y-4 h-full" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}>
+              <div className="p-8 text-center flex flex-col items-center justify-center space-y-4 h-full rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}>
                 <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--c-border-focus)', color: 'var(--c-bg)' }}>
                   <Check className="w-8 h-8" />
                 </div>
@@ -137,14 +136,14 @@ export const Contact = () => {
                 <p className="font-body text-sm" style={{ color: 'var(--c-body)' }}>Thanks for reaching out. I'll get back to you soon.</p>
                 <button 
                   onClick={() => setIsSuccess(false)}
-                  className="mt-4 px-6 py-2 font-mono text-xs tracking-wider uppercase transition-colors"
+                  className="mt-4 px-6 py-2 font-mono text-xs tracking-wider uppercase transition-colors rounded-[var(--radius-md)]"
                   style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
                 >
                   Send another
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-4 p-6 sm:p-8" style={{ border: '1px solid var(--c-border)' }}>
+              <form onSubmit={handleFormSubmit} className="space-y-4 p-6 sm:p-8 rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)' }}>
                 <div>
                   <label htmlFor="name" className="block text-sm font-mono mb-2" style={{ color: 'var(--c-heading)' }}>Name</label>
                   <input
@@ -153,7 +152,7 @@ export const Contact = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full p-3 font-body bg-transparent outline-none transition-colors"
+                    className="w-full p-3 font-body bg-transparent outline-none transition-colors rounded-[var(--radius-md)]"
                     style={{ 
                       border: `1px solid ${errors.name ? 'red' : 'var(--c-border)'}`,
                       color: 'var(--c-body)' 
@@ -171,7 +170,7 @@ export const Contact = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full p-3 font-body bg-transparent outline-none transition-colors"
+                    className="w-full p-3 font-body bg-transparent outline-none transition-colors rounded-[var(--radius-md)]"
                     style={{ 
                       border: `1px solid ${errors.email ? 'red' : 'var(--c-border)'}`,
                       color: 'var(--c-body)' 
@@ -189,7 +188,7 @@ export const Contact = () => {
                     value={formData.message}
                     onChange={handleInputChange}
                     rows={4}
-                    className="w-full p-3 font-body bg-transparent outline-none transition-colors resize-none"
+                    className="w-full p-3 font-body bg-transparent outline-none transition-colors resize-none rounded-[var(--radius-md)]"
                     style={{ 
                       border: `1px solid ${errors.message ? 'red' : 'var(--c-border)'}`,
                       color: 'var(--c-body)' 
@@ -202,7 +201,7 @@ export const Contact = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full p-3 font-mono text-sm tracking-wider uppercase flex items-center justify-center gap-2 transition-all hover:bg-black/5 disabled:opacity-50"
+                  className="w-full p-3 font-mono text-sm tracking-wider uppercase flex items-center justify-center gap-2 transition-all hover:bg-black/5 disabled:opacity-50 rounded-[var(--radius-md)]"
                   style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
                 >
                   {isSubmitting ? (
@@ -231,13 +230,13 @@ export const Contact = () => {
             <LineReveal delay={0.4} className="space-y-3">
               <button
                 onClick={handleCopyEmail}
-                className="w-full p-4 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] text-left flex items-center justify-between group cursor-pointer"
+                className="w-full p-4 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] text-left flex items-center justify-between group cursor-pointer rounded-[var(--radius-md)]"
                 style={{ border: '1px solid var(--c-border)' }}
                 aria-label={copied ? 'Email copied to clipboard' : `Copy email address: ${EMAIL}`}
               >
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4" style={{ color: 'var(--c-subtle)' }} />
-                  <span className="font-handwriting text-lg" style={{ color: 'var(--c-heading)' }}>{EMAIL}</span>
+                  <span className="font-handwriting text-sm xs:text-lg truncate max-w-[160px] min-[380px]:max-w-none" style={{ color: 'var(--c-heading)' }}>{EMAIL}</span>
                 </div>
                 {copied ? (
                   <Check className="w-4 h-4" style={{ color: 'var(--c-heading)' }} aria-hidden="true" />
@@ -253,7 +252,7 @@ export const Contact = () => {
                 href={GITHUB}
                 target="_blank"
                 rel="noreferrer"
-                className="w-11 h-11 flex items-center justify-center rounded-lg transition-colors cursor-pointer"
+                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer"
                 style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
                 onMouseEnter={handleSocialHover}
                 onMouseLeave={handleSocialLeave}
@@ -266,7 +265,7 @@ export const Contact = () => {
                 href={LINKEDIN}
                 target="_blank"
                 rel="noreferrer"
-                className="w-11 h-11 flex items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-black/5"
+                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer hover:bg-black/5"
                 style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
                 onMouseEnter={handleSocialHover}
                 onMouseLeave={handleSocialLeave}
@@ -278,7 +277,7 @@ export const Contact = () => {
                 href={INSTAGRAM}
                 target="_blank"
                 rel="noreferrer"
-                className="w-11 h-11 flex items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-black/5"
+                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer hover:bg-black/5"
                 style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
                 onMouseEnter={handleSocialHover}
                 onMouseLeave={handleSocialLeave}
@@ -289,7 +288,7 @@ export const Contact = () => {
             </LineReveal>
           </div>
 
-          <LineReveal delay={0.8} className="p-6 sm:p-8 flex items-center bg-black/5" style={{ border: '1px solid var(--c-border)' }}>
+          <LineReveal delay={0.8} className="p-6 sm:p-8 flex items-center bg-black/5 rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)' }}>
             <p className="font-handwriting text-3xl sm:text-4xl leading-tight" style={{ color: 'var(--c-heading)' }}>
               <WordReveal text="Folding ideas into something real." baseDelay={0.2} />
             </p>

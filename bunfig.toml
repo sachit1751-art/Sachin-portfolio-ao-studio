@@ -1,0 +1,5 @@
+# bunfig.toml - Bun configuration file
+
+[install.lockfile]
+# Enforce the modern text-based lockfile (bun.lock) format instead of binary
+saveTextLockfile = true

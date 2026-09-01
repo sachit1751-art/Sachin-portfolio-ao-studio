@@ -46,7 +46,7 @@ export const About = () => {
           </p>
         </div>
 
-        <div className="md:col-span-5 p-6 flex flex-col justify-between" style={{ border: '1px solid var(--c-border)' }}>
+        <div className="md:col-span-5 p-6 flex flex-col justify-between rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)' }}>
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] mb-4 flex items-center gap-1.5 font-semibold" style={{ color: 'var(--c-subtle)' }}>
               <Feather className="w-3.5 h-3.5" style={{ color: 'var(--c-heading)' }} />

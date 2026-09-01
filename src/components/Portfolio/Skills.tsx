@@ -122,7 +122,7 @@ export const Skills = () => {
               ref={(el) => { tabRefs.current[idx] = el; }}
               onClick={() => setActiveTab(idx)}
               onKeyDown={(e) => handleTabKeyDown(e, idx)}
-              className="px-4 py-2 text-base font-handwriting transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
+              className="px-4 py-2 text-base font-handwriting transition-all cursor-pointer whitespace-nowrap flex-shrink-0 rounded-[var(--radius-md)]"
               style={{
                 backgroundColor: isActive ? 'var(--c-tab-active-bg)' : undefined,
                 color: isActive ? 'var(--c-tab-active-text)' : 'var(--c-body)',
@@ -140,7 +140,7 @@ export const Skills = () => {
         })}
       </div>
 
-      <LineReveal delay={0.3} className="p-6 sm:p-8" style={{ border: '1px solid var(--c-border)' }}>
+      <LineReveal delay={0.3} className="p-6 sm:p-8 rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)' }}>
         <div
           role="tabpanel"
           id={`skill-panel-${activeTab}`}
@@ -159,7 +159,7 @@ export const Skills = () => {
             {categories[activeTab].skills.map((skill, sIdx) => (
               <span
                 key={sIdx}
-                className="px-2.5 py-1 text-xs font-mono uppercase tracking-wider"
+                className="px-2.5 py-1 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-sm)]"
                 style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
               >
                 {skill.name}

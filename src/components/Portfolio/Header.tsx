@@ -221,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
           boxShadow: scrolled ? '0 1px 3px rgba(0,0,0,0.03)' : undefined,
         }}
       >
-        <div className="max-w-[min(82vw,1100px)] mx-auto px-6 sm:px-10 md:px-14 flex items-center justify-between h-[68px]">
+        <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-4 sm:px-10 md:px-14 flex items-center justify-between h-[68px]">
           {/* Logo */}
           <button
             onClick={() => scrollTo('hero')}
@@ -306,7 +306,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
             <button
               id="recrumple-btn"
               onClick={onRecrumple}
-              className="px-3 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-md"
+              className="px-3 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
               style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
               title="Fold the paper back into a crumpled ball"
             >
@@ -317,7 +317,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
 
           {/* Mobile Hamburger */}
           <button
-            className="md:hidden p-2 rounded-md cursor-pointer transition-colors"
+            className="md:hidden p-2 rounded-[var(--radius-md)] cursor-pointer transition-colors"
             style={{ color: 'var(--c-heading)' }}
             onClick={mobileOpen ? closeMobile : openMobile}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -346,7 +346,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
           <div
             ref={drawerRef}
             id="mobile-menu-drawer"
-            className="absolute top-0 right-0 h-full w-[85vw] max-w-sm flex flex-col"
+            className="absolute top-0 right-0 h-full w-[85vw] max-w-sm flex flex-col rounded-l-[var(--radius-xl)]"
             style={{
               backgroundColor: 'var(--c-header-bg)',
               borderLeft: '1px solid var(--c-header-border)',
@@ -368,7 +368,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
                 Menu
               </span>
               <button
-                className="p-2 rounded-md cursor-pointer"
+                className="p-2 rounded-[var(--radius-md)] cursor-pointer"
                 style={{ color: 'var(--c-heading)' }}
                 onClick={closeMobile}
                 aria-label="Close menu"
@@ -386,7 +386,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
                     <li key={id}>
                       <button
                         onClick={() => scrollTo(id)}
-                        className="w-full text-left px-4 py-3 text-lg font-body rounded-lg transition-colors cursor-pointer"
+                        className="w-full text-left px-4 py-3 text-lg font-body rounded-[var(--radius-md)] transition-colors cursor-pointer"
                         style={{
                           color: isActive ? 'var(--c-heading)' : 'var(--c-body)',
                           backgroundColor: isActive ? 'var(--c-input-bg)' : 'transparent',

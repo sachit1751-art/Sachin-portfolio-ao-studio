@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -60,6 +67,11 @@
     --c-tab-active-bg: rgba(26,25,23,0.85);
     --c-tab-active-text: #F9F8F6;
     --c-dot: #1A1917;
+    --c-git-0: #ebedf0;
+    --c-git-1: #9be9a8;
+    --c-git-2: #40c463;
+    --c-git-3: #30a14e;
+    --c-git-4: #216e39;
   }
 
   [data-theme="kraft"] {
@@ -90,6 +102,11 @@
     --c-tab-active-bg: rgba(36,31,26,0.85);
     --c-tab-active-text: #F4EDE0;
     --c-dot: #241F1A;
+    --c-git-0: #ebedf0;
+    --c-git-1: #9be9a8;
+    --c-git-2: #40c463;
+    --c-git-3: #30a14e;
+    --c-git-4: #216e39;
   }
 
   [data-theme="blueprint"] {
@@ -120,6 +137,11 @@
     --c-tab-active-bg: rgba(234,239,244,0.85);
     --c-tab-active-text: #1a334d;
     --c-dot: #EAEFF4;
+    --c-git-0: #161b22;
+    --c-git-1: #0e4429;
+    --c-git-2: #006d32;
+    --c-git-3: #26a641;
+    --c-git-4: #39d353;
   }
 
   [data-theme="slate"] {
@@ -150,6 +172,11 @@
     --c-tab-active-bg: rgba(232,231,228,0.85);
     --c-tab-active-text: #232428;
     --c-dot: #E8E7E4;
+    --c-git-0: #161b22;
+    --c-git-1: #0e4429;
+    --c-git-2: #006d32;
+    --c-git-3: #26a641;
+    --c-git-4: #39d353;
   }
 
   /* Focus-visible styles — visible keyboard focus ring for all interactive elements */
@@ -362,8 +389,22 @@
 /* Hero focus card hover effects */
 .hero-card {
   border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   transition: border-color 0.3s ease-out, background 0.3s ease-out, box-shadow 0.3s ease-out, transform 0.3s ease-out;
   contain: layout style;
+}
+
+/* Custom responsive variables for GitHub contribution grid to prevent misaligned month labels */
+.github-contributions-wrapper {
+  --col-width: 14px;
+  --offset-left: 30px;
+}
+@media (min-width: 640px) {
+  .github-contributions-wrapper {
+    --col-width: 17px;
+    --offset-left: 36px;
+  }
 }
 
 .hero-card:hover {
@@ -407,6 +448,7 @@
   overflow: hidden;
   z-index: 1;
   border: 2px solid var(--jf-color);
+  border-radius: var(--radius-md);
   color: var(--jf-color);
   transition: color 0.5s;
 }
@@ -3343,23 +3385,3 @@ section[id] {
   animation: glitchFlash 0.4s ease-out;
   pointer-events: none;
 }
-
-@keyframes github-ticker {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.github-ticker-track {
-  display: flex;
-  width: max-content;
-  animation: github-ticker 40s linear infinite;
-}
-
-.github-ticker-track:hover {
-  animation-play-state: paused;
-}
-

@@ -1,3 +1,5 @@
+import { motion } from 'motion/react';
+
 interface ScrollTextPathProps {
   text: string;
   className?: string;
@@ -21,10 +23,14 @@ export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) =>
           stroke="transparent"
         />
         <text className="font-handwriting text-2xl sm:text-3xl tracking-widest uppercase" style={{ fill: 'var(--c-subtle)' }}>
-          <textPath href="#wavy-path" startOffset="0%">
+          <motion.textPath
+            href="#wavy-path"
+            animate={{ startOffset: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 20 }}
+          >
+            {/* Repeat the text to ensure it covers the path even when shifting */}
             {`${text} • `.repeat(8)}
-            <animate attributeName="startOffset" from="0%" to="-50%" dur="20s" repeatCount="indefinite" />
-          </textPath>
+          </motion.textPath>
         </text>
       </svg>
     </div>

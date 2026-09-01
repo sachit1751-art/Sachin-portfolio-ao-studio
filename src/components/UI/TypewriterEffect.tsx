@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 
 interface TypewriterEffectProps {
   text: string;
@@ -49,8 +50,15 @@ export const TypewriterEffect = ({
   return (
     <span className={`inline-block ${className}`}>
       {displayedText}
-      <span
-        className={`inline-block w-[0.08em] h-[0.85em] bg-current ml-[4px] align-baseline translate-y-[0.1em] animate-pulse ${cursorClassName}`}
+      <motion.span
+        animate={{ opacity: [1, 1, 0, 0, 1] }}
+        transition={{ 
+          repeat: Infinity, 
+          duration: 0.8, 
+          ease: "linear",
+          times: [0, 0.49, 0.5, 0.99, 1]
+        }}
+        className={`inline-block w-[0.08em] h-[0.85em] bg-current ml-[4px] align-baseline translate-y-[0.1em] ${cursorClassName}`}
         style={{ 
           display: (hideCursorOnComplete && !isTyping && hasStarted) ? 'none' : 'inline-block' 
         }}

@@ -39,12 +39,12 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
       <div className="mb-10">
-        <h1 className="text-5xl sm:text-7xl md:text-[80px] lg:text-[100px] leading-[1.3] font-handwriting font-bold tracking-tight mb-6 py-4 flex flex-col" style={{ color: 'var(--c-heading)' }}>
+        <h1 className="text-[2.2rem] xs:text-[2.8rem] sm:text-6xl md:text-[80px] lg:text-[100px] leading-[1.3] font-handwriting font-bold tracking-tight mb-6 py-4 flex flex-col" style={{ color: 'var(--c-heading)' }}>
           <span className="block min-h-[1.3em]">
-            <TypewriterEffect text="AI & Web" delay={0.2} hideCursorOnComplete={true} />
+            <TypewriterEffect text="Aspiring Software" delay={0.2} hideCursorOnComplete={true} />
           </span>
           <span className="block min-h-[1.3em]">
-            <TypewriterEffect text="Developer." delay={1.0} />
+            <TypewriterEffect text="Developer." delay={1.8} />
           </span>
         </h1>
         <p className="max-w-[520px] leading-relaxed text-lg sm:text-xl font-body" style={{ color: 'var(--c-heading)' }}>
@@ -58,7 +58,7 @@ export const Hero: React.FC<HeroProps> = ({
       <div className="flex flex-wrap items-center gap-4 mb-8">
         <button
           onClick={onExploreProjects}
-          className="view-projects-btn px-6 py-3 font-body text-base transition-all hover:-translate-y-0.5 active:translate-y-0 hover:bg-[var(--c-btn-bg-hover)] flex items-center gap-2 cursor-pointer animate-line-reveal lr-delay-12"
+          className="view-projects-btn px-6 py-3 font-body text-base transition-all hover:-translate-y-0.5 active:translate-y-0 hover:bg-[var(--c-btn-bg-hover)] flex items-center gap-2 cursor-pointer animate-line-reveal lr-delay-12 rounded-[var(--radius-md)]"
           style={{ backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}
         >
           <span>View Projects</span>

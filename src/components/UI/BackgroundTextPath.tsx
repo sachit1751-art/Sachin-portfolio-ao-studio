@@ -1,6 +1,8 @@
+import { motion } from 'motion/react';
+
 export const BackgroundTextPath = () => {
   const text = "SACHIT • DEVELOPER • AI • DESIGN • CREATE • ";
-  // Repeat to cover path
+  // Massive repeat to ensure it covers the screen and provides a long continuous animation
   const repeatedText = text.repeat(50); 
 
   return (
@@ -31,22 +33,31 @@ export const BackgroundTextPath = () => {
 
         <g className="font-handwriting text-4xl font-bold uppercase tracking-[0.4em]" style={{ fill: 'var(--c-heading)' }}>
           <text>
-            <textPath href="#bg-wavy-1" startOffset="0%">
+            <motion.textPath
+              href="#bg-wavy-1"
+              animate={{ startOffset: ["0%", "-50%"] }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 150 }}
+            >
               {repeatedText}
-              <animate attributeName="startOffset" from="0%" to="-50%" dur="150s" repeatCount="indefinite" />
-            </textPath>
+            </motion.textPath>
           </text>
           <text>
-            <textPath href="#bg-wavy-2" startOffset="-50%">
+            <motion.textPath
+              href="#bg-wavy-2"
+              animate={{ startOffset: ["-50%", "0%"] }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 180 }}
+            >
               {repeatedText}
-              <animate attributeName="startOffset" from="-50%" to="0%" dur="180s" repeatCount="indefinite" />
-            </textPath>
+            </motion.textPath>
           </text>
           <text>
-            <textPath href="#bg-wavy-3" startOffset="0%">
+            <motion.textPath
+              href="#bg-wavy-3"
+              animate={{ startOffset: ["0%", "-50%"] }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 160 }}
+            >
               {repeatedText}
-              <animate attributeName="startOffset" from="0%" to="-50%" dur="160s" repeatCount="indefinite" />
-            </textPath>
+            </motion.textPath>
           </text>
         </g>
       </svg>

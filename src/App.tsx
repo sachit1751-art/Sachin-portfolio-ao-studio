@@ -26,9 +26,9 @@ export default function App() {
       initSecurity();
     }
   }, []);
-  const [paperState, setPaperState] = useState<PaperState>('crumpled');
+  const [paperState, setPaperState] = useState<PaperState>('opened');
   const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('cotton');
-  const [showContent, setShowContent] = useState(false);
+  const [showContent, setShowContent] = useState(true);
   const [showTransition, setShowTransition] = useState(false);
   const [showStructureRoom, setShowStructureRoom] = useState(false);
   const [showMoodTransition, setShowMoodTransition] = useState(false);

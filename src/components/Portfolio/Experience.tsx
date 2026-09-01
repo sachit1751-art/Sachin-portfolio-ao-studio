@@ -31,7 +31,7 @@ export const Experience = () => {
           </div>
         </div>
 
-        <LineReveal delay={0.3} className="p-6 sm:p-8 mb-6" style={{ border: '1px solid var(--c-border)' }}>
+        <LineReveal delay={0.3} className="p-6 sm:p-8 mb-6 rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)' }}>
           <p className="text-lg sm:text-xl leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
             <WordReveal
               text="I build personal and experimental software projects to learn new technologies and turn ideas into working products."
@@ -47,7 +47,7 @@ export const Experience = () => {
           {focusAreas.map((area, i) => (
             <span
               key={i}
-              className="px-2.5 py-1 text-xs font-mono uppercase tracking-wider"
+              className="px-2.5 py-1 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-sm)]"
               style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
             >
               {area}

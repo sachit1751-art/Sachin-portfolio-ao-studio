@@ -8,7 +8,7 @@ import { ScrollReveal } from '../UI/ScrollReveal';
 const projects: Project[] = [
   {
     id: 'sky-roms',
-    title: 'SKY ROMs',
+    title: 'Custom ROM Manager',
     category: 'Android Platform',
     year: '2025',
     description:
@@ -138,7 +138,7 @@ export const Projects = () => {
           >
             <LineReveal
               delay={0.2 + idx * 0.15}
-              className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full"
+              className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)]"
               style={{
                 backgroundColor: 'var(--c-bg)',
                 border: '1px solid var(--c-border)',
@@ -172,7 +172,7 @@ export const Projects = () => {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider"
+                    className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider rounded-[var(--radius-sm)]"
                     style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
                   >
                     {tag}
@@ -198,7 +198,7 @@ export const Projects = () => {
             >
               <LineReveal
                 delay={0.3 + idx * 0.1}
-                className="p-5 flex flex-col justify-between min-h-[140px] h-full"
+                className="p-5 flex flex-col justify-between min-h-[140px] h-full rounded-[var(--radius-lg)]"
                 style={{ border: '1px solid var(--c-border)' }}
               >
                 <div className="flex items-center justify-between text-sm font-handwriting mb-2" style={{ color: 'var(--c-subtle)' }}>
@@ -247,7 +247,7 @@ export const Projects = () => {
           <div
             ref={modalRef}
             tabIndex={-1}
-            className="relative w-full max-w-2xl backdrop-blur-md p-6 sm:p-8 shadow-[0_30px_70px_rgba(0,0,0,0.15)] overflow-hidden outline-none"
+            className="relative w-full max-w-2xl backdrop-blur-md p-6 sm:p-8 shadow-[0_30px_70px_rgba(0,0,0,0.15)] overflow-hidden outline-none rounded-[var(--radius-xl)]"
             style={{
               backgroundColor: 'var(--c-modal-bg)',
               border: '1px solid var(--c-border)',
@@ -286,7 +286,7 @@ export const Projects = () => {
                 {selectedProject.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2.5 py-1 text-xs font-mono"
+                    className="px-2.5 py-1 text-xs font-mono rounded-[var(--radius-sm)]"
                     style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
                   >
                     {tag}
@@ -298,7 +298,7 @@ export const Projects = () => {
             <div className="flex items-center gap-4 pt-4" style={{ borderTop: '1px solid var(--c-border)' }}>
               <button
                 onClick={handleCloseModal}
-                className="px-6 py-3 font-handwriting text-lg transition-colors hover:bg-[var(--c-btn-bg-hover)] cursor-pointer"
+                className="px-6 py-3 font-handwriting text-lg transition-colors hover:bg-[var(--c-btn-bg-hover)] cursor-pointer rounded-[var(--radius-md)]"
                 style={{ backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}
               >
                 Close View

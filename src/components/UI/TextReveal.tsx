@@ -31,19 +31,31 @@ function useScrollReveal() {
 export function CharReveal({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) {
   const { ref, visible } = useScrollReveal();
   let charIdx = 0;
+  const words = text.split(' ');
+  
   return (
-    <span ref={ref} className={className} aria-label={text}>
-      {text.split('').map((char, i) => {
-        const idx = charIdx++;
-        if (char === ' ') return <span key={i}>&nbsp;</span>;
+    <span ref={ref} className={`inline ${className}`} aria-label={text}>
+      {words.map((word, wordIdx) => {
         return (
-          <span
-            key={i}
-            className={visible ? 'char-reveal' : ''}
-            style={visible ? { animationDelay: `${baseDelay + idx * 0.035}s` } : { opacity: 0 }}
-          >
-            {char}
-          </span>
+          <React.Fragment key={wordIdx}>
+            <span className="inline-block whitespace-nowrap">
+              {word.split('').map((char, charInWordIdx) => {
+                const idx = charIdx++;
+                return (
+                  <span
+                    key={charInWordIdx}
+                    className={visible ? 'char-reveal' : ''}
+                    style={visible ? { animationDelay: `${baseDelay + idx * 0.035}s` } : { opacity: 0 }}
+                  >
+                    {char}
+                  </span>
+                );
+              })}
+            </span>
+            {wordIdx < words.length - 1 && (
+              <span key={`space-${wordIdx}`}>&nbsp;</span>
+            )}
+          </React.Fragment>
         );
       })}
     </span>

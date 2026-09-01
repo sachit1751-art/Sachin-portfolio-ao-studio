@@ -41,7 +41,7 @@ export const Strengths = () => {
             <LineReveal
               key={idx}
               delay={0.3 + idx * 0.15}
-              className="p-6 transition-colors"
+              className="p-6 transition-colors rounded-[var(--radius-lg)]"
               style={{ border: '1px solid var(--c-border)' }}
             >
               <div className="flex items-start gap-4">

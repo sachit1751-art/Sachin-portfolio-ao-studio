@@ -45,11 +45,11 @@ export const Education = () => {
               <LineReveal
                 key={idx}
                 delay={0.3 + idx * 0.2}
-                className="p-6 sm:p-8"
+                className="p-6 sm:p-8 rounded-[var(--radius-lg)]"
                 style={{ border: '1px solid var(--c-border)' }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--c-card)', border: '1px solid var(--c-border)' }}>
+                  <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-[var(--radius-md)]" style={{ backgroundColor: 'var(--c-card)', border: '1px solid var(--c-border)' }}>
                     <Icon className="w-6 h-6" style={{ color: 'var(--c-heading)' }} />
                   </div>
                   <div className="flex-1">
