@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
 import { Mail, Check, Copy, Send } from 'lucide-react';
-import { animate } from 'animejs';
 import { CharReveal, WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 import { GitHubIcon } from '../UI/Icons';
@@ -31,22 +30,24 @@ export const Contact = () => {
     }
   };
 
-  const handleSocialHover = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSocialHover = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
     const el = e.currentTarget;
+    const { animate } = await import('animejs');
     animate(el, {
-      scale: (target, i) => 1.25,
-      rotate: (_, i) => [0, -12, 12, -6, 0],
+      scale: 1.25,
+      rotate: [0, -12, 12, -6, 0],
       duration: 600,
       ease: 'outElastic(1, .45)',
     });
   }, []);
 
-  const handleSocialLeave = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSocialLeave = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
     const el = e.currentTarget;
+    const { animate } = await import('animejs');
     animate(el, {
       scale: 1,
       rotate: 0,
-      duration: 300,
+      duration: 400,
       ease: 'outQuad',
     });
   }, []);

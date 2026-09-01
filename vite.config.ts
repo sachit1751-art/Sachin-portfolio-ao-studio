@@ -21,9 +21,9 @@ export default defineConfig(() => {
       rollupOptions: {
         output: {
           manualChunks: {
+            'vendor-react': ['react', 'react-dom'],
             'three': ['three'],
             'gsap': ['gsap'],
-            'anime': ['animejs'],
           },
         },
       },

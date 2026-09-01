@@ -3343,3 +3343,23 @@ section[id] {
   animation: glitchFlash 0.4s ease-out;
   pointer-events: none;
 }
+
+@keyframes github-ticker {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.github-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: github-ticker 40s linear infinite;
+}
+
+.github-ticker-track:hover {
+  animation-play-state: paused;
+}
+
