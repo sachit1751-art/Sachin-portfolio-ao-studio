@@ -1,10 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { usePerformance } from '../../hooks/usePerformance';
 
 function useScrollReveal() {
   const ref = useRef<HTMLSpanElement>(null);
   const [visible, setVisible] = useState(false);
+  const { simplify } = usePerformance();
 
   useEffect(() => {
+    if (simplify) {
+      setVisible(true);
+      return;
+    }
+    
     const el = ref.current;
     if (!el) return;
 
@@ -18,18 +25,23 @@ function useScrollReveal() {
           observer.disconnect();
         }
       },
-      { root, threshold: 0, rootMargin: '0px 0px -35% 0px' }
+      { root, threshold: 0, rootMargin: '0px 0px -25% 0px' }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [simplify]);
 
-  return { ref, visible };
+  return { ref, visible, simplify };
 }
 
 export function CharReveal({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) {
-  const { ref, visible } = useScrollReveal();
+  const { ref, visible, simplify } = useScrollReveal();
+  
+  if (simplify) {
+    return <span className={className}>{text}</span>;
+  }
+
   let charIdx = 0;
   const words = text.split(' ');
   
@@ -63,7 +75,12 @@ export function CharReveal({ text, baseDelay = 0, className = '' }: { text: stri
 }
 
 export function WordReveal({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) {
-  const { ref, visible } = useScrollReveal();
+  const { ref, visible, simplify } = useScrollReveal();
+  
+  if (simplify) {
+    return <span className={className}>{text}</span>;
+  }
+
   const words = text.split(' ');
   return (
     <span ref={ref} className={className}>

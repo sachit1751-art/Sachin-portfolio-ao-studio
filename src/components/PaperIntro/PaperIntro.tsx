@@ -4,6 +4,7 @@ import { PaperState, PaperTheme } from '../../types';
 import { PaperScene, PaperSceneAPI } from './PaperScene';
 import { CursorHint } from '../UI/CursorHint';
 import { FloatingPieces } from '../DoomEasterEgg/FloatingPieces';
+import { usePerformance } from '../../hooks/usePerformance';
 const MoodGame = lazy(() => import('../MoodGame/MoodGame').then(m => ({ default: m.MoodGame })));
 
 function MoodGameFallback() {
@@ -37,6 +38,7 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
 }) => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const { playUnfold, playCrumple } = usePaperSound();
+  const { simplify } = usePerformance();
 
   const handlePaperSound = useCallback((type: 'unfold' | 'crumple') => {
     if (type === 'unfold') playUnfold();
@@ -114,14 +116,14 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
   }, [setShowMoodGame, exitGame]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
-      {paperState === 'crumpled' && (
+    <div className="relative w-full h-screen overflow-hidden" style={{ backgroundColor: 'var(--c-bg)' }}>
+      {paperState === 'crumpled' && !simplify && (
         <video
           ref={videoRef}
           loop
           muted
           playsInline
-          preload="none"
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700"
           style={{ opacity: paperState === 'crumpled' ? 1 : 0 }}
           src="/scrapbook-bg.mp4"

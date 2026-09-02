@@ -4,6 +4,7 @@ import { Project } from '../../types';
 import { X, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { WordReveal, LineReveal, CharReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
+import { usePerformance } from '../../hooks/usePerformance';
 
 const projects: Project[] = [
   {
@@ -121,6 +122,7 @@ export const Projects = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const { simplify } = usePerformance();
 
   const filteredProjects = projects.filter((p) => 
     activeFilter === 'ALL' || p.filterCategories.includes(activeFilter)
@@ -206,16 +208,16 @@ export const Projects = () => {
           {displayFeatured.map((project, idx) => (
             <motion.div
               key={project.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
+              layout={!simplify}
+              initial={simplify ? { opacity: 0 } : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              exit={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              whileHover={{ y: -8 }}
+              whileHover={simplify ? {} : { y: -8 }}
               className="h-full"
             >
             <LineReveal
-              delay={0.2 + idx * 0.15}
+              delay={simplify ? 0 : 0.2 + idx * 0.15}
               className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)]"
               style={{
                 backgroundColor: 'var(--c-bg)',
@@ -237,12 +239,12 @@ export const Projects = () => {
                 </div>
 
                 <h3 className="font-sans text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
-                  <WordReveal text={project.title} baseDelay={0.2 + idx * 0.12} />
+                  <WordReveal text={project.title} baseDelay={simplify ? 0 : 0.2 + idx * 0.12} />
                   <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" style={{ color: 'var(--c-subtle)' }} />
                 </h3>
 
                 <p className="text-base sm:text-lg leading-relaxed mb-4 font-body" style={{ color: 'var(--c-body)' }}>
-                  <WordReveal text={project.description} baseDelay={0.4 + idx * 0.12} />
+                  <WordReveal text={project.description} baseDelay={simplify ? 0 : 0.4 + idx * 0.12} />
                 </p>
               </div>
 
@@ -278,16 +280,16 @@ export const Projects = () => {
             {otherProjects.map((project, idx) => (
               <motion.div
                 key={project.id}
-                layout
-                initial={{ opacity: 0, scale: 0.98 }}
+                layout={!simplify}
+                initial={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
+                exit={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                whileHover={{ y: -6 }}
+                whileHover={simplify ? {} : { y: -6 }}
                 className="h-full"
               >
                 <LineReveal
-                  delay={0.3 + idx * 0.1}
+                  delay={simplify ? 0 : 0.3 + idx * 0.1}
                   className="p-5 flex flex-col justify-between min-h-[140px] h-full rounded-[var(--radius-lg)]"
                   style={{ border: '1px solid var(--c-border)' }}
                 >

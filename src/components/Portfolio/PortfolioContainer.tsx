@@ -1,17 +1,22 @@
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { PaperTheme } from '../../types';
 import { Hero } from './Hero';
 import { ScrollTextPath } from '../UI/ScrollTextPath';
 import { BackgroundTextPath } from '../UI/BackgroundTextPath';
-import { About } from './About';
-import { Philosophy } from './Philosophy';
-import { Projects } from './Projects';
-import { Skills } from './Skills';
-import { CurrentlyBuilding } from './CurrentlyBuilding';
-import { GitHubSection } from './GitHub';
-import { Experience } from './Experience';
-import { Education } from './Education';
-import { Strengths } from './Strengths';
-import { Contact } from './Contact';
+
+// Lazy-load sections to optimize initial bundle size
+const About = lazy(() => import('./About').then(m => ({ default: m.About })));
+const Philosophy = lazy(() => import('./Philosophy').then(m => ({ default: m.Philosophy })));
+const Projects = lazy(() => import('./Projects').then(m => ({ default: m.Projects })));
+const Skills = lazy(() => import('./Skills').then(m => ({ default: m.Skills })));
+const CurrentlyBuilding = lazy(() => import('./CurrentlyBuilding').then(m => ({ default: m.CurrentlyBuilding })));
+const GitHubSection = lazy(() => import('./GitHub').then(m => ({ default: m.GitHubSection })));
+const Experience = lazy(() => import('./Experience').then(m => ({ default: m.Experience })));
+const Education = lazy(() => import('./Education').then(m => ({ default: m.Education })));
+const Strengths = lazy(() => import('./Strengths').then(m => ({ default: m.Strengths })));
+const Contact = lazy(() => import('./Contact').then(m => ({ default: m.Contact })));
+
+const SectionFallback = () => <div className="h-40 w-full animate-pulse bg-[var(--c-border)] opacity-10 rounded-lg mb-20" />;
 
 interface PortfolioContainerProps {
   theme: PaperTheme;
@@ -47,25 +52,45 @@ export const PortfolioContainer: React.FC<PortfolioContainerProps> = ({
 
           <ScrollTextPath text="Building • Creating • Designing • Coding" className="-my-8" />
 
-          <About />
+          <Suspense fallback={<SectionFallback />}>
+            <About />
+          </Suspense>
 
-          <Philosophy />
+          <Suspense fallback={<SectionFallback />}>
+            <Philosophy />
+          </Suspense>
 
-          <Projects />
+          <Suspense fallback={<SectionFallback />}>
+            <Projects />
+          </Suspense>
 
-          <Skills />
+          <Suspense fallback={<SectionFallback />}>
+            <Skills />
+          </Suspense>
 
-          <CurrentlyBuilding />
+          <Suspense fallback={<SectionFallback />}>
+            <CurrentlyBuilding />
+          </Suspense>
 
-          <GitHubSection />
+          <Suspense fallback={<SectionFallback />}>
+            <GitHubSection />
+          </Suspense>
 
-          <Experience />
+          <Suspense fallback={<SectionFallback />}>
+            <Experience />
+          </Suspense>
 
-          <Education />
+          <Suspense fallback={<SectionFallback />}>
+            <Education />
+          </Suspense>
 
-          <Strengths />
+          <Suspense fallback={<SectionFallback />}>
+            <Strengths />
+          </Suspense>
 
-          <Contact />
+          <Suspense fallback={<SectionFallback />}>
+            <Contact />
+          </Suspense>
         </div>
       </div>
     </main>

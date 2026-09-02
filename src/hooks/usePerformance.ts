@@ -19,7 +19,11 @@ export function usePerformance() {
       (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
       ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4);
     
-    setIsLowPower(isLowSpec);
+    // 3. Check connection speed
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    const isSlowNetwork = conn && (conn.saveData || /2g|3g/.test(conn.effectiveType));
+    
+    setIsLowPower(isLowSpec || isSlowNetwork);
 
     return () => motionQuery.removeEventListener('change', handleMotionChange);
   }, []);

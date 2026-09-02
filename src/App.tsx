@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { PaperState } from './types';
-import { PortfolioContainer } from './components/Portfolio/PortfolioContainer';
 import { Header } from './components/Portfolio/Header';
 import { useDoomSequence } from './hooks/useDoomSequence';
+import { usePerformance } from './hooks/usePerformance';
 import { initSecurity } from './utils/security';
 
 // Lazy-load heavy components not needed on initial render
+const PortfolioContainer = lazy(() => import('./components/Portfolio/PortfolioContainer').then(m => ({ default: m.PortfolioContainer })));
 const LazyPaperIntro = lazy(() => import('./components/PaperIntro/PaperIntro').then(m => ({ default: m.PaperIntro })));
 const LazyStructureRoom = lazy(() => import('./structure-room/StructureRoom').then(m => ({ default: m.StructureRoom })));
 const LazyDoomTransition = lazy(() => import('./structure-room/DoomTransition').then(m => ({ default: m.DoomTransition })));
@@ -47,7 +48,17 @@ export default function App() {
   const [showMoodGame, setShowMoodGame] = useState(false);
 
   const { isUnlocked: doomUnlocked, exitStructureRoom } = useDoomSequence(paperState);
+  const { simplify } = usePerformance();
   const moodTransitionFiredRef = useRef(false);
+
+  // Apply performance class to body for CSS optimizations
+  useEffect(() => {
+    if (simplify) {
+      document.body.classList.add('perf-simplify');
+    } else {
+      document.body.classList.remove('perf-simplify');
+    }
+  }, [simplify]);
 
   // Clear stale MOOD session on fresh load so game doesn't auto-start
   useEffect(() => {
@@ -134,10 +145,12 @@ export default function App() {
             onRecrumple={handleRecrumple}
           />
           <div id="content-scroll-container" className="w-full h-full overflow-y-auto overflow-x-hidden pt-[72px]">
-            <PortfolioContainer
-              theme={theme}
-              setTheme={setTheme}
-            />
+            <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center bg-transparent font-mono text-xs opacity-50">Loading Portfolio...</div>}>
+              <PortfolioContainer
+                theme={theme}
+                setTheme={setTheme}
+              />
+            </Suspense>
           </div>
         </div>
       )}

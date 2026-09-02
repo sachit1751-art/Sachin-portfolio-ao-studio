@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, ReactNode, useState } from 'react';
+import { usePerformance } from '../../hooks/usePerformance';
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -18,9 +19,15 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   distance = 40,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const { simplify } = usePerformance();
+  const [visible, setVisible] = useState(simplify);
 
   useEffect(() => {
+    if (simplify) {
+      setVisible(true);
+      return;
+    }
+
     const el = ref.current;
     if (!el) return;
 
@@ -34,14 +41,15 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
           observer.disconnect();
         }
       },
-      { root, threshold: 0, rootMargin: '0px 0px -35% 0px' }
+      { root, threshold: 0, rootMargin: '0px 0px -25% 0px' }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [simplify]);
 
   const getTransform = () => {
+    if (simplify) return 'none';
     if (!visible) {
       switch (direction) {
         case 'up': return `translateY(${distance}px)`;
@@ -61,8 +69,8 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
       style={{
         opacity: visible ? 1 : 0,
         transform: getTransform(),
-        transition: `opacity ${duration}s ease-out ${delay}s, transform ${duration}s ease-out ${delay}s`,
-        willChange: visible ? 'auto' : 'opacity, transform',
+        transition: simplify ? 'none' : `opacity ${duration}s ease-out ${delay}s, transform ${duration}s ease-out ${delay}s`,
+        willChange: (visible || simplify) ? 'auto' : 'opacity, transform',
       }}
     >
       {children}

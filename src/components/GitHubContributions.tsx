@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { WordReveal } from './UI/TextReveal';
+import { usePerformance } from '../hooks/usePerformance';
 
 interface ContributionDay {
   date: string;
@@ -24,6 +25,7 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
   const [error, setError] = useState<boolean>(false);
   const [hoveredCell, setHoveredCell] = useState<ContributionDay | null>(null);
   const [hasIntersected, setHasIntersected] = useState<boolean>(false);
+  const { simplify } = usePerformance();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -56,8 +58,6 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
     const fetchContributions = async () => {
       try {
         setLoading(true);
-        // On Vercel, this will be handled by /api/github-contributions.ts
-        // In local dev/Cloud Run, it will be handled by server.ts
         const response = await fetch(`/api/github-contributions?username=${username}`);
         if (!response.ok) throw new Error('API response not ok');
         const json = await response.json();
@@ -141,11 +141,14 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
   }
 
   // Group contributions into 7-day columns (weeks)
-  const weeks: ContributionDay[][] = [];
+  let weeks: ContributionDay[][] = [];
   if (data?.contributions) {
+    const rawWeeks: ContributionDay[][] = [];
     for (let i = 0; i < data.contributions.length; i += 7) {
-      weeks.push(data.contributions.slice(i, i + 7));
+      rawWeeks.push(data.contributions.slice(i, i + 7));
     }
+    // On low-end devices or slow networks, show only the last 6 months (26 weeks) to reduce DOM nodes
+    weeks = simplify ? rawWeeks.slice(-26) : rawWeeks;
   }
 
   // Derive month labels and column placements
@@ -182,13 +185,13 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
           </div>
         ) : (
           <div className="w-full">
-            {/* Inner Header Row from Screenshot */}
+            {/* Inner Header Row */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-[var(--c-border)] select-none">
               <div className="font-mono text-xs" style={{ color: 'var(--c-body)' }}>
                 <strong className="text-sm font-sans" style={{ color: 'var(--c-heading)', fontWeight: 600 }}>
                   {data?.totalContributions || 0} contributions
                 </strong>{' '}
-                in the last year
+                {simplify ? 'in the last 6 months' : 'in the last year'}
               </div>
               <button
                 type="button"
@@ -200,7 +203,7 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
               </button>
             </div>
 
-            {/* Scroll wrapper for small screens */}
+            {/* Scroll wrapper */}
             <div
               ref={scrollRef}
               className="w-full overflow-x-auto scrollbar-none select-none github-contributions-wrapper"
@@ -257,9 +260,9 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
                               className="w-[11px] h-[11px] sm:w-[13px] sm:h-[13px] rounded-[3px] transition-all duration-100 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--c-border-focus)]"
                               style={cellStyle}
                               aria-label={`${day.count} contributions on ${formatDate(day.date)}`}
-                              onMouseEnter={() => setHoveredCell(day)}
-                              onMouseLeave={() => setHoveredCell(null)}
-                              onTouchStart={() => setHoveredCell(day)}
+                              onMouseEnter={() => !simplify && setHoveredCell(day)}
+                              onMouseLeave={() => !simplify && setHoveredCell(null)}
+                              onTouchStart={() => !simplify && setHoveredCell(day)}
                               onClick={() => setHoveredCell(day)}
                             />
                           );
@@ -271,9 +274,8 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
               </div>
             </div>
 
-            {/* Bottom info row (Legend & Tooltip Status) */}
+            {/* Bottom info row */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 pt-4 gap-3 sm:gap-0 border-t border-dashed border-[var(--c-border)]">
-              {/* Dynamic hover state detail box */}
               <div className="font-mono text-[10px] sm:text-xs min-h-[16px] sm:min-h-[20px]" style={{ color: 'var(--c-body)' }}>
                 {hoveredCell ? (
                   <span>
@@ -281,11 +283,10 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
                     <span className="font-sans italic">{formatDate(hoveredCell.date)}</span>
                   </span>
                 ) : (
-                  <span className="opacity-60 italic font-sans">Hover or tap a block to view details</span>
+                  <span className="opacity-60 italic font-sans">{simplify ? 'Tap a block to view details' : 'Hover or tap a block to view details'}</span>
                 )}
               </div>
 
-              {/* Legend scale */}
               <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider" style={{ color: 'var(--c-muted)' }}>
                 <span>Less</span>
                 <div className="w-[10px] h-[10px] sm:w-[11px] sm:h-[11px] rounded-[3px]" style={{ backgroundColor: 'var(--c-git-0)', border: '1px solid var(--c-border)' }} />
@@ -302,7 +303,7 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
 
       <div className="flex justify-end mt-4">
         <a
-          href="https://github.com/sachit1751-art"
+          href={`https://github.com/${username}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 hover:underline font-mono text-[10px] tracking-wider uppercase font-bold"
