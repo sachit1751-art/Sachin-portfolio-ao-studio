@@ -34,10 +34,6 @@ To run this project locally, follow these steps:
 2. **Install dependencies:**
    ```bash
    npm install
-   # or
-   yarn install
-   # or
-   pnpm install
    ```
 
 3. **Start the development server:**
