@@ -103,7 +103,7 @@ export const Contact = () => {
 
   return (
     <ScrollReveal>
-    <section id="contact" className="relative pt-12 pb-16" style={{ borderTop: '1px solid var(--c-border)' }}>
+    <section id="contact" className="relative pt-2 pb-16">
       {/* Screen reader announcement for copy confirmation */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {copied ? 'Email address copied to clipboard' : ''}

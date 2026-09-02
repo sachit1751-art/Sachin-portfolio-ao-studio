@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { usePerformance } from '../../hooks/usePerformance';
+import { useRef, useEffect, useState } from 'react';
 
 interface ScrollTextPathProps {
   text: string;
@@ -8,10 +9,21 @@ interface ScrollTextPathProps {
 
 export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) => {
   const { simplify } = usePerformance();
+  const textPathRef = useRef<SVGTextPathElement>(null);
+  const [offset, setOffset] = useState<number>(0);
+
+  useEffect(() => {
+    // To make a seamless loop, we animate by exactly one repetition's text length.
+    if (textPathRef.current) {
+      const repeats = simplify ? 4 : 8;
+      const totalWidth = textPathRef.current.getComputedTextLength();
+      setOffset(totalWidth / repeats);
+    }
+  }, [text, simplify]);
 
   return (
     <div 
-      className={`w-full overflow-hidden flex items-center justify-center py-16 sm:py-24 pointer-events-none ${className}`}
+      className={`w-full overflow-hidden flex items-center justify-center py-2 sm:py-4 pointer-events-none ${className}`}
       style={{ opacity: 0.8 }}
     >
       <svg 
@@ -27,9 +39,10 @@ export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) =>
         />
         <text className="font-sans font-bold text-xl sm:text-2xl tracking-[0.3em] uppercase" style={{ fill: 'var(--c-subtle)' }}>
           <motion.textPath
+            ref={textPathRef}
             href="#wavy-path"
-            animate={simplify ? {} : { startOffset: ["0%", "-50%"] }}
-            transition={{ repeat: Infinity, ease: "linear", duration: 30 }}
+            animate={simplify || offset === 0 ? {} : { startOffset: [0, -offset] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
           >
             {/* Repeat the text to ensure it covers the path even when shifting */}
             {`${text} • `.repeat(simplify ? 4 : 8)}

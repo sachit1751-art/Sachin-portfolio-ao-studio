@@ -39,7 +39,7 @@ export default function App() {
     }
   }, []);
   const [paperState, setPaperState] = useState<PaperState>('crumpled');
-  const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('cotton');
+  const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('kraft');
   const [introCompleted, setIntroCompleted] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [showTransition, setShowTransition] = useState(false);

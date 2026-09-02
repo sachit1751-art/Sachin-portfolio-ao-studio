@@ -163,7 +163,7 @@ export const Projects = () => {
 
   return (
     <ScrollReveal>
-    <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
+    <section id="projects" className="relative mb-28 pt-2">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
         <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
           <CharReveal text="Featured" /> <CharReveal text="Projects" baseDelay={0.2} />

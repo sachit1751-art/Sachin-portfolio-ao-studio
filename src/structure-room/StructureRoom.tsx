@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Architecture } from './Architecture';
 import { FileStructure } from './FileStructure';
 import { TechStack } from './TechStack';
@@ -82,6 +83,60 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ onExit }) => {
 
       {/* Content Area */}
       <main className="sr-editorial-content">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 mb-8 pb-2 -mb-2 text-[10px] sm:text-xs font-mono uppercase tracking-[0.1em] opacity-70 overflow-x-auto scrollbar-none whitespace-nowrap">
+          <motion.button 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={onExit} 
+            className="hover:opacity-100 transition-opacity flex items-center gap-1 cursor-pointer flex-shrink-0"
+          >
+            <ArrowLeft className="w-3 h-3" /> Portfolio
+          </motion.button>
+          
+          <motion.span 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 0.5, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.05 }}
+            className="opacity-50 flex-shrink-0"
+          >
+            /
+          </motion.span>
+          
+          <motion.button 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="hover:opacity-100 transition-opacity cursor-pointer flex-shrink-0"
+          >
+            Structure Room
+          </motion.button>
+          
+          <motion.span 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 0.5, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="opacity-50 flex-shrink-0"
+          >
+            /
+          </motion.span>
+          
+          <AnimatePresence mode="wait">
+            <motion.span 
+              key={activeTab}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2 }}
+              className="font-bold opacity-100 flex-shrink-0" 
+              style={{ color: 'var(--c-heading)' }}
+            >
+              {TABS.find(t => t.id === activeTab)?.label}
+            </motion.span>
+          </AnimatePresence>
+        </nav>
+
         <div key={activeTab} className="structure-room-content-inner">
           {renderContent()}
         </div>

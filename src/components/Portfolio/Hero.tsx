@@ -23,7 +23,7 @@ export const Hero: React.FC<HeroProps> = ({
   onContactClick,
 }) => {
   return (
-    <section id="hero" className="relative mb-28 pt-2 pb-6">
+    <section id="hero" className="relative mb-8 pt-2 pb-6">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-10 pb-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
         <div className="inline-flex items-center gap-2 text-sm font-handwriting animate-line-reveal lr-delay-1" style={{ color: 'var(--c-subtle)' }}>
           <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--c-dot)' }} />

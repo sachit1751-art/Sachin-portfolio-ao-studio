@@ -116,7 +116,7 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
   }, [setShowMoodGame, exitGame]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden" style={{ backgroundColor: 'var(--c-bg)' }}>
+    <div className="relative w-full h-screen overflow-hidden">
       {paperState === 'crumpled' && !simplify && (
         <video
           ref={videoRef}
@@ -160,9 +160,19 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
           className="relative z-20 pointer-events-none flex flex-col items-center justify-between w-full h-full p-8 md:p-12"
           style={{ animation: 'fadeIn 0.5s ease-out' }}
         >
-          <header className="flex items-center justify-between w-full max-w-5xl opacity-80">
+          <header className="flex items-center justify-between w-full max-w-5xl">
             <div className="relative">
-              <div className="absolute -top-6 -left-2 font-handwriting text-sm italic opacity-40 rotate-[-12deg] select-none hidden sm:block">
+              <div 
+                className="absolute -top-7 -left-1 font-handwriting text-sm font-bold select-none hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-sm"
+                style={{
+                  color: 'var(--c-heading)',
+                  backgroundColor: 'rgba(255, 253, 249, 0.85)',
+                  border: '1px solid var(--c-border)',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                  transform: 'rotate(-4deg)',
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--c-heading)' }} />
                 click to unfold
               </div>
               <div className="font-mono text-[10px] tracking-[0.25em] uppercase flex items-center gap-2" style={{ color: 'var(--c-subtle)' }}>
@@ -181,32 +191,32 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
             <button
               id="unfold-paper-btn"
               onClick={handleUnfold}
-              className="group relative px-6 py-3 transition-all duration-300 flex items-center gap-4 cursor-pointer backdrop-blur-md rounded-lg"
+              className="group relative px-7 py-3.5 transition-all duration-300 flex items-center gap-4 cursor-pointer backdrop-blur-md rounded-xl hover:scale-[1.02] active:scale-[0.98]"
               style={{
-                backgroundColor: 'rgba(255, 253, 249, 0.45)',
+                backgroundColor: 'rgba(255, 253, 249, 0.92)',
                 color: 'var(--c-heading)',
-                border: '1px solid var(--c-border)',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                border: '1.5px solid var(--c-border)',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--c-border-focus)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--c-border)'; }}
               aria-label="Click to unfold the crumpled portfolio sheet"
             >
-              <span className="font-handwriting text-2xl tracking-wide">
+              <span className="font-handwriting text-2xl font-bold tracking-wide" style={{ color: 'var(--c-heading)' }}>
                 click to unfold
               </span>
               
               <div className="hidden sm:flex items-center gap-1.5 ml-1">
-                <span className="inline-flex items-center justify-center px-2 py-0.5 min-w-[24px] rounded-[4px] border border-b-2 font-mono text-[9px] uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#5a544d]">
+                <span className="inline-flex items-center justify-center px-2.5 py-1 min-w-[28px] rounded-[5px] border border-b-2 font-mono text-[10px] font-bold uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#403a34]">
                   Space
                 </span>
-                <span className="text-[10px] font-mono text-[#8c857d]">/</span>
-                <span className="inline-flex items-center justify-center px-2 py-0.5 min-w-[24px] rounded-[4px] border border-b-2 font-mono text-[9px] uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#5a544d]">
+                <span className="text-[11px] font-mono text-[#8c857d]">/</span>
+                <span className="inline-flex items-center justify-center px-2.5 py-1 min-w-[28px] rounded-[5px] border border-b-2 font-mono text-[10px] font-bold uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#403a34]">
                   Enter
                 </span>
               </div>
             </button>
-            <p className="text-base font-handwriting tracking-wider opacity-60" style={{ color: 'var(--c-muted)' }}>
+            <p className="text-base font-handwriting tracking-wider" style={{ color: 'var(--c-heading)', opacity: 0.8 }}>
               Tactile portfolio exploration
             </p>
           </div>

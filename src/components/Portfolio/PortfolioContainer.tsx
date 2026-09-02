@@ -3,6 +3,8 @@ import { PaperTheme } from '../../types';
 import { Hero } from './Hero';
 import { ScrollTextPath } from '../UI/ScrollTextPath';
 import { BackgroundTextPath } from '../UI/BackgroundTextPath';
+import { KraftDustParticles } from '../UI/KraftDustParticles';
+import { PaperTearTransition } from '../UI/PaperTearTransition';
 
 // Lazy-load sections to optimize initial bundle size
 const About = lazy(() => import('./About').then(m => ({ default: m.About })));
@@ -41,6 +43,7 @@ export const PortfolioContainer: React.FC<PortfolioContainerProps> = ({
       className="relative w-full min-h-screen transition-colors duration-500"
     >
       <BackgroundTextPath />
+      <KraftDustParticles />
       <div
         id="physical-paper-sheet"
         className="relative w-full max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto overflow-x-hidden py-10 sm:py-14 md:py-20 px-4 sm:px-10 md:px-14"
@@ -53,45 +56,67 @@ export const PortfolioContainer: React.FC<PortfolioContainerProps> = ({
 
           <ScrollTextPath text="Building • Creating • Designing • Coding" className="-my-8" />
 
+          <PaperTearTransition variant="deckle" />
+
           <Suspense fallback={<SectionFallback />}>
             <About />
           </Suspense>
+
+          <PaperTearTransition variant="fibrous" />
 
           <Suspense fallback={<SectionFallback />}>
             <Philosophy />
           </Suspense>
 
+          <PaperTearTransition variant="jagged" />
+
           <Suspense fallback={<SectionFallback />}>
             <Projects />
           </Suspense>
+
+          <PaperTearTransition variant="rift" />
 
           <Suspense fallback={<SectionFallback />}>
             <Skills />
           </Suspense>
 
+          <PaperTearTransition variant="deckle" />
+
           <Suspense fallback={<SectionFallback />}>
             <CurrentlyBuilding />
           </Suspense>
+
+          <PaperTearTransition variant="fibrous" />
 
           <Suspense fallback={<SectionFallback />}>
             <GitHubSection />
           </Suspense>
 
+          <PaperTearTransition variant="jagged" />
+
           <Suspense fallback={<SectionFallback />}>
             <Experience />
           </Suspense>
+
+          <PaperTearTransition variant="rift" />
 
           <Suspense fallback={<SectionFallback />}>
             <Education />
           </Suspense>
 
+          <PaperTearTransition variant="deckle" />
+
           <Suspense fallback={<SectionFallback />}>
             <Strengths />
           </Suspense>
 
+          <PaperTearTransition variant="fibrous" />
+
           <Suspense fallback={<SectionFallback />}>
             <BuildingInPublic />
           </Suspense>
+
+          <PaperTearTransition variant="jagged" />
 
           <Suspense fallback={<SectionFallback />}>
             <Contact />

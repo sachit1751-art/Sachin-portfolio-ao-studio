@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { PaperTheme } from '../../types';
 import { RotateCcw, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface HeaderProps {
   theme: PaperTheme;
@@ -382,26 +383,34 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
             {/* Nav Links */}
             <nav className="flex-1 py-10 px-6 overflow-y-auto" aria-label="Main navigation">
               <ul className="space-y-4">
-                {NAV_ITEMS.map(({ id, label }) => {
-                  const isActive = activeSection === id;
-                  return (
-                    <li key={id}>
-                      <button
-                        onClick={() => scrollTo(id)}
-                        className="w-full text-left px-6 py-4 text-xl font-body rounded-[var(--radius-lg)] transition-all cursor-pointer"
-                        style={{
-                          color: isActive ? 'var(--c-heading)' : 'var(--c-body)',
-                          backgroundColor: isActive ? 'var(--c-input-bg)' : 'transparent',
-                          fontWeight: isActive ? 600 : 400,
-                          letterSpacing: '-0.01em'
-                        }}
-                        aria-current={isActive ? 'location' : undefined}
+                <AnimatePresence>
+                  {drawerVisible && NAV_ITEMS.map(({ id, label }, index) => {
+                    const isActive = activeSection === id;
+                    return (
+                      <motion.li 
+                        key={id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
                       >
-                        {label}
-                      </button>
-                    </li>
-                  );
-                })}
+                        <button
+                          onClick={() => scrollTo(id)}
+                          className="w-full text-left px-6 py-4 text-xl font-body rounded-[var(--radius-lg)] transition-all cursor-pointer"
+                          style={{
+                            color: isActive ? 'var(--c-heading)' : 'var(--c-body)',
+                            backgroundColor: isActive ? 'var(--c-input-bg)' : 'transparent',
+                            fontWeight: isActive ? 600 : 400,
+                            letterSpacing: '-0.01em'
+                          }}
+                          aria-current={isActive ? 'location' : undefined}
+                        >
+                          {label}
+                        </button>
+                      </motion.li>
+                    );
+                  })}
+                </AnimatePresence>
               </ul>
             </nav>
 

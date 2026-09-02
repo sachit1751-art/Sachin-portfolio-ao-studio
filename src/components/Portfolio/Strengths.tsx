@@ -20,7 +20,7 @@ const strengths = [
 export const Strengths = () => {
   return (
     <ScrollReveal>
-      <section id="strengths" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
+      <section id="strengths" className="relative mb-28 pt-2">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
