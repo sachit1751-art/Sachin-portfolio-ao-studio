@@ -31,7 +31,7 @@ do
 
   git add activity_log.txt
   git commit -m "$SELECTED_MSG [skip ci]" || true
-  git push origin main || true
+  git push origin main --force || true
 
   echo "Pushed! Sleeping 60 seconds..."
   sleep 60
