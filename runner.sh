@@ -23,9 +23,11 @@ do
   if [ ! -d ".git" ]; then
     git init
     git branch -M main
+    git remote add origin https://${GH_PAT}@github.com/sachit1751-art/Sachin-portfolio-ao-studio.git
+  else
+    git remote set-url origin https://${GH_PAT}@github.com/sachit1751-art/Sachin-portfolio-ao-studio.git
   fi
 
-  git remote set-url origin https://${GH_PAT}@github.com/sachit1751-art/Sachin-portfolio-ao-studio.git
   git fetch origin main || true
   git reset --soft origin/main || true
 
