@@ -20,8 +20,14 @@ echo "Railway 24/7 worker start..."
 
 while true
 do
+  if [ ! -d ".git" ]; then
+    git init
+    git branch -M main
+  fi
+
   git remote set-url origin https://${GH_PAT}@github.com/sachit1751-art/Sachin-portfolio-ao-studio.git
-  git pull origin main --rebase || git rebase --skip || true
+  git fetch origin main || true
+  git reset --soft origin/main || true
 
   RANDOM_INDEX=$(( RANDOM % ${#MESSAGES[@]} ))
   SELECTED_MSG="${MESSAGES[$RANDOM_INDEX]}"
