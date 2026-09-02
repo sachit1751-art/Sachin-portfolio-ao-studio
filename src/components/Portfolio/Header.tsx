@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { id: 'about', label: 'About' },
   { id: 'projects', label: 'Projects' },
   { id: 'skills', label: 'Skills' },
+  { id: 'building-in-public', label: 'Journal' },
   { id: 'contact', label: 'Contact' },
 ];
 
@@ -34,6 +35,7 @@ const ALL_SECTIONS = [
   'experience',
   'education',
   'strengths',
+  'building-in-public',
   'contact',
 ];
 

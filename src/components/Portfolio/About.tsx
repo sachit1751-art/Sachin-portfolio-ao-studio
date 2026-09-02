@@ -21,7 +21,7 @@ export const About = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
-        <div className="md:col-span-7 space-y-4 text-base sm:text-lg leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
+        <div className="md:col-span-7 space-y-4 text-base sm:text-lg leading-relaxed font-handwriting" style={{ color: 'var(--c-body)' }}>
           <p>
             <WordReveal
               text="I'm Sachit, a student software developer focused on building practical software and exploring AI, web development, automation, and open-source technologies."
