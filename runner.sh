@@ -3,8 +3,6 @@
 git config --global user.email "sachit1751@gmail.com"
 git config --global user.name "sachit1751-art"
 
-git remote set-url origin https://${GH_PAT}@github.com/sachit1751-art/Sachin-portfolio-ao-studio.git
-
 MESSAGES=(
   "docs: update maintenance log"
   "refactor: minor code cleanup"
@@ -18,11 +16,12 @@ MESSAGES=(
   "chore: minor repository maintenance"
 )
 
-echo "Railway 24/7 worker start (1 min loop)..."
+echo "Railway 24/7 worker start..."
 
 while true
 do
-  git pull origin main --rebase || true
+  git remote set-url origin https://${GH_PAT}@github.com/sachit1751-art/Sachin-portfolio-ao-studio.git
+  git pull origin main --rebase || git rebase --skip || true
 
   RANDOM_INDEX=$(( RANDOM % ${#MESSAGES[@]} ))
   SELECTED_MSG="${MESSAGES[$RANDOM_INDEX]}"
