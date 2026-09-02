@@ -21,13 +21,9 @@ export const Experience = () => {
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
               [ 08 / WORK ]
             </span>
-            <h2 className="font-handwriting text-4xl sm:text-5xl font-bold" style={{ color: 'var(--c-heading)' }}>
+            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
               <WordReveal text="Independent Developer" baseDelay={0.1} />
             </h2>
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-sm font-handwriting" style={{ color: 'var(--c-muted)' }}>
-            <Briefcase className="w-4 h-4" />
-            <WordReveal text="Self-Directed" baseDelay={0.3} />
           </div>
         </div>
 

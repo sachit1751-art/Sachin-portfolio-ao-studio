@@ -11,13 +11,9 @@ export const CurrentlyBuilding = () => {
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
               [ 06 / NOW ]
             </span>
-            <h2 className="font-handwriting text-4xl sm:text-5xl font-bold" style={{ color: 'var(--c-heading)' }}>
+            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
               <WordReveal text="Something New" baseDelay={0.1} />
             </h2>
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-sm font-handwriting" style={{ color: 'var(--c-muted)' }}>
-            <Compass className="w-4 h-4" />
-            <WordReveal text="In Progress" baseDelay={0.3} />
           </div>
         </div>
 

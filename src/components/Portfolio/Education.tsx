@@ -28,13 +28,9 @@ export const Education = () => {
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
               [ 09 / EDUCATION & CERTIFICATIONS ]
             </span>
-            <h2 className="font-handwriting text-4xl sm:text-5xl font-bold" style={{ color: 'var(--c-heading)' }}>
+            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
               <WordReveal text="Education & Certifications" baseDelay={0.1} />
             </h2>
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-sm font-handwriting" style={{ color: 'var(--c-muted)' }}>
-            <GraduationCap className="w-4 h-4" />
-            <WordReveal text="In Progress" baseDelay={0.3} />
           </div>
         </div>
 
@@ -56,7 +52,7 @@ export const Education = () => {
                     <span className="font-mono text-[10px] uppercase tracking-[0.25em] font-semibold" style={{ color: 'var(--c-muted)' }}>
                       {item.label}
                     </span>
-                    <h3 className="font-handwriting text-2xl font-bold mt-1 mb-2" style={{ color: 'var(--c-heading)' }}>
+                    <h3 className="font-sans text-xl font-bold mt-1 mb-2 tracking-tight" style={{ color: 'var(--c-heading)' }}>
                       <WordReveal text={item.title} baseDelay={0.2 + idx * 0.12} />
                     </h3>
                     <p className="text-base sm:text-lg font-body mb-1" style={{ color: 'var(--c-body)' }}>

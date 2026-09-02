@@ -69,11 +69,16 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
     if (showMoodGame) return;
     if (prefersReducedMotion) {
       setPaperState('opened');
-      onOpenComplete?.();
       return;
     }
     setPaperState('opening');
-  }, [paperState, prefersReducedMotion, setPaperState, onOpenComplete, showMoodGame]);
+  }, [paperState, prefersReducedMotion, setPaperState, showMoodGame]);
+
+  useEffect(() => {
+    if (paperState === 'opened') {
+      onOpenComplete?.();
+    }
+  }, [paperState, onOpenComplete]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

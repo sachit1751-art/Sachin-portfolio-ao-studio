@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { usePerformance } from '../../hooks/usePerformance';
 
 interface ScrollTextPathProps {
   text: string;
@@ -6,6 +7,8 @@ interface ScrollTextPathProps {
 }
 
 export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) => {
+  const { simplify } = usePerformance();
+
   return (
     <div 
       className={`w-full overflow-hidden flex items-center justify-center py-16 sm:py-24 pointer-events-none ${className}`}
@@ -22,14 +25,14 @@ export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) =>
           fill="transparent"
           stroke="transparent"
         />
-        <text className="font-handwriting text-2xl sm:text-3xl tracking-widest uppercase" style={{ fill: 'var(--c-subtle)' }}>
+        <text className="font-sans font-bold text-xl sm:text-2xl tracking-[0.3em] uppercase" style={{ fill: 'var(--c-subtle)' }}>
           <motion.textPath
             href="#wavy-path"
-            animate={{ startOffset: ["0%", "-50%"] }}
-            transition={{ repeat: Infinity, ease: "linear", duration: 20 }}
+            animate={simplify ? {} : { startOffset: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 30 }}
           >
             {/* Repeat the text to ensure it covers the path even when shifting */}
-            {`${text} • `.repeat(8)}
+            {`${text} • `.repeat(simplify ? 4 : 8)}
           </motion.textPath>
         </text>
       </svg>

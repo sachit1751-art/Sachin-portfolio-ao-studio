@@ -11,16 +11,12 @@ export const About = () => {
           [ 01 / BACKGROUND ]
         </span>
         <div className="flex items-center justify-center gap-3">
-          <h2 className="font-handwriting text-4xl sm:text-5xl font-bold text-center" style={{ color: 'var(--c-heading)' }}>
+          <h2 className="font-sans text-4xl sm:text-5xl font-extrabold text-center tracking-tight" style={{ color: 'var(--c-heading)' }}>
             <WordReveal text="About Me" baseDelay={0.1} />
           </h2>
         </div>
         <div className="flex justify-center mt-3">
           <div className="w-16 h-[2px] rounded-full" style={{ backgroundColor: 'var(--c-dot)' }} />
-        </div>
-        <div className="flex justify-center items-center gap-1.5 text-sm font-handwriting mt-3" style={{ color: 'var(--c-muted)' }}>
-          <Feather className="w-4 h-4" />
-          <WordReveal text="My Story" baseDelay={0.3} />
         </div>
       </div>
 

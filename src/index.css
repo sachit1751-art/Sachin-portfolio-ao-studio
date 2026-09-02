@@ -336,15 +336,10 @@
   0% {
     opacity: 0;
     transform: translateY(10px);
-    filter: blur(3px);
-  }
-  60% {
-    filter: blur(0.5px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
@@ -410,8 +405,7 @@
 .hero-card:hover {
   border-color: var(--c-border-hover);
   background: var(--c-card-gradient-from);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-  transform: scale(1.02);
+  transform: translateY(-4px);
 }
 
 .hero-card:hover .hero-card-number {
@@ -528,7 +522,7 @@ section[id] {
 
 @keyframes paperFloat {
   0%, 100% { transform: translateY(0) rotate(var(--piece-rotate, 0deg)); }
-  50% { transform: translateY(-8px) rotate(calc(var(--piece-rotate, 0deg) + 2deg)); }
+  50% { transform: translateY(-4px) rotate(calc(var(--piece-rotate, 0deg) + 1deg)); }
 }
 
 .floating-piece {
@@ -3384,4 +3378,12 @@ section[id] {
   mix-blend-mode: overlay;
   animation: glitchFlash 0.4s ease-out;
   pointer-events: none;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

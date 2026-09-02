@@ -39,15 +39,15 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
       <div className="mb-10">
-        <h1 className="text-[2.2rem] xs:text-[2.8rem] sm:text-6xl md:text-[80px] lg:text-[100px] leading-[1.3] font-handwriting font-bold tracking-tight mb-6 py-4 flex flex-col" style={{ color: 'var(--c-heading)' }}>
-          <span className="block min-h-[1.3em]">
+        <h1 className="text-[2.2rem] xs:text-[2.8rem] sm:text-6xl md:text-[72px] lg:text-[88px] leading-[1.1] font-sans font-extrabold tracking-tight mb-6 py-4 flex flex-col" style={{ color: 'var(--c-heading)' }}>
+          <span className="block min-h-[1.1em]">
             <TypewriterEffect text="Aspiring Software" delay={0.2} hideCursorOnComplete={true} />
           </span>
-          <span className="block min-h-[1.3em]">
+          <span className="block min-h-[1.1em]">
             <TypewriterEffect text="Developer." delay={1.8} />
           </span>
         </h1>
-        <p className="max-w-[520px] leading-relaxed text-lg sm:text-xl font-body" style={{ color: 'var(--c-heading)' }}>
+        <p className="max-w-[540px] leading-relaxed text-lg sm:text-xl font-body opacity-90" style={{ color: 'var(--c-heading)' }}>
           <WordReveal
             text="I build full-stack web applications, architect AI integrations, and automate workflows."
             baseDelay={0.4}
@@ -116,7 +116,7 @@ export const Hero: React.FC<HeroProps> = ({
       <div className="flex flex-col sm:flex-row gap-6 pt-4" role="list" aria-label="Focus areas">
         <div className="hero-card flex-1 cursor-default p-5 flex flex-col justify-between min-h-[160px] relative animate-line-reveal lr-delay-14" role="listitem" aria-label="Web Development focus area">
           <div className="relative z-10 flex justify-between items-start">
-            <span className="text-sm italic font-handwriting" style={{ color: 'var(--c-subtle)' }}>
+            <span className="text-xs uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-subtle)' }}>
               Focus • Building
             </span>
             <span className="hero-card-number text-[9px] uppercase tracking-widest font-mono" style={{ color: 'var(--c-faint)' }}>
@@ -124,10 +124,10 @@ export const Hero: React.FC<HeroProps> = ({
             </span>
           </div>
           <div className="relative z-10 mt-auto">
-            <h3 className="hero-card-title text-lg font-bold font-handwriting" style={{ color: 'var(--c-heading)' }}>
+            <h3 className="hero-card-title text-xl font-bold font-sans" style={{ color: 'var(--c-heading)' }}>
               Web Development
             </h3>
-            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-body)' }}>
+            <p className="text-xs mt-1 font-mono uppercase tracking-wider" style={{ color: 'var(--c-body)' }}>
               React · TypeScript · Vite
             </p>
           </div>
@@ -135,7 +135,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         <div className="hero-card flex-1 cursor-default p-5 flex flex-col justify-between min-h-[160px] relative animate-line-reveal lr-delay-16" role="listitem" aria-label="AI & Agents focus area">
           <div className="relative z-10 flex justify-between items-start">
-            <span className="text-sm italic font-handwriting" style={{ color: 'var(--c-subtle)' }}>
+            <span className="text-xs uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-subtle)' }}>
               Focus • Intelligence
             </span>
             <span className="hero-card-number text-[9px] uppercase tracking-widest font-mono" style={{ color: 'var(--c-faint)' }}>
@@ -143,10 +143,10 @@ export const Hero: React.FC<HeroProps> = ({
             </span>
           </div>
           <div className="relative z-10 mt-auto">
-            <h3 className="hero-card-title text-lg font-bold font-handwriting" style={{ color: 'var(--c-heading)' }}>
+            <h3 className="hero-card-title text-xl font-bold font-sans" style={{ color: 'var(--c-heading)' }}>
               AI & Automation
             </h3>
-            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-body)' }}>
+            <p className="text-xs mt-1 font-mono uppercase tracking-wider" style={{ color: 'var(--c-body)' }}>
               Claude API · MCP · Prompt Engineering
             </p>
           </div>
@@ -154,7 +154,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         <div className="hero-card flex-1 cursor-default p-5 flex flex-col justify-between min-h-[160px] relative animate-line-reveal lr-delay-18" role="listitem" aria-label="UI/UX focus area">
           <div className="relative z-10 flex justify-between items-start">
-            <span className="text-sm italic font-handwriting" style={{ color: 'var(--c-subtle)' }}>
+            <span className="text-xs uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-subtle)' }}>
               Focus • Craft
             </span>
             <span className="hero-card-number text-[9px] uppercase tracking-widest font-mono" style={{ color: 'var(--c-faint)' }}>
@@ -162,10 +162,10 @@ export const Hero: React.FC<HeroProps> = ({
             </span>
           </div>
           <div className="relative z-10 mt-auto">
-            <h3 className="hero-card-title text-lg font-bold font-handwriting" style={{ color: 'var(--c-heading)' }}>
+            <h3 className="hero-card-title text-xl font-bold font-sans" style={{ color: 'var(--c-heading)' }}>
               UI / UX
             </h3>
-            <p className="text-sm mt-1 font-mono" style={{ color: 'var(--c-body)' }}>
+            <p className="text-xs mt-1 font-mono uppercase tracking-wider" style={{ color: 'var(--c-body)' }}>
               Interface · Interaction · Design
             </p>
           </div>

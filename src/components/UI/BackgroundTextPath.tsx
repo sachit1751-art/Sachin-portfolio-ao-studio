@@ -1,9 +1,13 @@
 import { motion } from 'motion/react';
+import { usePerformance } from '../../hooks/usePerformance';
 
 export const BackgroundTextPath = () => {
+  const { simplify } = usePerformance();
   const text = "SACHIT • DEVELOPER • AI • DESIGN • CREATE • ";
-  // Massive repeat to ensure it covers the screen and provides a long continuous animation
-  const repeatedText = text.repeat(50); 
+  // Reduced repeat for efficiency, especially if simplified
+  const repeatedText = text.repeat(simplify ? 10 : 40); 
+
+  if (simplify) return null; // Remove entirely on low-end devices to save paint cost
 
   return (
     <div 
@@ -31,12 +35,12 @@ export const BackgroundTextPath = () => {
           fill="none"
         />
 
-        <g className="font-handwriting text-4xl font-bold uppercase tracking-[0.4em]" style={{ fill: 'var(--c-heading)' }}>
+        <g className="font-sans font-black uppercase tracking-[0.6em]" style={{ fill: 'var(--c-heading)' }}>
           <text>
             <motion.textPath
               href="#bg-wavy-1"
               animate={{ startOffset: ["0%", "-50%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 150 }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 250 }}
             >
               {repeatedText}
             </motion.textPath>
@@ -45,7 +49,7 @@ export const BackgroundTextPath = () => {
             <motion.textPath
               href="#bg-wavy-2"
               animate={{ startOffset: ["-50%", "0%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 180 }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 300 }}
             >
               {repeatedText}
             </motion.textPath>
@@ -54,7 +58,7 @@ export const BackgroundTextPath = () => {
             <motion.textPath
               href="#bg-wavy-3"
               animate={{ startOffset: ["0%", "-50%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 160 }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 280 }}
             >
               {repeatedText}
             </motion.textPath>

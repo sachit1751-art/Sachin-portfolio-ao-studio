@@ -11,6 +11,7 @@ export interface Project {
   id: string;
   title: string;
   category: string;
+  filterCategories: string[];
   year: string;
   description: string;
   longDescription?: string;

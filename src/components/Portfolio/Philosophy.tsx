@@ -41,7 +41,7 @@ export const Philosophy = () => {
         <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase block text-center mb-2" style={{ color: 'var(--c-muted)' }}>
           [ 02 / PHILOSOPHY ]
         </span>
-        <h2 className="font-handwriting text-4xl sm:text-5xl font-bold text-center" style={{ color: 'var(--c-heading)' }}>
+        <h2 className="font-sans text-4xl sm:text-5xl font-extrabold text-center tracking-tight" style={{ color: 'var(--c-heading)' }}>
           <WordReveal text="How I Think" baseDelay={0.1} />
         </h2>
       </div>
@@ -63,7 +63,7 @@ export const Philosophy = () => {
                 <principle.icon className="w-6 h-6" style={{ color: 'var(--c-heading)' }} />
               </div>
               <div className="flex-1">
-                <h3 className="font-handwriting text-xl font-bold mb-2" style={{ color: 'var(--c-heading)' }}>
+                <h3 className="font-sans text-xl font-bold mb-2 tracking-tight" style={{ color: 'var(--c-heading)' }}>
                   <WordReveal text={principle.title} baseDelay={0.2 + idx * 0.1} />
                 </h3>
                 <p className="text-base sm:text-lg leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>

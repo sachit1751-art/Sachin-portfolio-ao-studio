@@ -8,8 +8,9 @@ import { ScrollReveal } from '../UI/ScrollReveal';
 const projects: Project[] = [
   {
     id: 'sky-roms',
-    title: 'Custom ROM Manager',
+    title: 'SKY ROMs',
     category: 'Android Platform',
+    filterCategories: ['ANDROID', 'WEB'],
     year: '2025',
     description:
       'Android Custom ROM Discovery & Management Platform for finding, downloading, and managing custom ROMs.',
@@ -21,8 +22,9 @@ const projects: Project[] = [
   },
   {
     id: 'doc-summarizer',
-    title: 'AI Document Summarizer',
+    title: 'Claude Document Summarizer',
     category: 'AI Tool',
+    filterCategories: ['AI', 'WEB'],
     year: '2025',
     description:
       'AI-powered tool that uses Claude API to summarize documents with intelligent prompt engineering.',
@@ -33,8 +35,9 @@ const projects: Project[] = [
   },
   {
     id: 'schedule-planner',
-    title: 'Schedule Automation',
+    title: 'Schedule Planner',
     category: 'Automation',
+    filterCategories: ['AUTOMATION'],
     year: '2025',
     description:
       'Automated schedule planner and notification engine for managing tasks and sending alerts.',
@@ -45,8 +48,9 @@ const projects: Project[] = [
   },
   {
     id: 'music-streaming',
-    title: 'Music Player',
+    title: 'Music Streaming Application',
     category: 'Open Source',
+    filterCategories: ['WEB'],
     year: '2025',
     description:
       'Open-source web music streaming application for playing and discovering music.',
@@ -57,8 +61,9 @@ const projects: Project[] = [
   },
   {
     id: 'mcp-tool',
-    title: 'AI Integrations',
+    title: 'MCP Integration Tool',
     category: 'AI Tool',
+    filterCategories: ['AI', 'AUTOMATION'],
     year: '2025',
     description:
       'Tool for integrating and working with Model Context Protocol (MCP) architectures.',
@@ -69,16 +74,23 @@ const projects: Project[] = [
   },
 ];
 
-const featuredProjects = projects.filter((p) => p.featured);
-const otherProjects = projects.filter((p) => !p.featured);
-
-const displayFeatured = featuredProjects.slice(0, 3);
+const FILTER_CATEGORIES = ['ALL', 'WEB', 'AI', 'AUTOMATION', 'ANDROID'];
 
 export const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeFilter, setActiveFilter] = useState('ALL');
   const [modalVisible, setModalVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const filteredProjects = projects.filter((p) => 
+    activeFilter === 'ALL' || p.filterCategories.includes(activeFilter)
+  );
+
+  const featuredProjects = filteredProjects.filter((p) => p.featured);
+  const otherProjects = filteredProjects.filter((p) => !p.featured);
+
+  const displayFeatured = featuredProjects; // Show all filtered featured projects
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape' && selectedProject) {
@@ -122,20 +134,47 @@ export const Projects = () => {
   return (
     <ScrollReveal>
     <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
-      <div className="flex items-center justify-between mb-12">
-        <h2 className="font-handwriting text-5xl sm:text-6xl font-bold" style={{ color: 'var(--c-heading)' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
+        <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
           <CharReveal text="Selected" /> <CharReveal text="Work" baseDelay={0.2} />
         </h2>
+
+        <div className="flex flex-wrap gap-2 pt-2 sm:pt-0 scrollbar-none" role="tablist">
+          {FILTER_CATEGORIES.map((category) => {
+            const isActive = activeFilter === category;
+            return (
+              <button
+                key={category}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveFilter(category)}
+                className="px-3 py-1.5 text-[10px] font-sans font-bold tracking-widest uppercase transition-all duration-200 border rounded-[var(--radius-md)] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
+                style={{
+                  backgroundColor: isActive ? 'var(--c-tab-active-bg)' : 'transparent',
+                  color: isActive ? 'var(--c-tab-active-text)' : 'var(--c-body)',
+                  borderColor: isActive ? 'var(--c-tab-active-bg)' : 'var(--c-border)',
+                }}
+              >
+                {category}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {displayFeatured.map((project, idx) => (
-          <motion.div
-            key={project.id}
-            whileHover={{ y: -8 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="h-full"
-          >
+      {featuredProjects.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {displayFeatured.map((project, idx) => (
+            <motion.div
+              key={project.id}
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              whileHover={{ y: -8 }}
+              className="h-full"
+            >
             <LineReveal
               delay={0.2 + idx * 0.15}
               className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)]"
@@ -158,9 +197,9 @@ export const Projects = () => {
                   </span>
                 </div>
 
-                <h3 className="font-handwriting text-3xl font-bold transition-colors mb-2 flex items-center justify-between" style={{ color: 'var(--c-heading)' }}>
+                <h3 className="font-sans text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
                   <WordReveal text={project.title} baseDelay={0.2 + idx * 0.12} />
-                  <ArrowUpRight className="w-5 h-5 transition-transform" style={{ color: 'var(--c-subtle)' }} />
+                  <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" style={{ color: 'var(--c-subtle)' }} />
                 </h3>
 
                 <p className="text-base sm:text-lg leading-relaxed mb-4 font-body" style={{ color: 'var(--c-body)' }}>
@@ -183,53 +222,80 @@ export const Projects = () => {
           </motion.div>
         ))}
       </div>
+      ) : (
+        activeFilter !== 'ALL' && filteredProjects.length > 0 && (
+          <div className="py-12 text-center border border-dashed rounded-[var(--radius-lg)] mb-12" style={{ borderColor: 'var(--c-border)', color: 'var(--c-muted)' }}>
+             <p className="font-mono text-xs uppercase tracking-widest">No featured projects in this category</p>
+          </div>
+        )
+      )}
 
-      <div className="mt-16">
-        <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] font-semibold mb-6" style={{ color: 'var(--c-muted)' }}>
-          Other Projects
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {otherProjects.map((project, idx) => (
-            <motion.div
-              key={project.id}
-              whileHover={{ y: -6 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="h-full"
-            >
-              <LineReveal
-                delay={0.3 + idx * 0.1}
-                className="p-5 flex flex-col justify-between min-h-[140px] h-full rounded-[var(--radius-lg)]"
-                style={{ border: '1px solid var(--c-border)' }}
+      {otherProjects.length > 0 && (
+        <div className="mt-16">
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] font-semibold mb-6" style={{ color: 'var(--c-muted)' }}>
+            Other Projects
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {otherProjects.map((project, idx) => (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                whileHover={{ y: -6 }}
+                className="h-full"
               >
-                <div className="flex items-center justify-between text-sm font-handwriting mb-2" style={{ color: 'var(--c-subtle)' }}>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full flex-shrink-0 bg-[var(--c-subtle)]" />
-                    <span>{project.category}</span>
-                  </div>
-                  <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                    {String(otherProjects.length - idx).padStart(2, '0')}
-                  </span>
-                </div>
-
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setSelectedProject(project)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
-                  className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded"
+                <LineReveal
+                  delay={0.3 + idx * 0.1}
+                  className="p-5 flex flex-col justify-between min-h-[140px] h-full rounded-[var(--radius-lg)]"
+                  style={{ border: '1px solid var(--c-border)' }}
                 >
-                  <h4 className="font-handwriting text-xl font-bold mb-1" style={{ color: 'var(--c-heading)' }}>
-                    {project.title}
-                  </h4>
-                  <p className="text-sm leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
-                    {project.description}
-                  </p>
-                </div>
-              </LineReveal>
-            </motion.div>
-          ))}
+                  <div className="flex items-center justify-between text-sm font-handwriting mb-2" style={{ color: 'var(--c-subtle)' }}>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0 bg-[var(--c-subtle)]" />
+                      <span>{project.category}</span>
+                    </div>
+                    <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
+                      {String(otherProjects.length - idx).padStart(2, '0')}
+                    </span>
+                  </div>
+
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedProject(project)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
+                    className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded"
+                  >
+                    <h4 className="font-sans text-lg font-bold mb-1 tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                      {project.title}
+                    </h4>
+                    <p className="text-sm leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
+                      {project.description}
+                    </p>
+                  </div>
+                </LineReveal>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {filteredProjects.length === 0 && (
+        <div className="py-20 text-center border border-dashed rounded-[var(--radius-xl)]" style={{ borderColor: 'var(--c-border)' }}>
+          <p className="font-sans text-xl font-bold mb-2" style={{ color: 'var(--c-heading)' }}>No Projects Found</p>
+          <p className="font-body text-sm mb-6" style={{ color: 'var(--c-body)' }}>There are no projects matching the "{activeFilter}" category yet.</p>
+          <button 
+            onClick={() => setActiveFilter('ALL')}
+            className="px-6 py-2 text-xs font-mono font-bold tracking-widest uppercase border rounded-[var(--radius-md)] cursor-pointer hover:bg-[var(--c-heading)] hover:text-[var(--c-bg)] transition-colors"
+            style={{ borderColor: 'var(--c-border)', color: 'var(--c-body)' }}
+          >
+            Show All Projects
+          </button>
+        </div>
+      )}
 
       {selectedProject && (
         <div
@@ -270,11 +336,11 @@ export const Projects = () => {
               {selectedProject.category} • {selectedProject.year}
             </div>
 
-            <h3 id="modal-title" className="font-handwriting text-4xl font-bold mb-3" style={{ color: 'var(--c-heading)' }}>
+            <h3 id="modal-title" className="font-sans text-3xl font-extrabold mb-3 tracking-tight" style={{ color: 'var(--c-heading)' }}>
               {selectedProject.title}
             </h3>
 
-            <p className="text-lg sm:text-xl leading-relaxed mb-6 font-handwriting whitespace-pre-line" style={{ color: 'var(--c-body)' }}>
+            <p className="text-base sm:text-lg leading-relaxed mb-6 font-body whitespace-pre-line opacity-90" style={{ color: 'var(--c-body)' }}>
               {selectedProject.longDescription || selectedProject.description}
             </p>
 

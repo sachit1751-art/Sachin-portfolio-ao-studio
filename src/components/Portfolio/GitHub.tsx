@@ -17,13 +17,9 @@ export const GitHubSection = () => {
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
               [ 07 / OPEN SOURCE ]
             </span>
-            <h2 className="font-handwriting text-4xl sm:text-5xl font-bold" style={{ color: 'var(--c-heading)' }}>
+            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
               <WordReveal text="Building in Public" baseDelay={0.1} />
             </h2>
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-sm font-handwriting" style={{ color: 'var(--c-muted)' }}>
-            <span className="w-4 h-4 inline-flex"><GitHubIcon className="w-4 h-4" /></span>
-            <WordReveal text="Multiple Repos" baseDelay={0.3} />
           </div>
         </div>
 
@@ -41,21 +37,21 @@ export const GitHubSection = () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6" style={{ borderTop: '1px solid var(--c-border)' }}>
                 <div>
                   <span className="block font-mono text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--c-muted)' }}>Public Repos</span>
-                  <span className="font-handwriting text-2xl font-bold" style={{ color: 'var(--c-heading)' }}>5+</span>
+                  <span className="font-sans text-2xl font-black" style={{ color: 'var(--c-heading)' }}>5+</span>
                 </div>
                 <div>
                   <span className="block font-mono text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--c-muted)' }}>Stars Accrued</span>
-                  <span className="font-handwriting text-2xl font-bold flex items-center gap-1" style={{ color: 'var(--c-heading)' }}>
+                  <span className="font-sans text-2xl font-black flex items-center gap-1" style={{ color: 'var(--c-heading)' }}>
                     2 <span style={{ color: '#EAB308' }}>★</span>
                   </span>
                 </div>
                 <div>
                   <span className="block font-mono text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--c-muted)' }}>Recent Commits</span>
-                  <span className="font-handwriting text-2xl font-bold" style={{ color: 'var(--c-heading)' }}>5+</span>
+                  <span className="font-sans text-2xl font-black" style={{ color: 'var(--c-heading)' }}>5+</span>
                 </div>
                 <div>
                   <span className="block font-mono text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--c-muted)' }}>Primary Stack</span>
-                  <span className="font-handwriting text-lg font-bold block truncate" style={{ color: 'var(--c-heading)' }}>TypeScript</span>
+                  <span className="font-sans text-sm font-bold block truncate uppercase tracking-tight" style={{ color: 'var(--c-heading)' }}>TypeScript</span>
                 </div>
               </div>
             </LineReveal>
@@ -89,7 +85,7 @@ export const GitHubSection = () => {
                   }}
                 >
                   <GitHubIcon className="w-12 h-12 mb-3 transition-transform duration-300 group-hover:rotate-[360deg]" />
-                  <span className="font-handwriting text-2xl font-bold">@sachit1751-art</span>
+                  <span className="font-sans text-xl font-extrabold tracking-tight">@sachit1751-art</span>
                   <span className="font-mono text-[10px] uppercase tracking-widest mt-1 opacity-70 flex items-center gap-1">
                     Visit GitHub Profile <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">↗</span>
                   </span>

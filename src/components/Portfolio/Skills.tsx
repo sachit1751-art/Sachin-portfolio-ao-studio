@@ -98,13 +98,13 @@ export const Skills = () => {
           [ 03 / CAPABILITIES ]
         </span>
         <div className="flex items-center gap-4">
-          <h2 className="font-handwriting text-4xl sm:text-5xl font-bold whitespace-nowrap" style={{ color: 'var(--c-heading)' }}>
+          <h2 className="font-sans text-4xl sm:text-5xl font-extrabold whitespace-nowrap tracking-tight" style={{ color: 'var(--c-heading)' }}>
             <WordReveal text="Skills & Stack" baseDelay={0.1} />
           </h2>
           <div className="flex-1 h-[1px]" style={{ backgroundColor: 'var(--c-border)' }} />
         </div>
-        <div className="text-sm font-handwriting uppercase tracking-wide mt-2" style={{ color: 'var(--c-muted)' }}>
-          <WordReveal text="What I Work With" baseDelay={0.3} />
+        <div className="text-xs font-mono uppercase tracking-widest mt-2 font-bold" style={{ color: 'var(--c-muted)' }}>
+          <WordReveal text="Technical Proficiencies" baseDelay={0.3} />
         </div>
       </div>
 
@@ -122,11 +122,11 @@ export const Skills = () => {
               ref={(el) => { tabRefs.current[idx] = el; }}
               onClick={() => setActiveTab(idx)}
               onKeyDown={(e) => handleTabKeyDown(e, idx)}
-              className="px-4 py-2 text-base font-handwriting transition-all cursor-pointer whitespace-nowrap flex-shrink-0 rounded-[var(--radius-md)]"
+              className="px-4 py-2 text-[10px] font-sans font-bold uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap flex-shrink-0 border rounded-[var(--radius-md)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
               style={{
-                backgroundColor: isActive ? 'var(--c-tab-active-bg)' : undefined,
+                backgroundColor: isActive ? 'var(--c-tab-active-bg)' : 'transparent',
                 color: isActive ? 'var(--c-tab-active-text)' : 'var(--c-body)',
-                border: isActive ? undefined : '1px solid var(--c-border)',
+                borderColor: isActive ? 'var(--c-tab-active-bg)' : 'var(--c-border)',
               }}
               role="tab"
               id={`skill-tab-${idx}`}
@@ -147,10 +147,10 @@ export const Skills = () => {
           aria-labelledby={`skill-tab-${activeTab}`}
         >
           <div className="mb-6">
-            <h3 className="font-handwriting text-3xl font-bold mb-1" style={{ color: 'var(--c-heading)' }}>
+            <h3 className="font-sans text-2xl font-bold mb-1 tracking-tight" style={{ color: 'var(--c-heading)' }}>
               {categories[activeTab].title}
             </h3>
-            <p className="text-base sm:text-lg font-handwriting" style={{ color: 'var(--c-body)' }}>
+            <p className="text-base sm:text-lg font-body opacity-90" style={{ color: 'var(--c-body)' }}>
               {categories[activeTab].description}
             </p>
           </div>

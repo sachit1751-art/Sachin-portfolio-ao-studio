@@ -115,7 +115,7 @@ export const Contact = () => {
           <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
             [ 05 / DISPATCH ]
           </span>
-          <h2 className="font-handwriting text-4xl sm:text-5xl font-bold" style={{ color: 'var(--c-heading)' }}>
+          <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
             <CharReveal text="Let's Build Something" baseDelay={0.1} />
           </h2>
         </div>
@@ -236,7 +236,7 @@ export const Contact = () => {
               >
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4" style={{ color: 'var(--c-subtle)' }} />
-                  <span className="font-handwriting text-sm xs:text-lg truncate max-w-[160px] min-[380px]:max-w-none" style={{ color: 'var(--c-heading)' }}>{EMAIL}</span>
+                  <span className="font-sans font-bold text-sm xs:text-base truncate max-w-[160px] min-[380px]:max-w-none" style={{ color: 'var(--c-heading)' }}>{EMAIL}</span>
                 </div>
                 {copied ? (
                   <Check className="w-4 h-4" style={{ color: 'var(--c-heading)' }} aria-hidden="true" />

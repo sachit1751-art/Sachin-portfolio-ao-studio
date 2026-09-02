@@ -28,6 +28,7 @@ export default function App() {
   }, []);
   const [paperState, setPaperState] = useState<PaperState>('crumpled');
   const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('cotton');
+  const [introCompleted, setIntroCompleted] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [showTransition, setShowTransition] = useState(false);
   const [showStructureRoom, setShowStructureRoom] = useState(false);
@@ -45,15 +46,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (paperState === 'opened') {
+    if (paperState === 'opened' && introCompleted) {
       setShowContent(true);
     } else if (paperState === 'crumpled' && !showMoodGame) {
       setShowContent(false);
     }
-  }, [paperState, showMoodGame]);
+  }, [paperState, showMoodGame, introCompleted]);
 
   const handleRecrumple = useCallback(() => {
     setShowContent(false);
+    setIntroCompleted(false);
     setPaperState('crumpled');
     setShowStructureRoom(false);
     setShowTransition(false);
@@ -95,6 +97,7 @@ export default function App() {
             theme={theme}
             setTheme={setTheme}
             onOpenComplete={() => {
+              setIntroCompleted(true);
               setShowContent(true);
             }}
             showMoodGame={showMoodGame}
@@ -105,7 +108,7 @@ export default function App() {
       </div>
 
       {/* Portfolio Content */}
-      {showContent && !showStructureRoom && !showMoodGame && (
+      {showContent && introCompleted && !showStructureRoom && !showMoodGame && (
         <div
           className="fixed inset-0 z-20"
           data-theme={theme}
