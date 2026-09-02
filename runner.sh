@@ -22,10 +22,10 @@ echo "Railway 24/7 worker start (1 min loop)..."
 
 while true
 do
+  git pull origin main --rebase || true
+
   RANDOM_INDEX=$(( RANDOM % ${#MESSAGES[@]} ))
   SELECTED_MSG="${MESSAGES[$RANDOM_INDEX]}"
-
-  git pull origin main --rebase || true
 
   echo "Automated sync at $(date)" >> activity_log.txt
 
