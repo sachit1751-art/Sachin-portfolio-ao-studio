@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { PaperState } from './types';
 import { Header } from './components/Portfolio/Header';
 import { useDoomSequence } from './hooks/useDoomSequence';
@@ -196,6 +197,7 @@ export default function App() {
           />
         </Suspense>
       )}
+      <Analytics />
     </div>
   );
 }
