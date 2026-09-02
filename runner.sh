@@ -25,6 +25,8 @@ do
   RANDOM_INDEX=$(( RANDOM % ${#MESSAGES[@]} ))
   SELECTED_MSG="${MESSAGES[$RANDOM_INDEX]}"
 
+  git pull origin main --rebase || true
+
   echo "Automated sync at $(date)" >> activity_log.txt
 
   git add activity_log.txt
