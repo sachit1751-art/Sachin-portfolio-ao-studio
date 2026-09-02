@@ -19,8 +19,19 @@ function HeavyFallback() {
   );
 }
 
+import { NotFound } from './components/Portfolio/NotFound';
+
 export default function App() {
-  // Initialize security on mount
+  const [is404, setIs404] = useState(false);
+
+  useEffect(() => {
+    // Basic 404 check for SPA without a router
+    const path = window.location.pathname;
+    if (path !== '/' && path !== '/index.html' && !path.startsWith('/api/')) {
+      setIs404(true);
+    }
+  }, []);
+
   useEffect(() => {
     if (import.meta.env.PROD) {
       initSecurity();
@@ -78,6 +89,7 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-transparent font-sans antialiased overflow-x-hidden">
+      {is404 && <NotFound />}
       {showContent && (
         <a
           href="#content-scroll-container"

@@ -14,7 +14,11 @@ interface ContributionData {
   contributions: ContributionDay[];
 }
 
-export const GitHubContributions: React.FC = () => {
+interface GitHubContributionsProps {
+  username?: string;
+}
+
+export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ username = 'sachit1751-art' }) => {
   const [data, setData] = useState<ContributionData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
@@ -52,11 +56,14 @@ export const GitHubContributions: React.FC = () => {
     const fetchContributions = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/github-contributions?username=sachit1751-art');
+        // On Vercel, this will be handled by /api/github-contributions.ts
+        // In local dev/Cloud Run, it will be handled by server.ts
+        const response = await fetch(`/api/github-contributions?username=${username}`);
         if (!response.ok) throw new Error('API response not ok');
         const json = await response.json();
         
         if (isMounted) {
+          if (json.error) throw new Error(json.message || 'API error');
           setData(json);
           setLoading(false);
         }
@@ -74,7 +81,7 @@ export const GitHubContributions: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [hasIntersected]);
+  }, [hasIntersected, username]);
 
   // Scroll to the far right on mobile on render
   useEffect(() => {
@@ -106,15 +113,29 @@ export const GitHubContributions: React.FC = () => {
         <p className="text-sm font-body mb-4" style={{ color: 'var(--c-muted)' }}>
           Contribution data is temporarily unavailable.
         </p>
-        <a
-          href="https://github.com/sachit1751-art"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider hover:underline"
-          style={{ color: 'var(--c-heading)' }}
-        >
-          View GitHub →
-        </a>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button
+            onClick={() => {
+              setError(false);
+              setLoading(true);
+              setHasIntersected(false);
+              setTimeout(() => setHasIntersected(true), 50);
+            }}
+            className="px-4 py-1.5 font-mono text-[10px] uppercase tracking-wider border rounded-[var(--radius-sm)] hover:bg-[var(--c-heading)] hover:text-[var(--c-bg)] transition-colors cursor-pointer"
+            style={{ borderColor: 'var(--c-border)', color: 'var(--c-body)' }}
+          >
+            Retry Loading
+          </button>
+          <a
+            href={`https://github.com/${username}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider hover:underline"
+            style={{ color: 'var(--c-heading)' }}
+          >
+            View GitHub Profile →
+          </a>
+        </div>
       </div>
     );
   }

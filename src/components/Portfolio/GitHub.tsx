@@ -4,7 +4,8 @@ import { ScrollReveal } from '../UI/ScrollReveal';
 import { GitHubIcon } from '../UI/Icons';
 import { GitHubContributions } from '../GitHubContributions';
 
-const GITHUB = 'https://github.com/sachit1751-art';
+const GITHUB_USERNAME = 'sachit1751-art';
+const GITHUB_URL = `https://github.com/${GITHUB_USERNAME}`;
 
 export const GitHubSection = () => {
   const [hovered, setHovered] = useState(false);
@@ -59,11 +60,11 @@ export const GitHubSection = () => {
           
           <div className="md:col-span-4">
             <a
-              href={GITHUB}
+              href={GITHUB_URL}
               target="_blank"
               rel="noreferrer"
               className="block h-full relative overflow-hidden cursor-pointer outline-none rounded-[var(--radius-lg)] group"
-              aria-label="Visit Sachit's GitHub profile"
+              aria-label={`Visit ${GITHUB_USERNAME}'s GitHub profile`}
               onMouseEnter={() => setHovered(true)}
               onMouseLeave={() => setHovered(false)}
               onFocus={() => setHovered(true)}
@@ -85,7 +86,7 @@ export const GitHubSection = () => {
                   }}
                 >
                   <GitHubIcon className="w-12 h-12 mb-3 transition-transform duration-300 group-hover:rotate-[360deg]" />
-                  <span className="font-sans text-xl font-extrabold tracking-tight">@sachit1751-art</span>
+                  <span className="font-sans text-xl font-extrabold tracking-tight">@{GITHUB_USERNAME}</span>
                   <span className="font-mono text-[10px] uppercase tracking-widest mt-1 opacity-70 flex items-center gap-1">
                     Visit GitHub Profile <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">↗</span>
                   </span>
@@ -96,7 +97,7 @@ export const GitHubSection = () => {
         </div>
 
         {/* Dynamic GitHub Contribution Heatmap / Calendar */}
-        <GitHubContributions />
+        <GitHubContributions username={GITHUB_USERNAME} />
       </section>
     </ScrollReveal>
   );

@@ -72,6 +72,45 @@ const projects: Project[] = [
     tags: ['Python', 'Claude API', 'MCP', 'Prompt Caching'],
     featured: false,
   },
+  {
+    id: 'sentience-os',
+    title: 'Sentience OS',
+    category: 'Android OS',
+    filterCategories: ['ANDROID', 'AI'],
+    year: '2025',
+    description:
+      'Custom Android distribution with integrated local LLMs for proactive privacy hardening and context-aware automation.',
+    longDescription:
+      'Sentience OS is a research-driven Android distribution that integrates local Large Language Models (LLMs) directly into the system layer. It provides proactive privacy hardening and context-aware automation without ever sending data to the cloud.\n\nKey Features: On-device AI inference, automated permission management, semantic system search, real-time privacy auditing.\n\nTech Stack: AOSP, C++, Kotlin, TensorFlow Lite, Python.',
+    tags: ['AOSP', 'Kotlin', 'TensorFlow Lite', 'AI'],
+    featured: true,
+  },
+  {
+    id: 'nexus-core',
+    title: 'Nexus Core',
+    category: 'Enterprise Web',
+    filterCategories: ['WEB', 'AUTOMATION'],
+    year: '2024',
+    description:
+      'Next-generation ERP system for distributed teams, featuring real-time collaborative state management and automated resource allocation.',
+    longDescription:
+      'Nexus Core is a highly scalable enterprise resource planning system designed for the modern distributed workforce. It leverages CRDTs for seamless real-time collaboration and includes a robust automation engine for resource management.\n\nKey Features: Real-time multi-user editing, automated billing workflows, predictive resource scaling, comprehensive analytics dashboard.\n\nTech Stack: Next.js, Go, PostgreSQL, Redis, Socket.io.',
+    tags: ['Next.js', 'Go', 'PostgreSQL', 'Redis'],
+    featured: true,
+  },
+  {
+    id: 'ghost-protocol',
+    title: 'Ghost Protocol',
+    category: 'Security',
+    filterCategories: ['ANDROID', 'WEB'],
+    year: '2024',
+    description:
+      'Military-grade end-to-end encrypted messaging protocol with zero-knowledge proof identity verification and decentralized relay nodes.',
+    longDescription:
+      'Ghost Protocol is a high-security communication platform focusing on absolute anonymity and data integrity. It utilizes ZK-proofs for identity verification and routes traffic through a decentralized network of volunteer-operated relay nodes.\n\nKey Features: E2EE messaging, ZK-proof authentication, metadata obfuscation, self-destructing data packets.\n\nTech Stack: Rust, WebAssembly, React Native, Libp2p.',
+    tags: ['Rust', 'Wasm', 'React Native', 'Security'],
+    featured: false,
+  },
 ];
 
 const FILTER_CATEGORIES = ['ALL', 'WEB', 'AI', 'AUTOMATION', 'ANDROID'];

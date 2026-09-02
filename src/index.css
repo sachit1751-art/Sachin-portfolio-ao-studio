@@ -2,10 +2,20 @@
 
 @layer base {
   :root {
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
     --radius-xl: 20px;
+  }
+
+  /* Global Accessibility & Performance */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   html {
@@ -13,13 +23,17 @@
   }
 
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Courier Prime', monospace;
     background-color: transparent;
     color: var(--c-heading);
   }
 
-  h1, h2, h3, .font-serif {
+  h1, h2, h3, h4, h5, h6 {
     font-family: 'Kalam', cursive;
+  }
+
+  .font-serif {
+    font-family: 'Courier Prime', monospace;
   }
 
   code, pre, .font-mono {
@@ -31,11 +45,11 @@
   }
 
   .font-body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Courier Prime', monospace;
   }
 
   .font-sans {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-family: 'Kalam', cursive;
   }
 
   /* Theme color tokens */
@@ -742,7 +756,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: var(--c-subtle);
   cursor: pointer;
@@ -816,7 +830,7 @@ section[id] {
   gap: 10px;
   width: 100%;
   padding: 10px 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: var(--c-subtle);
   cursor: pointer;
@@ -899,7 +913,7 @@ section[id] {
 }
 
 .sr-section-desc {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 15px;
   color: var(--c-body);
   line-height: 1.6;
@@ -915,7 +929,7 @@ section[id] {
   background: var(--c-card-gradient-from);
   border-radius: 6px;
   margin-top: 32px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.6;
@@ -998,7 +1012,7 @@ section[id] {
   background: var(--c-card-gradient-from);
   border: 1px solid var(--c-border);
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.6;
@@ -1095,7 +1109,7 @@ section[id] {
 
 .sr-file-desc {
   padding: 8px 16px 8px 32px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 12px;
   color: var(--c-subtle);
   line-height: 1.5;
@@ -1185,7 +1199,7 @@ section[id] {
 }
 
 .sr-tech-value {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.5;
@@ -1274,7 +1288,7 @@ section[id] {
   background: var(--c-card-gradient-from);
   border: 1px solid var(--c-border);
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.6;
@@ -1383,7 +1397,7 @@ section[id] {
 }
 
 .sr-perf-value {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 12px;
   color: var(--c-body);
 }
@@ -1401,7 +1415,7 @@ section[id] {
 }
 
 .sr-score-label {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: var(--c-body);
   min-width: 130px;
@@ -1429,7 +1443,7 @@ section[id] {
 }
 
 .sr-perf-note {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 11px;
   color: var(--c-muted);
   margin-top: 12px;
@@ -1463,7 +1477,7 @@ section[id] {
   gap: 10px;
   width: 100%;
   padding: 14px 16px;
-  font-family: 'Kalam', cursive;
+  font-family: 'Courier Prime', monospace;
   font-size: 15px;
   color: var(--c-heading);
   cursor: pointer;
@@ -1491,7 +1505,7 @@ section[id] {
 }
 
 .sr-decision-answer p {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: var(--c-body);
   line-height: 1.7;
@@ -1664,13 +1678,14 @@ section[id] {
 }
 
 .sr-masthead-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 48px;
+  font-family: 'Kalam', cursive;
+  font-size: clamp(32px, 8vw, 48px);
   font-weight: 900;
   letter-spacing: 0.18em;
   color: #e8e7e4;
   margin: 0;
-  line-height: 1;
+  line-height: 1.1;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
 }
 
 .sr-masthead-subtitle {
@@ -1698,7 +1713,7 @@ section[id] {
   align-items: center;
   gap: 5px;
   padding: 12px 18px;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: #9e9c97;
   background: none;
@@ -1773,7 +1788,7 @@ section[id] {
 }
 
 .sr-section-numeral {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 42px;
   font-weight: 900;
   color: #e8e7e4;
@@ -1781,7 +1796,7 @@ section[id] {
 }
 
 .sr-section-title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 28px;
   font-weight: 700;
   color: #e8e7e4;
@@ -1791,7 +1806,7 @@ section[id] {
 
 /* Editorial Lead Paragraph */
 .sr-lead {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 17px;
   color: #c8c4be;
   line-height: 1.7;
@@ -1823,7 +1838,7 @@ section[id] {
 }
 
 .sr-pull-quote p {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 16px;
   color: #e8e7e4;
   line-height: 1.6;
@@ -1843,7 +1858,7 @@ section[id] {
 
 /* Subsection Title */
 .sr-subsection-title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 18px;
   font-weight: 700;
   color: #e8e7e4;
@@ -1880,7 +1895,7 @@ section[id] {
 }
 
 .sr-numbered-value {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #9e9c97;
   font-style: italic;
@@ -1974,7 +1989,7 @@ section[id] {
   background: rgba(255,255,255,0.04);
   border: 1px solid #3a3a3a;
   border-radius: 0;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #c8c4be;
   line-height: 1.6;
@@ -2071,7 +2086,7 @@ section[id] {
 
 .sr-file-desc {
   padding: 8px 16px 8px 32px;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 12px;
   color: #9e9c97;
   line-height: 1.5;
@@ -2123,7 +2138,7 @@ section[id] {
 }
 
 .sr-tech-num {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 22px;
   font-weight: 900;
   color: #e8e7e4;
@@ -2169,7 +2184,7 @@ section[id] {
 }
 
 .sr-tech-value {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: #c8c4be;
   line-height: 1.5;
@@ -2240,7 +2255,7 @@ section[id] {
 }
 
 .sr-timeline-label {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 18px;
   font-weight: 700;
   color: #e8e7e4;
@@ -2258,7 +2273,7 @@ section[id] {
   background: rgba(255,255,255,0.04);
   border: 1px solid #3a3a3a;
   border-radius: 0;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #c8c4be;
   line-height: 1.6;
@@ -2337,7 +2352,7 @@ section[id] {
 }
 
 .sr-score-label {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #c8c4be;
   min-width: 130px;
@@ -2397,7 +2412,7 @@ section[id] {
   gap: 12px;
   width: 100%;
   padding: 16px 0;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 16px;
   color: #c8c4be;
   cursor: pointer;
@@ -2440,7 +2455,7 @@ section[id] {
 }
 
 .sr-decision-answer p {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 15px;
   color: #9e9c97;
   line-height: 1.7;
@@ -2493,7 +2508,7 @@ section[id] {
 }
 
 .sr-continuous-desc {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #9e9c97;
   line-height: 1.6;
@@ -2580,7 +2595,7 @@ section[id] {
 }
 
 .sr-game-arch-body p {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 15px;
   color: #9e9c97;
   line-height: 1.7;
@@ -2635,7 +2650,7 @@ section[id] {
 }
 
 .sr-game-stat-detail {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #9e9c97;
   padding-top: 8px;
@@ -2667,7 +2682,7 @@ section[id] {
 }
 
 .sr-control-action {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #9e9c97;
 }
@@ -2726,7 +2741,7 @@ section[id] {
 }
 
 .sr-game-state-body p {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: #9e9c97;
   line-height: 1.6;
@@ -2760,7 +2775,7 @@ section[id] {
 .sr-sound-method,
 .sr-sound-freq,
 .sr-sound-duration {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 12px;
   color: #9e9c97;
   display: block;
@@ -2827,7 +2842,7 @@ section[id] {
 }
 
 .sr-math-desc {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #9e9c97;
   line-height: 1.6;
@@ -2899,7 +2914,7 @@ section[id] {
 }
 
 .sr-math-stage-desc {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 13px;
   color: #9e9c97;
   line-height: 1.5;
@@ -3017,7 +3032,7 @@ section[id] {
 }
 
 .sr-texture-body p {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 14px;
   color: #9e9c97;
   line-height: 1.6;
@@ -3071,7 +3086,7 @@ section[id] {
 }
 
 .sr-theme-fibers {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 12px;
   color: #9e9c97;
 }
@@ -3220,7 +3235,7 @@ section[id] {
 }
 
 .mood-game-over-title {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Courier Prime', monospace;
   font-size: 48px;
   font-weight: 900;
   color: #e8e7e4;
