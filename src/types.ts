@@ -24,6 +24,9 @@ export interface Project {
 export interface SkillCategory {
   title: string;
   description: string;
-  skills: { name: string }[];
+  skills: { 
+    name: string;
+    iconName?: string;
+  }[];
 }
 

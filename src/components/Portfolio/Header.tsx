@@ -378,19 +378,20 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
             </div>
 
             {/* Nav Links */}
-            <nav className="flex-1 py-6 px-6 overflow-y-auto" aria-label="Main navigation">
-              <ul className="space-y-2">
+            <nav className="flex-1 py-10 px-6 overflow-y-auto" aria-label="Main navigation">
+              <ul className="space-y-4">
                 {NAV_ITEMS.map(({ id, label }) => {
                   const isActive = activeSection === id;
                   return (
                     <li key={id}>
                       <button
                         onClick={() => scrollTo(id)}
-                        className="w-full text-left px-4 py-3 text-lg font-body rounded-[var(--radius-md)] transition-colors cursor-pointer"
+                        className="w-full text-left px-6 py-4 text-xl font-body rounded-[var(--radius-lg)] transition-all cursor-pointer"
                         style={{
                           color: isActive ? 'var(--c-heading)' : 'var(--c-body)',
                           backgroundColor: isActive ? 'var(--c-input-bg)' : 'transparent',
-                          fontWeight: isActive ? 500 : undefined,
+                          fontWeight: isActive ? 600 : 400,
+                          letterSpacing: '-0.01em'
                         }}
                         aria-current={isActive ? 'location' : undefined}
                       >
@@ -403,12 +404,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
             </nav>
 
             {/* Theme Selector */}
-            <div className="px-6 pb-6" style={{ borderTop: '1px solid var(--c-header-border)' }}>
-              <p className="text-sm font-body mb-4" style={{ color: 'var(--c-subtle)' }}>
-                Theme
+            <div className="px-6 py-8" style={{ borderTop: '1px solid var(--c-header-border)' }}>
+              <p className="text-xs font-mono uppercase tracking-widest mb-6" style={{ color: 'var(--c-muted)' }}>
+                Select Atmosphere
               </p>
               <div
-                className="flex items-center gap-2 p-2 rounded-xl"
+                className="flex items-center justify-between p-3 rounded-2xl"
                 style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
               >
                 {THEMES.map((t) => (
@@ -416,13 +417,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
                     key={t.id}
                     onClick={() => setTheme(t.id)}
                     title={t.label}
-                    className="w-4 h-4 rounded-full border transition-all duration-200"
+                    className="w-8 h-8 rounded-full border-2 transition-all duration-300"
                     style={{
                       backgroundColor: t.color,
                       borderColor: theme === t.id ? 'var(--c-heading)' : 'transparent',
                       opacity: theme === t.id ? 1 : 0.4,
-                      transform: theme === t.id ? 'scale(1.15)' : undefined,
-                      boxShadow: theme === t.id ? '0 1px 4px rgba(0,0,0,0.2)' : undefined,
+                      transform: theme === t.id ? 'scale(1.1)' : 'scale(0.9)',
+                      boxShadow: theme === t.id ? '0 4px 12px rgba(0,0,0,0.15)' : undefined,
                     }}
                     aria-label={`Switch to ${t.label}`}
                     aria-pressed={theme === t.id}
@@ -432,11 +433,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
             </div>
 
             {/* Fold Button */}
-            <div className="p-6">
+            <div className="p-6 pb-12">
               <button
                 onClick={() => { onRecrumple(); closeMobile(); }}
-                className="w-full px-4 py-3 font-handwriting text-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.98] cursor-pointer rounded-lg"
-                style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
+                className="w-full px-4 py-4 font-handwriting text-xl flex items-center justify-center gap-3 transition-all active:scale-[0.96] cursor-pointer rounded-xl"
+                style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
               >
                 <RotateCcw className="w-5 h-5" />
                 <span>Fold Paper</span>

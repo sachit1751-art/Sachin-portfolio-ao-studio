@@ -1,99 +1,78 @@
-import { useState, useRef, useCallback } from 'react';
 import { SkillCategory } from '../../types';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
+import * as LucideIcons from 'lucide-react';
 
 const categories: SkillCategory[] = [
   {
-    title: 'Programming',
-    description: 'Languages I use to build software.',
+    title: 'Frontend Development',
+    description: 'Crafting responsive, accessible, and high-performance user interfaces.',
     skills: [
-      { name: 'Python' },
-      { name: 'JavaScript' },
-      { name: 'TypeScript' },
-      { name: 'HTML5' },
-      { name: 'CSS3' },
+      { name: 'HTML5', iconName: 'Layout' },
+      { name: 'CSS3', iconName: 'Palette' },
+      { name: 'JavaScript', iconName: 'Code' },
+      { name: 'TypeScript', iconName: 'FileCode' },
+      { name: 'Responsive Design', iconName: 'Smartphone' },
+      { name: 'UI/UX Fundamentals', iconName: 'Figma' },
+      { name: 'Accessibility Basics', iconName: 'Accessibility' },
+      { name: 'Micro-interactions', iconName: 'Zap' },
     ],
   },
   {
-    title: 'AI & Automation',
-    description: 'Building with AI models and automating workflows.',
+    title: 'Interactive Web',
+    description: 'Immersive 3D experiences and complex animation workflows.',
     skills: [
-      { name: 'Anthropic Claude API' },
-      { name: 'Prompt Engineering' },
-      { name: 'Prompt Caching' },
-      { name: 'OpenAI API' },
-      { name: 'Model Context Protocol (MCP)' },
-      { name: 'Cursor' },
+      { name: 'Three.js', iconName: 'Box' },
+      { name: 'WebGL Basics', iconName: 'Globe' },
+      { name: 'GSAP Animations', iconName: 'Move' },
+      { name: 'Canvas Workflows', iconName: 'Image' },
+      { name: 'Camera Transitions', iconName: 'Camera' },
+      { name: 'Object Interaction Logic', iconName: 'MousePointer2' },
     ],
   },
   {
-    title: 'Web & Backend',
-    description: 'Full-stack web development technologies.',
+    title: 'Backend & Data',
+    description: 'Server-side logic, database management, and persistent storage.',
     skills: [
-      { name: 'React' },
-      { name: 'Vite' },
-      { name: 'Supabase' },
-      { name: 'PostgreSQL' },
-      { name: 'Node.js' },
-      { name: 'REST APIs' },
+      { name: 'Node.js HTTP Server', iconName: 'Server' },
+      { name: 'REST-style APIs', iconName: 'Globe' },
+      { name: 'Supabase Postgres', iconName: 'Database' },
+      { name: 'Supabase Storage', iconName: 'HardDrive' },
+      { name: 'JSON Fallback Persistence', iconName: 'FileJson' },
     ],
   },
   {
-    title: 'DevOps & Tools',
-    description: 'Tools for development, deployment, and version control.',
+    title: 'Tools & Practices',
+    description: 'Development workflows, security, and deployment infrastructure.',
     skills: [
-      { name: 'Git' },
-      { name: 'GitHub' },
-      { name: 'VS Code' },
-      { name: 'Vercel' },
-      { name: 'Capacitor' },
-      { name: 'Android Studio' },
-      { name: 'Command Line' },
+      { name: 'Git', iconName: 'GitBranch' },
+      { name: 'GitHub', iconName: 'Github' },
+      { name: 'Render', iconName: 'Cloud' },
+      { name: 'Netlify Forms', iconName: 'Clipboard' },
+      { name: 'Sharp Image Processing', iconName: 'Image' },
+      { name: 'Security Headers', iconName: 'ShieldCheck' },
+      { name: 'Origin/CSRF Checks', iconName: 'Lock' },
     ],
   },
   {
-    title: 'Exploring',
-    description: 'Technologies I am currently learning and experimenting with.',
+    title: 'AI / ML',
+    description: 'Artificial intelligence, natural language processing, and data visualization.',
     skills: [
-      { name: 'FastAPI' },
-      { name: 'Full-Stack Development' },
-      { name: 'App Development' },
+      { name: 'Python', iconName: 'Terminal' },
+      { name: 'NLP Concepts', iconName: 'MessageSquare' },
+      { name: 'ML Classification Basics', iconName: 'Layers' },
+      { name: 'AI Tools', iconName: 'Bot' },
+      { name: 'ChatGPT Prompting', iconName: 'MessageCircle' },
+      { name: 'Power BI Fundamentals', iconName: 'BarChart' },
     ],
   },
 ];
 
 export const Skills = () => {
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-  const handleTabKeyDown = useCallback((e: React.KeyboardEvent, idx: number) => {
-    let nextIdx: number | null = null;
-
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      nextIdx = (idx + 1) % categories.length;
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      nextIdx = (idx - 1 + categories.length) % categories.length;
-    } else if (e.key === 'Home') {
-      e.preventDefault();
-      nextIdx = 0;
-    } else if (e.key === 'End') {
-      e.preventDefault();
-      nextIdx = categories.length - 1;
-    }
-
-    if (nextIdx !== null) {
-      setActiveTab(nextIdx);
-      tabRefs.current[nextIdx]?.focus();
-    }
-  }, []);
-
   return (
     <ScrollReveal>
     <section id="skills" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
-      <div className="mb-8">
+      <div className="mb-12">
         <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase block mb-2" style={{ color: 'var(--c-muted)' }}>
           [ 03 / CAPABILITIES ]
         </span>
@@ -108,66 +87,41 @@ export const Skills = () => {
         </div>
       </div>
 
-      <div
-        className="flex md:flex-wrap gap-2 mb-8 pb-4 overflow-x-auto md:overflow-visible scrollbar-none"
-        style={{ borderBottom: '1px solid var(--c-border)' }}
-        role="tablist"
-        aria-label="Skill categories"
-      >
-        {categories.map((cat, idx) => {
-          const isActive = activeTab === idx;
-          return (
-            <button
-              key={idx}
-              ref={(el) => { tabRefs.current[idx] = el; }}
-              onClick={() => setActiveTab(idx)}
-              onKeyDown={(e) => handleTabKeyDown(e, idx)}
-              className="px-4 py-2 text-[10px] font-sans font-bold uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap flex-shrink-0 border rounded-[var(--radius-md)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
-              style={{
-                backgroundColor: isActive ? 'var(--c-tab-active-bg)' : 'transparent',
-                color: isActive ? 'var(--c-tab-active-text)' : 'var(--c-body)',
-                borderColor: isActive ? 'var(--c-tab-active-bg)' : 'var(--c-border)',
-              }}
-              role="tab"
-              id={`skill-tab-${idx}`}
-              aria-selected={isActive}
-              aria-controls={`skill-panel-${idx}`}
-              tabIndex={isActive ? 0 : -1}
-            >
-              {cat.title}
-            </button>
-          );
-        })}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        {categories.map((category, cIdx) => (
+          <LineReveal 
+            key={cIdx} 
+            delay={0.1 * cIdx} 
+            className="p-6 sm:p-8 rounded-[var(--radius-lg)] transition-all duration-300 hover:bg-[var(--c-border)]/10" 
+            style={{ border: '1px solid var(--c-border)' }}
+          >
+            <div className="mb-6">
+              <h3 className="font-sans text-xl font-bold mb-1 tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                {category.title}
+              </h3>
+              <p className="text-sm font-body opacity-70" style={{ color: 'var(--c-body)' }}>
+                {category.description}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2.5">
+              {category.skills.map((skill, sIdx) => {
+                const Icon = skill.iconName ? (LucideIcons as any)[skill.iconName] : null;
+                return (
+                  <span
+                    key={sIdx}
+                    className="px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-wider rounded-[var(--radius-sm)] flex items-center gap-2 transition-all"
+                    style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
+                  >
+                    {Icon && <Icon size={12} className="opacity-60" />}
+                    {skill.name}
+                  </span>
+                );
+              })}
+            </div>
+          </LineReveal>
+        ))}
       </div>
-
-      <LineReveal delay={0.3} className="p-6 sm:p-8 rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)' }}>
-        <div
-          role="tabpanel"
-          id={`skill-panel-${activeTab}`}
-          aria-labelledby={`skill-tab-${activeTab}`}
-        >
-          <div className="mb-6">
-            <h3 className="font-sans text-2xl font-bold mb-1 tracking-tight" style={{ color: 'var(--c-heading)' }}>
-              {categories[activeTab].title}
-            </h3>
-            <p className="text-base sm:text-lg font-body opacity-90" style={{ color: 'var(--c-body)' }}>
-              {categories[activeTab].description}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {categories[activeTab].skills.map((skill, sIdx) => (
-              <span
-                key={sIdx}
-                className="px-2.5 py-1 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-sm)]"
-                style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
-              >
-                {skill.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </LineReveal>
     </section>
     </ScrollReveal>
   );

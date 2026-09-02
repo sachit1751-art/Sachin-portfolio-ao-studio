@@ -161,37 +161,52 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
           style={{ animation: 'fadeIn 0.5s ease-out' }}
         >
           <header className="flex items-center justify-between w-full max-w-5xl opacity-80">
-            <div className="font-mono text-[10px] tracking-[0.25em] uppercase flex items-center gap-2" style={{ color: 'var(--c-subtle)' }}>
-              <span className="w-1.5 h-1.5" style={{ backgroundColor: 'var(--c-heading)' }} />
-              PHYSICAL CANVAS &bull; 01/2026
+            <div className="relative">
+              <div className="absolute -top-6 -left-2 font-handwriting text-sm italic opacity-40 rotate-[-12deg] select-none hidden sm:block">
+                click to unfold
+              </div>
+              <div className="font-mono text-[10px] tracking-[0.25em] uppercase flex items-center gap-2" style={{ color: 'var(--c-subtle)' }}>
+                <span className="w-1.5 h-1.5" style={{ backgroundColor: 'var(--c-heading)' }} />
+                PHYSICAL CANVAS &bull; 01/2026
+              </div>
             </div>
             <div className="text-[10px] font-mono tracking-[0.2em] uppercase hidden sm:block" style={{ color: 'var(--c-muted)' }}>
               [ 3D Paper Deformation Engine ]
             </div>
           </header>
 
-          <div className="flex flex-col items-center gap-3 text-center mb-8 pointer-events-auto">
+          <div className="flex-grow" /> {/* Spacer to push the CTA below the center paper ball */}
+
+          <div className="flex flex-col items-center gap-4 text-center mb-16 pointer-events-auto">
             <button
               id="unfold-paper-btn"
               onClick={handleUnfold}
-              className="group relative px-6 py-3 shadow-sm transition-all duration-200 flex items-center gap-3 cursor-pointer backdrop-blur-sm"
+              className="group relative px-6 py-3 transition-all duration-300 flex items-center gap-4 cursor-pointer backdrop-blur-md rounded-lg"
               style={{
-                backgroundColor: 'var(--c-input-bg)',
+                backgroundColor: 'rgba(255, 253, 249, 0.45)',
                 color: 'var(--c-heading)',
                 border: '1px solid var(--c-border)',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--c-border-focus)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--c-border)'; }}
               aria-label="Click to unfold the crumpled portfolio sheet"
             >
-              <span className="font-handwriting text-2xl tracking-wide group-hover:translate-x-0.5 transition-transform">
+              <span className="font-handwriting text-2xl tracking-wide">
                 click to unfold
               </span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.2em] px-2 py-0.5" style={{ backgroundColor: 'var(--c-border)', color: 'var(--c-body)' }}>
-                Space / Enter
-              </span>
+              
+              <div className="hidden sm:flex items-center gap-1.5 ml-1">
+                <span className="inline-flex items-center justify-center px-2 py-0.5 min-w-[24px] rounded-[4px] border border-b-2 font-mono text-[9px] uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#5a544d]">
+                  Space
+                </span>
+                <span className="text-[10px] font-mono text-[#8c857d]">/</span>
+                <span className="inline-flex items-center justify-center px-2 py-0.5 min-w-[24px] rounded-[4px] border border-b-2 font-mono text-[9px] uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#5a544d]">
+                  Enter
+                </span>
+              </div>
             </button>
-            <p className="text-base font-handwriting tracking-wider" style={{ color: 'var(--c-muted)' }}>
+            <p className="text-base font-handwriting tracking-wider opacity-60" style={{ color: 'var(--c-muted)' }}>
               Tactile portfolio exploration
             </p>
           </div>

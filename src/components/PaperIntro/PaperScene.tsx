@@ -49,6 +49,17 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
   const shadowMeshRef = useRef<THREE.Mesh | null>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
 
+  const interactionRef = useRef({
+    isDragging: false,
+    lastX: 0,
+    lastY: 0,
+    rotX: 0,
+    rotY: 0,
+    velX: 0,
+    velY: 0,
+    dragDistance: 0,
+  });
+
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
   const timeRef = useRef(0);
   const reqAnimFrameRef = useRef<number | null>(null);
@@ -259,19 +270,56 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     window.addEventListener('resize', handleResize);
     handleResize();
 
+    const handlePointerDown = (e: PointerEvent) => {
+      interactionRef.current.isDragging = true;
+      interactionRef.current.lastX = e.clientX;
+      interactionRef.current.lastY = e.clientY;
+      interactionRef.current.dragDistance = 0;
+      interactionRef.current.velX = 0;
+      interactionRef.current.velY = 0;
+      resumeRenderRef.current?.();
+    };
+
     const handlePointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
       const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
       mouseRef.current.targetX = nx;
       mouseRef.current.targetY = ny;
+
+      if (interactionRef.current.isDragging) {
+        const dx = e.clientX - interactionRef.current.lastX;
+        const dy = e.clientY - interactionRef.current.lastY;
+        
+        interactionRef.current.velX = dy * 0.015;
+        interactionRef.current.velY = dx * 0.015;
+        interactionRef.current.dragDistance += Math.sqrt(dx * dx + dy * dy);
+
+        interactionRef.current.lastX = e.clientX;
+        interactionRef.current.lastY = e.clientY;
+      }
+
       // Resume loop for hover effects when paper is crumpled
       if (paperStateRef.current === 'crumpled') {
         resumeRenderRef.current?.();
       }
     };
 
+    const handlePointerUp = (e: PointerEvent) => {
+      if (interactionRef.current.isDragging) {
+        interactionRef.current.isDragging = false;
+        
+        // If it was just a click (minimal drag), trigger the click handler
+        if (interactionRef.current.dragDistance < 10) {
+          onPaperClick?.();
+        }
+      }
+    };
+
+    container.addEventListener('pointerdown', handlePointerDown);
     container.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
 
     // Restart render loop on scroll so paper stays visible during page transitions
     const handleScroll = () => {
@@ -317,6 +365,7 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       const skipHover = isFullyOpen && Math.abs(mouseRef.current.x) < 0.01 && Math.abs(mouseRef.current.y) < 0.01;
 
       const ctrl = animControllerRef.current;
+      const inter = interactionRef.current;
       const time = timeRef.current;
       const crumpled = crumpledVertsRef.current;
       const flat = flatVertsRef.current;
@@ -325,6 +374,23 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         const prog = ctrl.progress;
         const pos = geometry.attributes.position;
         const arr = pos.array as Float32Array;
+
+        // Interactive rotation physics
+        if (!inter.isDragging) {
+          inter.velX *= 0.95;
+          inter.velY *= 0.95;
+        }
+        
+        // Reset interactive rotation when unfolding
+        if (prog > 0.1) {
+          inter.rotX *= 0.9;
+          inter.rotY *= 0.9;
+          inter.velX *= 0.9;
+          inter.velY *= 0.9;
+        } else {
+          inter.rotX += inter.velX;
+          inter.rotY += inter.velY;
+        }
 
         // Smooth continuous lerp with smoothstep
         const t = Math.max(0, Math.min(1, prog));
@@ -357,8 +423,8 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         const hoverTiltX = skipHover ? 0 : -mouseRef.current.y * 0.15 * (1.0 - t * 0.8);
         const hoverTiltY = skipHover ? 0 : mouseRef.current.x * 0.18 * (1.0 - t * 0.8);
 
-        paperMesh.rotation.x = ctrl.rotationX + idleRotX + hoverTiltX;
-        paperMesh.rotation.y = ctrl.rotationY + idleRotY + hoverTiltY;
+        paperMesh.rotation.x = ctrl.rotationX + idleRotX + hoverTiltX + inter.rotX;
+        paperMesh.rotation.y = ctrl.rotationY + idleRotY + hoverTiltY + inter.rotY;
         paperMesh.rotation.z = ctrl.rotationZ;
 
         paperMesh.position.y = ctrl.positionY + idlePosY;
@@ -402,7 +468,10 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      container.removeEventListener('pointerdown', handlePointerDown);
       container.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('visibilitychange', handleVisibility);
 
@@ -656,7 +725,6 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       ref={containerRef}
       id="paper-3d-scene"
       className="w-full h-full cursor-pointer select-none"
-      onClick={onPaperClick}
       aria-label="3D Crumpled Paper Canvas"
     />
   );

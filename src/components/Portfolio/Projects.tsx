@@ -48,16 +48,16 @@ const projects: Project[] = [
     featured: true,
   },
   {
-    id: 'music-streaming',
-    title: 'Music Streaming Application',
-    category: 'Open Source',
+    id: 'tic-tac-toe',
+    title: 'Tic-Tac-Toe Mini Game',
+    category: 'Game Dev',
     filterCategories: ['WEB'],
     year: '2025',
     description:
-      'Open-source web music streaming application for playing and discovering music.',
+      'Built a standalone browser game with a polished launcher, responsive board, restart controls, difficulty selector, result messages, and clean modern UI.',
     longDescription:
-      'An open-source web music streaming application. Users can browse, search, and stream music through a clean web interface.\n\nKey Features: Music streaming, search, playlists, responsive design.\n\nTech Stack: JavaScript, HTML, CSS, REST APIs.',
-    tags: ['JavaScript', 'HTML', 'CSS', 'REST APIs'],
+      'Built a standalone browser game with a polished launcher, responsive board, restart controls, difficulty selector, result messages, and clean modern UI.\n\nImplemented Easy and Hard AI modes; Hard mode evaluates open moves with minimax recursion to choose stronger opponent moves. Managed board state, turn locking, delayed AI responses, win/draw detection, reset behavior, and UI feedback so players cannot interrupt the opponent turn.\n\nTech: HTML, CSS, JavaScript, Minimax Algorithm, Browser Game Logic',
+    tags: ['HTML', 'CSS', 'JavaScript', 'Minimax', 'Game Logic'],
     featured: false,
   },
   {
@@ -114,24 +114,13 @@ const projects: Project[] = [
   },
 ];
 
-const FILTER_CATEGORIES = ['ALL', 'WEB', 'AI', 'AUTOMATION', 'ANDROID'];
 
 export const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [activeFilter, setActiveFilter] = useState('ALL');
   const [modalVisible, setModalVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const { simplify } = usePerformance();
-
-  const filteredProjects = projects.filter((p) => 
-    activeFilter === 'ALL' || p.filterCategories.includes(activeFilter)
-  );
-
-  const featuredProjects = filteredProjects.filter((p) => p.featured);
-  const otherProjects = filteredProjects.filter((p) => !p.featured);
-
-  const displayFeatured = featuredProjects; // Show all filtered featured projects
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape' && selectedProject) {
@@ -179,45 +168,22 @@ export const Projects = () => {
         <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
           <CharReveal text="Selected" /> <CharReveal text="Work" baseDelay={0.2} />
         </h2>
-
-        <div className="flex flex-wrap gap-2 pt-2 sm:pt-0 scrollbar-none" role="tablist">
-          {FILTER_CATEGORIES.map((category) => {
-            const isActive = activeFilter === category;
-            return (
-              <button
-                key={category}
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveFilter(category)}
-                className="px-3 py-1.5 text-[10px] font-sans font-bold tracking-widest uppercase transition-all duration-200 border rounded-[var(--radius-md)] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
-                style={{
-                  backgroundColor: isActive ? 'var(--c-tab-active-bg)' : 'transparent',
-                  color: isActive ? 'var(--c-tab-active-text)' : 'var(--c-body)',
-                  borderColor: isActive ? 'var(--c-tab-active-bg)' : 'var(--c-border)',
-                }}
-              >
-                {category}
-              </button>
-            );
-          })}
-        </div>
       </div>
 
-      {featuredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {displayFeatured.map((project, idx) => (
-            <motion.div
-              key={project.id}
-              layout={!simplify}
-              initial={simplify ? { opacity: 0 } : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-              whileHover={simplify ? {} : { y: -8 }}
-              className="h-full"
-            >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project, idx) => (
+          <motion.div
+            key={project.id}
+            layout={!simplify}
+            initial={simplify ? { opacity: 0 } : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            whileHover={simplify ? {} : { y: -8 }}
+            className="h-full"
+          >
             <LineReveal
-              delay={simplify ? 0 : 0.2 + idx * 0.15}
+              delay={simplify ? 0 : 0.2 + idx * 0.1}
               className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)]"
               style={{
                 backgroundColor: 'var(--c-bg)',
@@ -234,21 +200,21 @@ export const Projects = () => {
                 <div className="flex items-center justify-between text-sm font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
                   <span>{project.category}</span>
                   <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                    0{idx + 1}
+                    {String(idx + 1).padStart(2, '0')}
                   </span>
                 </div>
 
                 <h3 className="font-sans text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
-                  <WordReveal text={project.title} baseDelay={simplify ? 0 : 0.2 + idx * 0.12} />
-                  <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" style={{ color: 'var(--c-subtle)' }} />
+                  <span className="line-clamp-1">{project.title}</span>
+                  <ArrowUpRight className="w-5 h-5 flex-shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" style={{ color: 'var(--c-subtle)' }} />
                 </h3>
 
-                <p className="text-base sm:text-lg leading-relaxed mb-4 font-body" style={{ color: 'var(--c-body)' }}>
-                  <WordReveal text={project.description} baseDelay={simplify ? 0 : 0.4 + idx * 0.12} />
+                <p className="text-base sm:text-lg leading-relaxed mb-4 font-body opacity-80" style={{ color: 'var(--c-body)' }}>
+                  {project.description}
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-1.5 pt-3" style={{ borderTop: '1px solid var(--c-border)' }}>
+              <div className="flex flex-wrap gap-1.5 pt-3 mt-auto" style={{ borderTop: '1px solid var(--c-border)' }}>
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
@@ -263,80 +229,6 @@ export const Projects = () => {
           </motion.div>
         ))}
       </div>
-      ) : (
-        activeFilter !== 'ALL' && filteredProjects.length > 0 && (
-          <div className="py-12 text-center border border-dashed rounded-[var(--radius-lg)] mb-12" style={{ borderColor: 'var(--c-border)', color: 'var(--c-muted)' }}>
-             <p className="font-mono text-xs uppercase tracking-widest">No featured projects in this category</p>
-          </div>
-        )
-      )}
-
-      {otherProjects.length > 0 && (
-        <div className="mt-16">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] font-semibold mb-6" style={{ color: 'var(--c-muted)' }}>
-            Other Projects
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {otherProjects.map((project, idx) => (
-              <motion.div
-                key={project.id}
-                layout={!simplify}
-                initial={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                whileHover={simplify ? {} : { y: -6 }}
-                className="h-full"
-              >
-                <LineReveal
-                  delay={simplify ? 0 : 0.3 + idx * 0.1}
-                  className="p-5 flex flex-col justify-between min-h-[140px] h-full rounded-[var(--radius-lg)]"
-                  style={{ border: '1px solid var(--c-border)' }}
-                >
-                  <div className="flex items-center justify-between text-sm font-handwriting mb-2" style={{ color: 'var(--c-subtle)' }}>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full flex-shrink-0 bg-[var(--c-subtle)]" />
-                      <span>{project.category}</span>
-                    </div>
-                    <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                      {String(otherProjects.length - idx).padStart(2, '0')}
-                    </span>
-                  </div>
-
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setSelectedProject(project)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
-                    className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded"
-                  >
-                    <h4 className="font-sans text-lg font-bold mb-1 tracking-tight" style={{ color: 'var(--c-heading)' }}>
-                      {project.title}
-                    </h4>
-                    <p className="text-sm leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
-                      {project.description}
-                    </p>
-                  </div>
-                </LineReveal>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {filteredProjects.length === 0 && (
-        <div className="py-20 text-center border border-dashed rounded-[var(--radius-xl)]" style={{ borderColor: 'var(--c-border)' }}>
-          <p className="font-sans text-xl font-bold mb-2" style={{ color: 'var(--c-heading)' }}>No Projects Found</p>
-          <p className="font-body text-sm mb-6" style={{ color: 'var(--c-body)' }}>There are no projects matching the "{activeFilter}" category yet.</p>
-          <button 
-            onClick={() => setActiveFilter('ALL')}
-            className="px-6 py-2 text-xs font-mono font-bold tracking-widest uppercase border rounded-[var(--radius-md)] cursor-pointer hover:bg-[var(--c-heading)] hover:text-[var(--c-bg)] transition-colors"
-            style={{ borderColor: 'var(--c-border)', color: 'var(--c-body)' }}
-          >
-            Show All Projects
-          </button>
-        </div>
-      )}
 
       {selectedProject && (
         <div
