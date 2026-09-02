@@ -107,14 +107,6 @@ export function initSecurity() {
     }
   });
 
-  // Disable text selection on sensitive elements (optional - uncomment if needed)
-  // document.addEventListener('selectstart', (e) => {
-  //   const target = e.target as HTMLElement;
-  //   if (target.tagName === 'BUTTON' || target.tagName === 'A') {
-  //     e.preventDefault();
-  //   }
-  // });
-
   console.log(
     '%c Nice try! ',
     'background: #24211e; color: #f5f1eb; font-size: 20px; padding: 10px; border-radius: 5px;'

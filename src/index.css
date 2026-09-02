@@ -3479,20 +3479,3 @@ section[id] {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
-
-@keyframes floatKraftParticle {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(var(--base-rot, 0deg));
-    opacity: inherit;
-  }
-  33% {
-    transform: translate3d(calc(var(--drift-x, 15px) * 0.4), calc(var(--drift-y, -20px) * 0.5), 0) rotate(calc(var(--base-rot, 0deg) + 12deg));
-  }
-  66% {
-    transform: translate3d(calc(var(--drift-x, 15px) * 0.8), calc(var(--drift-y, -20px) * 0.8), 0) rotate(calc(var(--base-rot, 0deg) - 8deg));
-  }
-  100% {
-    transform: translate3d(var(--drift-x, 15px), var(--drift-y, -20px), 0) rotate(calc(var(--base-rot, 0deg) + 20deg));
-    opacity: inherit;
-  }
-}

@@ -33,7 +33,7 @@ const principles = [
 export const Philosophy = () => {
   return (
     <ScrollReveal>
-<section id="philosophy" className="relative mb-28 pt-2">
+<section id="philosophy" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
       <div className="mb-8">
         <div className="flex justify-center mb-3">
           <Feather className="w-6 h-6" style={{ color: 'var(--c-dot)' }} />

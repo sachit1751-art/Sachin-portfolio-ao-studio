@@ -69,7 +69,6 @@ const FILE_TREE: FileNode[] = [
           { name: 'MoodGame.tsx', type: 'file', description: 'Main game loop — Canvas 2D rendering, player jet, bullets, particles, collision detection, Web Audio sound effects.' },
           { name: 'MoodTransition.tsx', type: 'file', description: 'Terminal-style "mission briefing" transition before the game. 4 checkmark lines → welcome box → glitch flash.' },
           { name: 'GameHUD.tsx', type: 'file', description: 'HUD overlay — paper integrity health bar (green/yellow/red), exit button, controls hint, game over screen.' },
-          { name: 'JetModel.tsx', type: 'file', description: 'Three.js GLTF model loader for paper airplane (unused — jet drawn via Canvas 2D instead).' },
         ],
       },
     ],
@@ -89,15 +88,16 @@ const FILE_TREE: FileNode[] = [
       { name: 'DoomTransition.tsx', type: 'file', description: 'Terminal-style loading overlay with typewriter effect.' },
     ],
   },
-      {
-        name: 'hooks/',
-        type: 'folder',
-        children: [
-          { name: 'useDoomSequence.ts', type: 'file', description: 'Keyboard listener tracking D→O→O→M sequence. Stores unlock in sessionStorage.' },
-          { name: 'useMoodSequence.ts', type: 'file', description: 'Same pattern as DOOM but for M→O→O→D. Unlocks the jet shooter game.' },
-          { name: 'usePaperSound.ts', type: 'file', description: 'Paper sound effects manager — lazy-creates Audio elements for unfold/crumple sounds. Auto-stops after timeout.' },
-        ],
-      },
+  {
+    name: 'hooks/',
+    type: 'folder',
+    children: [
+      { name: 'useDoomSequence.ts', type: 'file', description: 'Keyboard listener tracking D→O→O→M sequence. Stores unlock in sessionStorage.' },
+      { name: 'useMoodSequence.ts', type: 'file', description: 'Same pattern as DOOM but for M→O→O→D. Unlocks the jet shooter game.' },
+      { name: 'usePaperSound.ts', type: 'file', description: 'Paper sound effects manager — lazy-creates Audio elements for unfold/crumple sounds. Auto-stops after timeout.' },
+      { name: 'usePerformance.ts', type: 'file', description: 'Performance detection hook — adaptive quality based on device capabilities.' },
+    ],
+  },
   {
     name: 'utils/',
     type: 'folder',

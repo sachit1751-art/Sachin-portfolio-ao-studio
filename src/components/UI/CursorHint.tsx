@@ -3,10 +3,9 @@ import { PaperState } from '../../types';
 
 interface CursorHintProps {
   paperState: PaperState;
-  onClick: () => void;
 }
 
-export const CursorHint = ({ paperState, onClick }: CursorHintProps) => {
+export const CursorHint = ({ paperState }: CursorHintProps) => {
   const elRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
 

@@ -148,7 +148,6 @@ export default function App() {
             <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center bg-transparent font-mono text-xs opacity-50">Loading Portfolio...</div>}>
               <PortfolioContainer
                 theme={theme}
-                setTheme={setTheme}
               />
             </Suspense>
           </div>

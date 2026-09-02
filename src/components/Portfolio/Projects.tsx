@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Project } from '../../types';
 import { X, ArrowUpRight, ExternalLink } from 'lucide-react';
-import { WordReveal, LineReveal, CharReveal } from '../UI/TextReveal';
+import { LineReveal, CharReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 import { usePerformance } from '../../hooks/usePerformance';
 
@@ -163,7 +163,7 @@ export const Projects = () => {
 
   return (
     <ScrollReveal>
-    <section id="projects" className="relative mb-28 pt-2">
+    <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
         <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
           <CharReveal text="Featured" /> <CharReveal text="Projects" baseDelay={0.2} />

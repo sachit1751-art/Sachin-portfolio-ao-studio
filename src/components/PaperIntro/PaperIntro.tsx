@@ -142,7 +142,7 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
         />
       </div>
 
-      <CursorHint paperState={paperState} onClick={handleUnfold} />
+      <CursorHint paperState={paperState} />
 
       {/* Floating paper pieces — single set for both DOOM and MOOD */}
       {paperState === 'crumpled' && !doomUnlocked && !moodUnlocked && !showMoodGame && (

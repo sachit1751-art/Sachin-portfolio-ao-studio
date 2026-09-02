@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { WordReveal } from './UI/TextReveal';
 import { usePerformance } from '../hooks/usePerformance';
 
 interface ContributionDay {

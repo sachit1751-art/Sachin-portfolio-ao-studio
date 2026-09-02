@@ -1,11 +1,10 @@
-import { Compass } from 'lucide-react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 
 export const CurrentlyBuilding = () => {
   return (
     <ScrollReveal>
-      <section id="currently-building" className="relative mb-28 pt-2">
+      <section id="currently-building" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>

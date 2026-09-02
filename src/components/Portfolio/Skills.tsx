@@ -71,7 +71,7 @@ const categories: SkillCategory[] = [
 export const Skills = () => {
   return (
     <ScrollReveal>
-    <section id="skills" className="relative mb-28 pt-2">
+    <section id="skills" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
       <div className="mb-12">
         <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase block mb-2" style={{ color: 'var(--c-muted)' }}>
           [ 03 / CAPABILITIES ]
