@@ -39,9 +39,16 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
       <div className="mb-10">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] mb-4" style={{ color: 'var(--c-subtle)' }}>
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--c-dot)' }} />
+          <span>Available for select projects · 2026</span>
+        </div>
+        <p className="font-handwriting text-lg sm:text-xl mb-2" style={{ color: 'var(--c-subtle)' }}>
+          Independent Developer
+        </p>
         <h1 className="text-[2.2rem] xs:text-[2.8rem] sm:text-6xl md:text-[72px] lg:text-[88px] leading-[1.1] font-sans font-extrabold tracking-tight mb-6 py-4" style={{ color: 'var(--c-heading)' }}>
           <span className="block min-h-[1.1em]">
-            <TypewriterEffect text="Aspiring Software Developer." delay={0.2} />
+            <TypewriterEffect text="AI & Web Developer" delay={0.2} />
           </span>
         </h1>
         <p className="max-w-[540px] leading-relaxed text-lg sm:text-xl font-body opacity-90" style={{ color: 'var(--c-heading)' }}>

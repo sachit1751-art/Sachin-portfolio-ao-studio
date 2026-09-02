@@ -17,7 +17,7 @@
     <meta property="og:url" content="https://sachit-portfolio.vercel.app/" />
     <meta property="og:title" content="Sachit — Software Developer Portfolio" />
     <meta property="og:description" content="Explore full-stack web applications, AI tools, and automation projects built with precision and intent." />
-    <meta property="og:image" content="https://sachit-portfolio.vercel.app/og-image.png" />
+    <meta property="og:image" content="https://sachit-portfolio.vercel.app/og-image.svg" />
     <meta property="og:site_name" content="Sachit's Portfolio" />
 
     <!-- Twitter -->
@@ -25,7 +25,7 @@
     <meta name="twitter:site" content="@sachit" />
     <meta name="twitter:title" content="Sachit — Software Developer Portfolio" />
     <meta name="twitter:description" content="Full-stack web applications and AI-powered tools showcasing technical depth and creative engineering." />
-    <meta name="twitter:image" content="https://sachit-portfolio.vercel.app/og-image.png" />
+    <meta name="twitter:image" content="https://sachit-portfolio.vercel.app/og-image.svg" />
 
     <!-- Google Search Console -->
     <meta name="google-site-verification" content="google8f8f1d08b9aacb8e" />
@@ -35,11 +35,16 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
 
+    <!-- Preload Kalam Fonts (avoids FOIT) -->
+    <link rel="preload" href="/fonts/Kalam-Bold.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/Kalam-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/Kalam-Light.ttf" as="font" type="font/ttf" crossorigin />
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap"></noscript>
 
     <!-- Theme Color -->
     <meta name="theme-color" content="#f5f1eb" />
@@ -56,11 +61,28 @@
       "name": "Sachit",
       "url": "https://sachit-portfolio.vercel.app/",
       "jobTitle": "Software Developer & Prompt Engineer",
-      "knowsAbout": ["Python", "JavaScript", "TypeScript", "React", "Supabase", "Node.js", "Claude API", "Prompt Engineering", "MCP"],
-      "sameAs": ["https://github.com/sachit1751-art"],
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Freelance"
+      "description": "Full-stack web applications, AI-powered tools, and automation projects built with precision and intent.",
+      "image": "https://sachit-portfolio.vercel.app/og-image.svg",
+      "email": "sachit1751@gmail.com",
+      "knowsAbout": ["Python", "JavaScript", "TypeScript", "React", "Supabase", "PostgreSQL", "Node.js", "Three.js", "Claude API", "Prompt Engineering", "MCP", "WebGL", "GSAP", "AI Integration", "Full-Stack Development"],
+      "hasOccupation": {
+        "@type": "Occupation",
+        "name": "Software Developer",
+        "occupationLocation": {
+          "@type": "Place",
+          "name": "Remote"
+        }
+      },
+      "sameAs": [
+        "https://github.com/sachit1751-art",
+        "https://www.linkedin.com/in/sachit",
+        "https://www.instagram.com/sachit"
+      ],
+      "mainEntity": {
+        "@type": "WebSite",
+        "name": "Sachit's Portfolio",
+        "url": "https://sachit-portfolio.vercel.app/",
+        "description": "Explore full-stack web applications, AI tools, and automation projects."
       }
     }
     </script>

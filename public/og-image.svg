@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f1eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e8e0d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="600" y="250" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="#1A1917" text-anchor="middle">Sachit</text>
+  <text x="600" y="320" font-family="Georgia, serif" font-size="28" fill="#63615D" text-anchor="middle">Software Developer &amp; Prompt Engineer</text>
+  <line x1="480" y1="350" x2="720" y2="350" stroke="#1A1917" stroke-width="2"/>
+  <text x="600" y="400" font-family="Courier, monospace" font-size="18" fill="#A3A19C" text-anchor="middle">Full-Stack · AI · Automation</text>
+  <text x="600" y="560" font-family="Courier, monospace" font-size="14" fill="#B5B3AF" text-anchor="middle">sachit-portfolio.vercel.app</text>
+</svg>

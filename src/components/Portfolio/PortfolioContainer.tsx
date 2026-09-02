@@ -14,6 +14,7 @@ const GitHubSection = lazy(() => import('./GitHub').then(m => ({ default: m.GitH
 const Experience = lazy(() => import('./Experience').then(m => ({ default: m.Experience })));
 const Education = lazy(() => import('./Education').then(m => ({ default: m.Education })));
 const Strengths = lazy(() => import('./Strengths').then(m => ({ default: m.Strengths })));
+const BuildingInPublic = lazy(() => import('./BuildingInPublic').then(m => ({ default: m.BuildingInPublic })));
 const Contact = lazy(() => import('./Contact').then(m => ({ default: m.Contact })));
 
 const SectionFallback = () => <div className="h-40 w-full animate-pulse bg-[var(--c-border)] opacity-10 rounded-lg mb-20" />;
@@ -86,6 +87,10 @@ export const PortfolioContainer: React.FC<PortfolioContainerProps> = ({
 
           <Suspense fallback={<SectionFallback />}>
             <Strengths />
+          </Suspense>
+
+          <Suspense fallback={<SectionFallback />}>
+            <BuildingInPublic />
           </Suspense>
 
           <Suspense fallback={<SectionFallback />}>

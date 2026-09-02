@@ -102,7 +102,26 @@
   .font-sans {
     font-family: 'Kalam', cursive;
   }
+}
 
+/* Font overrides OUTSIDE @layer to beat Tailwind v4 utilities */
+.font-sans {
+  font-family: 'Kalam', cursive !important;
+}
+
+.font-handwriting {
+  font-family: 'Kalam', cursive !important;
+}
+
+.font-body {
+  font-family: 'Courier Prime', monospace !important;
+}
+
+.font-serif {
+  font-family: 'Courier Prime', monospace !important;
+}
+
+@layer base {
   /* Theme color tokens */
   [data-theme="cotton"] {
     --c-heading: #1A1917;
