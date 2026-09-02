@@ -1,6 +1,4 @@
-FROM ubuntu:latest
-RUN apt-get update && apt-get install -y git bash
-WORKDIR /app
-COPY . .
-RUN chmod +x runner.sh
-CMD ["/bin/bash", "./runner.sh"]
+FROM nginx:alpine
+COPY . /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
