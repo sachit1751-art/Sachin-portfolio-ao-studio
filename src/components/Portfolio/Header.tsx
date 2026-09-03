@@ -44,6 +44,7 @@ const ALL_SECTIONS = [
   'strengths',
   'building-in-public',
   'contact',
+  'quick-contact',
 ];
 
 // ﻿author:sachit-2026-original﻿
@@ -82,103 +83,173 @@ export const Header = memo<HeaderProps>(({
     });
   }, [currentActive]);
 
-  // ── Scroll to section ──────────────────────────────────────────────
+  const openMobile = useCallback(() => {
+    lastFocusedRef.current = document.activeElement as HTMLElement;
+    setMobileOpen(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setDrawerVisible(true);
+      });
+    });
+  }, []);
+
+  const closeMobile = useCallback(() => {
+    setDrawerVisible(false);
+    setTimeout(() => {
+      setMobileOpen(false);
+      lastFocusedRef.current?.focus();
+    }, 300); // Match transition duration
+  }, []);
+
+  // ── Scroll to section & update URL hash ────────────────────────────
   const handleNavClick = useCallback((id: string, isResume?: boolean) => {
     if (isResume) {
       if (onViewResume) onViewResume();
-      setMobileOpen(false);
+      closeMobile();
       return;
     }
 
     // Set active immediately so the underline moves on click
     setActiveSection(id);
 
-    if (isViewingResume && onNavigateSection) {
-      onNavigateSection(id);
-      setMobileOpen(false);
-      return;
+    // Update URL hash smoothly for standard SPA routing
+    try {
+      const targetUrl = id === 'hero'
+        ? window.location.pathname + window.location.search
+        : `${window.location.pathname}${window.location.search}#${id}`;
+      window.history.pushState(null, '', targetUrl);
+    } catch {
+      // Fallback if pushState fails
     }
 
-    const container = document.getElementById('content-scroll-container');
-    const target = document.getElementById(id);
-    if (!container || !target) {
-      if (onNavigateSection) onNavigateSection(id);
-      setMobileOpen(false);
-      return;
-    }
-
-    // Mark as programmatic scroll — suppress scroll listener updates
+    // Mark as programmatic scroll — suppress observer updates during smooth animation
     isScrollingRef.current = true;
 
-    // Calculate target position relative to the scroll container
-    const containerRect = container.getBoundingClientRect();
-    const targetRect = target.getBoundingClientRect();
-    const offset = targetRect.top - containerRect.top + container.scrollTop - 72; // 72px header height
+    if (onNavigateSection) {
+      onNavigateSection(id);
+    } else {
+      const container = document.getElementById('content-scroll-container');
+      const target = document.getElementById(id);
+      if (container && target) {
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const offset = targetRect.top - containerRect.top + container.scrollTop - 72; // 72px header height
+        container.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    }
 
-    container.scrollTo({ top: offset, behavior: 'smooth' });
-    setMobileOpen(false);
-
+    closeMobile();
     setTimeout(() => { isScrollingRef.current = false; }, 800);
-  }, [onViewResume, isViewingResume, onNavigateSection]);
+  }, [onViewResume, onNavigateSection, closeMobile]);
 
-  // ── Scroll listener — detect active section ────────────────────────
+  // ── Intersection Observer — detect active section & update URL hash ───
   useEffect(() => {
     const container = document.getElementById('content-scroll-container');
     if (!container) return;
 
-    let ticking = false;
+    // Track visibility ratio of each section
+    const visibleSections = new Map<string, number>();
 
-    // Cache section positions to avoid layout thrashing on every scroll
-    let cachedPositions: { id: string; top: number }[] = [];
-    let lastCacheTime = 0;
-
-    const cachePositions = () => {
-      const now = Date.now();
-      // Re-cache every 500ms or on resize
-      if (now - lastCacheTime < 500 && cachedPositions.length > 0) return;
-      lastCacheTime = now;
-      const containerRect = container.getBoundingClientRect();
-      cachedPositions = ALL_SECTIONS.map(id => {
-        const el = document.getElementById(id);
-        if (!el) return { id, top: Infinity };
-        const rect = el.getBoundingClientRect();
-        return { id, top: rect.top - containerRect.top + container.scrollTop };
-      });
+    const observerOptions: IntersectionObserverInit = {
+      root: container,
+      rootMargin: '-70px 0px -40% 0px',
+      threshold: [0, 0.1, 0.25, 0.5, 0.75, 1.0],
     };
 
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-
-      requestAnimationFrame(() => {
-        const scrollTop = container.scrollTop;
-
-        const newScrolled = scrollTop > 20;
-        setScrolled(prev => prev !== newScrolled ? newScrolled : prev);
-
-        if (!isScrollingRef.current) {
-          cachePositions();
-          const midpoint = scrollTop + 150;
-          let found = 'hero';
-
-          for (const pos of cachedPositions) {
-            if (pos.top <= midpoint) {
-              found = pos.id;
-            }
-          }
-
-          setActiveSection(prev => prev !== found ? found : prev);
+    const updateHashAndSection = (sectionId: string) => {
+      setActiveSection(sectionId);
+      if (!isScrollingRef.current && !isViewingResume) {
+        const targetHash = sectionId === 'hero' ? '' : `#${sectionId}`;
+        const currentHash = window.location.hash;
+        if (currentHash !== targetHash && !(sectionId === 'hero' && !currentHash)) {
+          const newUrl = sectionId === 'hero'
+            ? window.location.pathname + window.location.search
+            : `${window.location.pathname}${window.location.search}#${sectionId}`;
+          window.history.replaceState(null, '', newUrl);
         }
-        
-        ticking = false;
-      });
+      }
     };
 
-    container.addEventListener('scroll', onScroll, { passive: true });
-    // Run once on mount
-    onScroll();
-    return () => container.removeEventListener('scroll', onScroll);
-  }, []);
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.target.id) {
+          if (entry.isIntersecting) {
+            visibleSections.set(entry.target.id, entry.intersectionRatio);
+          } else {
+            visibleSections.delete(entry.target.id);
+          }
+        }
+      });
+
+      if (isScrollingRef.current) return;
+
+      if (visibleSections.size > 0) {
+        let maxRatio = -1;
+        let bestSection = 'hero';
+
+        // Check sections in DOM order to prefer earlier sections if tied
+        for (const sectionId of ALL_SECTIONS) {
+          const ratio = visibleSections.get(sectionId) || 0;
+          if (ratio > maxRatio && ratio > 0.05) {
+            maxRatio = ratio;
+            bestSection = sectionId;
+          }
+        }
+
+        updateHashAndSection(bestSection);
+      }
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    ALL_SECTIONS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    // Handle background blur on scroll > 20px
+    const handleScroll = () => {
+      const isScrolled = container.scrollTop > 20;
+      setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      observer.disconnect();
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [isViewingResume]);
+
+  // ── Initial hash navigation & hashchange listener ────────────────────────
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ALL_SECTIONS.includes(hash)) {
+        if (onNavigateSection) {
+          onNavigateSection(hash);
+        } else {
+          const container = document.getElementById('content-scroll-container');
+          const target = document.getElementById(hash);
+          if (container && target) {
+            const containerRect = container.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            const offset = targetRect.top - containerRect.top + container.scrollTop - 72;
+            container.scrollTo({ top: offset, behavior: 'smooth' });
+          }
+        }
+      }
+    };
+
+    if (window.location.hash) {
+      const timer = setTimeout(handleHashChange, 350);
+      return () => clearTimeout(timer);
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [onNavigateSection]);
 
   // ── Mobile menu: focus trap + escape ───────────────────────────────
   useEffect(() => {
@@ -229,35 +300,35 @@ export const Header = memo<HeaderProps>(({
     }
   }, [mobileOpen]);
 
-  const openMobile = useCallback(() => {
-    lastFocusedRef.current = document.activeElement as HTMLElement;
-    setMobileOpen(true);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setDrawerVisible(true);
-      });
-    });
-  }, []);
-
-  const closeMobile = useCallback(() => {
-    setDrawerVisible(false);
-    setTimeout(() => {
-      setMobileOpen(false);
-      lastFocusedRef.current?.focus();
-    }, 300); // Match transition duration
-  }, []);
+  // Auto-close mobile menu when viewport expands to desktop width (>= 768px)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && mobileOpen) {
+        setMobileOpen(false);
+        setDrawerVisible(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [mobileOpen]);
 
   // ── Render ─────────────────────────────────────────────────────────
   return (
     <>
-      <header
+      <motion.header
+        initial={{ y: -28, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{
+          y: { type: 'spring', damping: 22, stiffness: 180, mass: 0.8 },
+          opacity: { duration: 0.5, ease: 'easeOut' },
+        }}
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          backgroundColor: 'var(--c-header-bg)',
-          borderBottom: '1px solid var(--c-header-border)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : undefined,
+          backgroundColor: scrolled ? 'var(--c-header-bg)' : 'transparent',
+          borderBottom: scrolled ? '1px solid var(--c-header-border)' : '1px solid transparent',
+          backdropFilter: scrolled ? 'blur(16px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
+          boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
         }}
       >
         <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-3 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
@@ -429,7 +500,7 @@ export const Header = memo<HeaderProps>(({
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Dedicated Full-Screen Mobile Navigation Overlay */}
       {mobileOpen && (

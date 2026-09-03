@@ -3654,7 +3654,17 @@ section[id] {
 
 @page {
   size: A4 portrait;
-  margin: 15mm 15mm 20mm 15mm;
+  margin: 20mm 20mm 25mm 25mm;
+}
+
+@page :left {
+  margin-left: 25mm;
+  margin-right: 20mm;
+}
+
+@page :right {
+  margin-left: 25mm;
+  margin-right: 20mm;
 }
 
 @media print {
@@ -3747,15 +3757,25 @@ section[id] {
 
   p { orphans: 3; widows: 3; }
 
-  /* 5. PROJECT DETAILS: Ensure clean rendering of project grid */
+  /* 5. PROJECT DETAILS & LIST ITEMS: Prevent splitting across pages */
+  .gsap-project-card,
+  .project-detail-section,
+  .experience-card,
+  .education-card,
+  .skill-category-card,
+  li,
+  tr,
+  blockquote {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
   .gsap-project-card {
     border: 1px solid #ddd !important;
     border-radius: 4px !important;
     margin-bottom: 1.5rem !important;
     padding: 1rem !important;
     display: block !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
   }
 
   .gsap-project-card button,
