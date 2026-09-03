@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
-import { motion } from 'motion/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Project } from '../../types';
 import { X, ArrowUpRight, ExternalLink } from 'lucide-react';
-import { LineReveal, CharReveal } from '../UI/TextReveal';
-import { ScrollReveal } from '../UI/ScrollReveal';
+import { CharReveal } from '../UI/TextReveal';
 import { usePerformance } from '../../hooks/usePerformance';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects: Project[] = [
   {
@@ -119,8 +121,60 @@ export const Projects = memo(() => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const cardsGridRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const { simplify } = usePerformance();
+
+  useEffect(() => {
+    if (!cardsGridRef.current) return;
+
+    const cards = gsap.utils.toArray<HTMLElement>('.gsap-project-card');
+    if (!cards.length) return;
+
+    if (simplify) {
+      gsap.set(cards, { opacity: 1, y: 0, scale: 1 });
+      return;
+    }
+
+    // Set initial animated state
+    gsap.set(cards, { opacity: 0, y: 28, scale: 0.98 });
+
+    const animateIn = () => {
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.65,
+        stagger: 0.1,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateIn();
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: '100px' }
+    );
+
+    observer.observe(cardsGridRef.current);
+
+    // Safety fallback: guarantee visibility after 300ms if observer missed
+    const timeoutId = setTimeout(() => {
+      animateIn();
+    }, 300);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeoutId);
+    };
+  }, [simplify]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape' && selectedProject) {
@@ -162,7 +216,6 @@ export const Projects = memo(() => {
   };
 
   return (
-    <ScrollReveal>
     <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
         <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
@@ -170,63 +223,52 @@ export const Projects = memo(() => {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div ref={cardsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project, idx) => (
-          <motion.div
+          <div
             key={project.id}
-            layout={!simplify}
-            initial={simplify ? { opacity: 0 } : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={simplify ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
-            whileHover={simplify ? {} : { y: -8 }}
-            className="h-full"
+            className="gsap-project-card group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+            style={{
+              backgroundColor: 'var(--c-card)',
+              border: '1px solid var(--c-border)',
+            }}
           >
-            <LineReveal
-              delay={simplify ? 0 : 0.2 + idx * 0.1}
-              className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)] transition-all duration-300"
-              style={{
-                backgroundColor: 'var(--c-card)',
-                border: '1px solid var(--c-border)',
-              }}
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedProject(project)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
+              className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
             >
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => setSelectedProject(project)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
-                className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
-              >
-                <div className="flex items-center justify-between text-sm font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
-                  <span>{project.category}</span>
-                  <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                </div>
-
-                <h3 className="font-sans text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
-                  <span className="line-clamp-1">{project.title}</span>
-                  <ArrowUpRight className="w-5 h-5 flex-shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" style={{ color: 'var(--c-subtle)' }} />
-                </h3>
-
-                <p className="text-base sm:text-lg leading-relaxed mb-4 font-body opacity-80" style={{ color: 'var(--c-body)' }}>
-                  {project.description}
-                </p>
+              <div className="flex items-center justify-between text-sm font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
+                <span>{project.category}</span>
+                <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
               </div>
 
-              <div className="flex flex-wrap gap-1.5 pt-3 mt-auto" style={{ borderTop: '1px solid var(--c-border)' }}>
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider rounded-[var(--radius-sm)]"
-                    style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </LineReveal>
-          </motion.div>
+              <h3 className="font-sans text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                <span className="line-clamp-1">{project.title}</span>
+                <ArrowUpRight className="w-5 h-5 flex-shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" style={{ color: 'var(--c-subtle)' }} />
+              </h3>
+
+              <p className="text-base sm:text-lg leading-relaxed mb-4 font-body opacity-80" style={{ color: 'var(--c-body)' }}>
+                {project.description}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 pt-3 mt-auto" style={{ borderTop: '1px solid var(--c-border)' }}>
+              {project.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider rounded-[var(--radius-sm)]"
+                  style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
@@ -318,7 +360,6 @@ export const Projects = memo(() => {
         </div>
       )}
     </section>
-    </ScrollReveal>
   );
 });
 

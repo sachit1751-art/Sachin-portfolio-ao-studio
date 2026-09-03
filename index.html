@@ -57,33 +57,257 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Sachit",
-      "url": "https://sachit-portfolio.vercel.app/",
-      "jobTitle": "Software Developer & Prompt Engineer",
-      "description": "Full-stack web applications, AI-powered tools, and automation projects built with precision and intent.",
-      "image": "https://sachit-portfolio.vercel.app/og-image.svg",
-      "email": "sachit1751@gmail.com",
-      "knowsAbout": ["Python", "JavaScript", "TypeScript", "React", "Supabase", "PostgreSQL", "Node.js", "Three.js", "Claude API", "Prompt Engineering", "MCP", "WebGL", "GSAP", "AI Integration", "Full-Stack Development"],
-      "hasOccupation": {
-        "@type": "Occupation",
-        "name": "Software Developer",
-        "occupationLocation": {
-          "@type": "Place",
-          "name": "Remote"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://sachit-portfolio.vercel.app/#website",
+          "url": "https://sachit-portfolio.vercel.app/",
+          "name": "Sachit — Software Developer Portfolio",
+          "description": "Portfolio of Sachit featuring full-stack web applications, AI integrations, Android custom platforms, and automation tools.",
+          "publisher": {
+            "@id": "https://sachit-portfolio.vercel.app/#person"
+          },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "ProfilePage",
+          "@id": "https://sachit-portfolio.vercel.app/#webpage",
+          "url": "https://sachit-portfolio.vercel.app/",
+          "name": "Sachit — Software Developer & Prompt Engineer Portfolio",
+          "isPartOf": {
+            "@id": "https://sachit-portfolio.vercel.app/#website"
+          },
+          "about": {
+            "@id": "https://sachit-portfolio.vercel.app/#person"
+          },
+          "mainEntity": {
+            "@id": "https://sachit-portfolio.vercel.app/#person"
+          },
+          "description": "Explore full-stack web applications, AI tools, Android custom platforms, and automation projects built with precision and intent."
+        },
+        {
+          "@type": "Person",
+          "@id": "https://sachit-portfolio.vercel.app/#person",
+          "name": "Sachit",
+          "url": "https://sachit-portfolio.vercel.app/",
+          "jobTitle": "Software Developer & Prompt Engineer",
+          "description": "Software Developer and Prompt Engineer focusing on full-stack web applications, AI tools, custom Android platforms, and automated workflows.",
+          "image": "https://sachit-portfolio.vercel.app/og-image.svg",
+          "email": "mailto:sachit1751@gmail.com",
+          "sameAs": [
+            "https://github.com/sachit1751-art",
+            "https://www.linkedin.com/in/sachit",
+            "https://www.instagram.com/sachit"
+          ],
+          "knowsAbout": [
+            "Frontend Development",
+            "HTML5",
+            "CSS3",
+            "JavaScript",
+            "TypeScript",
+            "React",
+            "Responsive Design",
+            "UI/UX Fundamentals",
+            "Accessibility",
+            "Micro-interactions",
+            "Interactive Web & 3D",
+            "Three.js",
+            "WebGL",
+            "GSAP Animations",
+            "Canvas Workflows",
+            "Camera Transitions",
+            "Backend & Data",
+            "Node.js",
+            "REST APIs",
+            "Supabase",
+            "PostgreSQL",
+            "Supabase Storage",
+            "JSON Fallback Persistence",
+            "Tools & Practices",
+            "Git",
+            "GitHub",
+            "Render",
+            "Netlify Forms",
+            "Sharp Image Processing",
+            "Security Headers",
+            "CSRF Protection",
+            "AI / Machine Learning",
+            "Python",
+            "Anthropic Claude API",
+            "Prompt Engineering",
+            "Prompt Caching",
+            "MCP (Model Context Protocol)",
+            "NLP Concepts",
+            "ML Classification",
+            "ChatGPT Prompting",
+            "Power BI",
+            "Android Development",
+            "AOSP",
+            "Custom ROMs",
+            "Kotlin",
+            "TensorFlow Lite",
+            "Next.js",
+            "Go",
+            "Redis",
+            "Rust",
+            "WebAssembly",
+            "React Native"
+          ],
+          "hasOccupation": {
+            "@type": "Occupation",
+            "name": "Software Developer",
+            "occupationLocation": {
+              "@type": "Place",
+              "name": "Remote"
+            }
+          }
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://sachit-portfolio.vercel.app/#projects-list",
+          "name": "Featured Projects & Portfolio Work",
+          "description": "Collection of software engineering, AI integration, Android custom distribution, and web development projects.",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#sky-roms",
+                "name": "SKY ROMs",
+                "category": "Android Platform",
+                "applicationCategory": "DeveloperApplication",
+                "operatingSystem": "Android, Web",
+                "description": "Android Custom ROM Discovery & Management Platform for finding, downloading, and managing custom ROMs.",
+                "url": "https://sky-roms.vercel.app",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "React, TypeScript, Vite, Supabase, Tailwind CSS, Android Custom ROMs"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#doc-summarizer",
+                "name": "Claude Document Summarizer",
+                "category": "AI Tool",
+                "applicationCategory": "ProductivityApplication",
+                "operatingSystem": "Web, Cross-platform",
+                "description": "AI-powered tool that uses Claude API to summarize documents with intelligent prompt engineering and prompt caching.",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "Python, Claude API, Prompt Engineering, Prompt Caching, Natural Language Processing"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#schedule-planner",
+                "name": "Schedule Planner",
+                "category": "Automation",
+                "applicationCategory": "ProductivityApplication",
+                "operatingSystem": "Web, Cross-platform",
+                "description": "Automated schedule planner and notification engine for managing tasks and sending alerts.",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "Python, Node.js, REST APIs, Automation, Task Scheduling"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#tic-tac-toe",
+                "name": "Tic-Tac-Toe Mini Game",
+                "category": "Game Dev",
+                "applicationCategory": "GameApplication",
+                "operatingSystem": "Web Browser",
+                "description": "Standalone browser game with Minimax AI evaluation, responsive board, difficulty selector, and clean modern UI.",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "HTML, CSS, JavaScript, Minimax Algorithm, Game Logic"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#mcp-tool",
+                "name": "MCP Integration Tool",
+                "category": "AI Tool",
+                "applicationCategory": "DeveloperApplication",
+                "operatingSystem": "Cross-platform",
+                "description": "Tool for integrating and working with Model Context Protocol (MCP) architectures and Claude API workflows.",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "Python, Claude API, MCP, Model Context Protocol, Prompt Caching"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#sentience-os",
+                "name": "Sentience OS",
+                "category": "Android OS",
+                "applicationCategory": "OperatingSystem",
+                "operatingSystem": "Android",
+                "description": "Custom Android distribution with integrated local LLMs for proactive privacy hardening and context-aware automation.",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "AOSP, Kotlin, TensorFlow Lite, Local LLMs, Privacy Hardening"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#nexus-core",
+                "name": "Nexus Core",
+                "category": "Enterprise Web",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web Browser",
+                "description": "Next-generation ERP system for distributed teams, featuring real-time collaborative state management and automated resource allocation.",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "Next.js, Go, PostgreSQL, Redis, Socket.io, Enterprise ERP"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "item": {
+                "@type": "SoftwareApplication",
+                "@id": "https://sachit-portfolio.vercel.app/#ghost-protocol",
+                "name": "Ghost Protocol",
+                "category": "Security",
+                "applicationCategory": "SecurityApplication",
+                "operatingSystem": "Cross-platform",
+                "description": "Military-grade end-to-end encrypted messaging protocol with zero-knowledge proof identity verification and decentralized relay nodes.",
+                "author": {
+                  "@id": "https://sachit-portfolio.vercel.app/#person"
+                },
+                "keywords": "Rust, WebAssembly, React Native, Libp2p, Security, E2EE"
+              }
+            }
+          ]
         }
-      },
-      "sameAs": [
-        "https://github.com/sachit1751-art",
-        "https://www.linkedin.com/in/sachit",
-        "https://www.instagram.com/sachit"
-      ],
-      "mainEntity": {
-        "@type": "WebSite",
-        "name": "Sachit's Portfolio",
-        "url": "https://sachit-portfolio.vercel.app/",
-        "description": "Explore full-stack web applications, AI tools, and automation projects."
-      }
+      ]
     }
     </script>
 

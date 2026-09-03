@@ -55,7 +55,7 @@ export const DepthFlipText = memo<DepthFlipTextProps>(({
 
   return (
     <span
-      className={`inline-block relative cursor-pointer select-none perspective-[1000px] ${className}`}
+      className={`inline-block relative cursor-pointer select-none ${className}`}
       style={{
         perspective: '1200px',
         transformStyle: 'preserve-3d',
@@ -69,7 +69,7 @@ export const DepthFlipText = memo<DepthFlipTextProps>(({
       <AnimatePresence mode="wait">
         <motion.span
           key={`${currentPhrase}-${index}`}
-          className="inline-flex flex-wrap items-center"
+          className="inline-flex flex-wrap items-center transform-gpu"
           style={{ transformStyle: 'preserve-3d' }}
           initial="initial"
           animate="animate"
@@ -91,37 +91,35 @@ export const DepthFlipText = memo<DepthFlipTextProps>(({
                 style={{
                   transformStyle: 'preserve-3d',
                   backfaceVisibility: 'hidden',
+                  willChange: 'transform, opacity',
                 }}
                 variants={{
                   initial: {
-                    rotateX: 90,
-                    translateZ: 40,
+                    rotateX: -60,
+                    y: 20,
                     opacity: 0,
-                    scale: 0.8,
-                    filter: 'blur(6px)',
+                    filter: 'blur(2px)',
                   },
                   animate: {
                     rotateX: 0,
-                    translateZ: 0,
+                    y: 0,
                     opacity: 1,
-                    scale: 1,
                     filter: 'blur(0px)',
                     transition: {
-                      duration: 0.55,
-                      ease: [0.2, 0.8, 0.2, 1],
-                      delay: i * 0.03,
+                      duration: 0.48,
+                      ease: [0.16, 1, 0.3, 1],
+                      delay: i * 0.022,
                     },
                   },
                   exit: {
-                    rotateX: -90,
-                    translateZ: -40,
+                    rotateX: 60,
+                    y: -20,
                     opacity: 0,
-                    scale: 0.8,
-                    filter: 'blur(6px)',
+                    filter: 'blur(2px)',
                     transition: {
-                      duration: 0.35,
-                      ease: [0.6, 0.05, 0.8, 0.4],
-                      delay: i * 0.015,
+                      duration: 0.32,
+                      ease: [0.7, 0, 0.84, 0],
+                      delay: i * 0.01,
                     },
                   },
                 }}
@@ -132,15 +130,6 @@ export const DepthFlipText = memo<DepthFlipTextProps>(({
           })}
         </motion.span>
       </AnimatePresence>
-
-      {/* Subtle depth floor shadow */}
-      <span
-        className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full opacity-25 blur-[2px] transition-all duration-300 pointer-events-none"
-        style={{
-          background: 'var(--c-heading)',
-          transform: 'translateZ(-20px) scaleX(0.85)',
-        }}
-      />
     </span>
   );
 });

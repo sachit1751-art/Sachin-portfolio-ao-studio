@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react'
 import { PaperState } from './types';
 import { Header } from './components/Portfolio/Header';
 import { NotFound } from './components/Portfolio/NotFound';
-import { CursorDitherTrail } from './components/UI/CursorDitherTrail';
 import { HoneycombLoader } from './components/UI/HoneycombLoader';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
@@ -171,7 +170,6 @@ export default function App() {
 
   return (
     <div data-theme={theme} className="relative min-h-screen bg-[var(--c-bg)] font-sans antialiased overflow-x-hidden transition-colors duration-500">
-      <CursorDitherTrail theme={theme} />
       {is404 && <NotFound />}
       {showContent && (
         <a

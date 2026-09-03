@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, memo } from 'react';
-import { Mail, Check, Copy, Send } from 'lucide-react';
+import { Mail, Check, Copy, Send, AlertCircle, CheckCircle2, Info, Loader2 } from 'lucide-react';
 import { animate } from 'animejs';
 import { CharReveal, WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
@@ -50,10 +50,32 @@ export const Contact = memo(() => {
 
   // Form State
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [touched, setTouched] = useState({ name: false, email: false, message: false });
   const [errors, setErrors] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isAutoTypingForm, setIsAutoTypingForm] = useState(false);
+
+  // Field validation helper
+  const validateField = (name: string, value: string): string => {
+    if (name === 'name') {
+      if (!value.trim()) return 'Name is required';
+      if (value.trim().length < 2) return 'Name must be at least 2 characters';
+      return '';
+    }
+    if (name === 'email') {
+      if (!value.trim()) return 'Email is required';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return 'Please enter a valid email address';
+      return '';
+    }
+    if (name === 'message') {
+      if (!value.trim()) return 'Message payload is required';
+      if (value.trim().length < 10) return 'Message must be at least 10 characters long';
+      if (value.length > 1000) return 'Message cannot exceed 1000 characters';
+      return '';
+    }
+    return '';
+  };
 
   // Handle Copy Email
   const handleCopyEmail = async () => {
@@ -82,7 +104,8 @@ export const Contact = memo(() => {
     if (isAutoTypingForm) return;
     setIsAutoTypingForm(true);
 
-    // Set name and email immediately
+    // Mark all touched & populate preset
+    setTouched({ name: true, email: true, message: true });
     setFormData(prev => ({ ...prev, name: preset.name, email: preset.email }));
     setErrors({ name: '', email: '', message: '' });
 
@@ -122,39 +145,28 @@ export const Contact = memo(() => {
   }, []);
 
   const validateForm = () => {
-    let valid = true;
-    const newErrors = { name: '', email: '', message: '' };
+    setTouched({ name: true, email: true, message: true });
+    const nameErr = validateField('name', formData.name);
+    const emailErr = validateField('email', formData.email);
+    const messageErr = validateField('message', formData.message);
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-      valid = false;
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-      valid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-      valid = false;
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = 'Message is required';
-      valid = false;
-    }
-
+    const newErrors = { name: nameErr, email: emailErr, message: messageErr };
     setErrors(newErrors);
-    return valid;
+
+    return !nameErr && !emailErr && !messageErr;
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (validateForm()) {
       setIsSubmitting(true);
       setTimeout(() => {
         setIsSubmitting(false);
         setIsSuccess(true);
         setFormData({ name: '', email: '', message: '' });
+        setTouched({ name: false, email: false, message: false });
+        setErrors({ name: '', email: '', message: '' });
         setTimeout(() => setIsSuccess(false), 5000);
       }, 1400);
     }
@@ -163,9 +175,19 @@ export const Contact = memo(() => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+    
+    // Live real-time validation if field has been touched or currently has an error
+    if (touched[name as keyof typeof touched] || errors[name as keyof typeof errors]) {
+      const fieldError = validateField(name, value);
+      setErrors(prev => ({ ...prev, [name]: fieldError }));
     }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const fieldError = validateField(name, value);
+    setErrors(prev => ({ ...prev, [name]: fieldError }));
   };
 
   return (
@@ -200,34 +222,34 @@ export const Contact = memo(() => {
           <div className="md:col-span-7 space-y-6">
             <LineReveal delay={0.25}>
               {isSuccess ? (
-                <div className="p-8 text-center flex flex-col items-center justify-center space-y-4 h-full rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}>
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--c-border-focus)', color: 'var(--c-bg)' }}>
+                <div className="p-8 text-center flex flex-col items-center justify-center space-y-4 h-full rounded-[var(--radius-lg)] shadow-sm" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-card)' }}>
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}>
                     <Check className="w-8 h-8" />
                   </div>
-                  <h3 className="font-handwriting text-2xl" style={{ color: 'var(--c-heading)' }}>Message Sent Successfully!</h3>
+                  <h3 className="font-sans text-2xl font-bold" style={{ color: 'var(--c-heading)' }}>Message Sent Successfully!</h3>
                   <p className="font-body text-sm" style={{ color: 'var(--c-body)' }}>Thanks for reaching out. Your dispatch payload has been transmitted.</p>
                   <button 
                     onClick={() => setIsSuccess(false)}
-                    className="mt-4 px-6 py-2 font-mono text-xs tracking-wider uppercase transition-colors rounded-[var(--radius-md)] cursor-pointer"
-                    style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)' }}
+                    className="mt-4 px-6 py-2 font-mono text-xs tracking-wider uppercase transition-colors rounded-[var(--radius-md)] cursor-pointer hover:opacity-90"
+                    style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}
                   >
                     Send Another Dispatch
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleFormSubmit} className="space-y-4 p-6 sm:p-8 rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-bg)' }}>
+                <form onSubmit={handleFormSubmit} className="space-y-4 p-6 sm:p-8 rounded-[var(--radius-lg)] shadow-sm" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-card)' }}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-mono text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--c-heading)' }}>
                       DIRECT DISPATCH FORM
                     </span>
-                    <span className="text-[10px] font-mono opacity-60">
+                    <span className="text-[10px] font-mono opacity-70" style={{ color: 'var(--c-muted)' }}>
                       Use presets or fill manually
                     </span>
                   </div>
 
                   {/* Auto-Type Preset Quick Chips */}
                   <div className="mb-4">
-                    <span className="block text-[11px] font-mono opacity-70 mb-2">Auto-Type Preset Templates:</span>
+                    <span className="block text-[11px] font-mono mb-2" style={{ color: 'var(--c-subtle)' }}>Auto-Type Preset Templates:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {AUTO_MESSAGES.map(preset => (
                         <button
@@ -235,7 +257,7 @@ export const Contact = memo(() => {
                           type="button"
                           onClick={() => handleAutoTypePreset(preset)}
                           disabled={isAutoTypingForm}
-                          className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-[var(--radius-sm)] transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50"
+                          className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded-[var(--radius-sm)] transition-all cursor-pointer hover:border-[var(--c-border-focus)] active:scale-95 disabled:opacity-50"
                           style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)', color: 'var(--c-heading)' }}
                         >
                           {preset.label}
@@ -245,74 +267,185 @@ export const Contact = memo(() => {
                   </div>
 
                   <div>
-                    <label htmlFor="name" className="block text-xs font-mono mb-1.5" style={{ color: 'var(--c-heading)' }}>Your Name</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full p-3 font-body bg-transparent outline-none transition-colors rounded-[var(--radius-md)] text-sm"
-                      style={{ 
-                        border: `1px solid ${errors.name ? 'red' : 'var(--c-border)'}`,
-                        color: 'var(--c-body)' 
-                      }}
-                      placeholder="John Doe"
-                    />
-                    {errors.name && <span className="text-red-500 text-xs font-mono mt-1 block">{errors.name}</span>}
+                    <label htmlFor="name" className="block text-xs font-mono mb-1.5 font-medium" style={{ color: 'var(--c-heading)' }}>
+                      Your Name <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        className="w-full p-3 pr-10 font-body outline-none transition-all rounded-[var(--radius-md)] text-sm focus:border-[var(--c-border-focus)]"
+                        style={{ 
+                          backgroundColor: 'var(--c-input-bg)',
+                          border: `1px solid ${
+                            touched.name && errors.name 
+                              ? '#ef4444' 
+                              : touched.name && !errors.name && formData.name.trim() 
+                              ? '#10b981' 
+                              : 'var(--c-border)'
+                          }`,
+                          color: 'var(--c-heading)' 
+                        }}
+                        placeholder="John Doe"
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        {touched.name && errors.name && (
+                          <AlertCircle className="w-4 h-4 text-red-500" />
+                        )}
+                        {touched.name && !errors.name && formData.name.trim() && (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        )}
+                      </div>
+                    </div>
+                    {touched.name && errors.name && (
+                      <div className="flex items-center gap-1.5 text-red-500 text-xs font-mono mt-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{errors.name}</span>
+                      </div>
+                    )}
+                    {touched.name && !errors.name && formData.name.trim() && (
+                      <div className="flex items-center gap-1 text-emerald-600 text-[11px] font-mono mt-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>Name validated</span>
+                      </div>
+                    )}
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-xs font-mono mb-1.5" style={{ color: 'var(--c-heading)' }}>Your Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full p-3 font-body bg-transparent outline-none transition-colors rounded-[var(--radius-md)] text-sm"
-                      style={{ 
-                        border: `1px solid ${errors.email ? 'red' : 'var(--c-border)'}`,
-                        color: 'var(--c-body)' 
-                      }}
-                      placeholder="john@example.com"
-                    />
-                    {errors.email && <span className="text-red-500 text-xs font-mono mt-1 block">{errors.email}</span>}
+                    <label htmlFor="email" className="block text-xs font-mono mb-1.5 font-medium" style={{ color: 'var(--c-heading)' }}>
+                      Your Email <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        className="w-full p-3 pr-10 font-body outline-none transition-all rounded-[var(--radius-md)] text-sm focus:border-[var(--c-border-focus)]"
+                        style={{ 
+                          backgroundColor: 'var(--c-input-bg)',
+                          border: `1px solid ${
+                            touched.email && errors.email 
+                              ? '#ef4444' 
+                              : touched.email && !errors.email && formData.email.trim() 
+                              ? '#10b981' 
+                              : 'var(--c-border)'
+                          }`,
+                          color: 'var(--c-heading)' 
+                        }}
+                        placeholder="john@example.com"
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        {touched.email && errors.email && (
+                          <AlertCircle className="w-4 h-4 text-red-500" />
+                        )}
+                        {touched.email && !errors.email && formData.email.trim() && (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        )}
+                      </div>
+                    </div>
+                    {touched.email && errors.email && (
+                      <div className="flex items-center gap-1.5 text-red-500 text-xs font-mono mt-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{errors.email}</span>
+                      </div>
+                    )}
+                    {touched.email && !errors.email && formData.email.trim() && (
+                      <div className="flex items-center gap-1 text-emerald-600 text-[11px] font-mono mt-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>Email address validated</span>
+                      </div>
+                    )}
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label htmlFor="message" className="block text-xs font-mono" style={{ color: 'var(--c-heading)' }}>Message Payload</label>
-                      {isAutoTypingForm && (
-                        <span className="text-[10px] font-mono text-emerald-600 animate-pulse">
-                          AUTO-TYPING IN PROGRESS...
+                      <label htmlFor="message" className="block text-xs font-mono font-medium" style={{ color: 'var(--c-heading)' }}>
+                        Message Payload <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {isAutoTypingForm && (
+                          <span className="text-[10px] font-mono text-emerald-600 animate-pulse font-bold">
+                            AUTO-TYPING...
+                          </span>
+                        )}
+                        <span className={`text-[10px] font-mono ${formData.message.length > 1000 ? 'text-red-500 font-bold' : ''}`} style={{ color: formData.message.length > 1000 ? '#ef4444' : 'var(--c-muted)' }}>
+                          {formData.message.length}/1000
                         </span>
-                      )}
+                      </div>
                     </div>
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      rows={4}
-                      className="w-full p-3 font-body bg-transparent outline-none transition-colors resize-none rounded-[var(--radius-md)] text-sm leading-relaxed"
-                      style={{ 
-                        border: `1px solid ${errors.message ? 'red' : 'var(--c-border)'}`,
-                        color: 'var(--c-body)' 
-                      }}
-                      placeholder="Type your project overview, query, or collaboration ideas..."
-                    />
-                    {errors.message && <span className="text-red-500 text-xs font-mono mt-1 block">{errors.message}</span>}
+                    <div className="relative">
+                      <textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        rows={4}
+                        className="w-full p-3 font-body outline-none transition-all resize-none rounded-[var(--radius-md)] text-sm leading-relaxed focus:border-[var(--c-border-focus)]"
+                        style={{ 
+                          backgroundColor: 'var(--c-input-bg)',
+                          border: `1px solid ${
+                            touched.message && errors.message 
+                              ? '#ef4444' 
+                              : touched.message && !errors.message && formData.message.trim() 
+                              ? '#10b981' 
+                              : 'var(--c-border)'
+                          }`,
+                          color: 'var(--c-heading)' 
+                        }}
+                        placeholder="Type your project overview, query, or collaboration ideas (min 10 characters)..."
+                      />
+                    </div>
+                    {touched.message && errors.message && (
+                      <div className="flex items-center gap-1.5 text-red-500 text-xs font-mono mt-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{errors.message}</span>
+                      </div>
+                    )}
+                    {touched.message && !errors.message && formData.message.trim() && (
+                      <div className="flex items-center gap-1 text-emerald-600 text-[11px] font-mono mt-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>Message payload validated ({formData.message.length} chars)</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Form Readiness & Validation Status Banner */}
+                  <div className="pt-2">
+                    {touched.name && touched.email && touched.message && !errors.name && !errors.email && !errors.message && formData.name.trim() && formData.email.trim() && formData.message.trim() ? (
+                      <div className="p-2.5 rounded-[var(--radius-md)] font-mono text-xs flex items-center gap-2 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
+                        <span className="font-bold tracking-wide">PAYLOAD VALIDATED — READY TO TRANSMIT</span>
+                      </div>
+                    ) : ((touched.name && errors.name) || (touched.email && errors.email) || (touched.message && errors.message)) ? (
+                      <div className="p-2.5 rounded-[var(--radius-md)] font-mono text-xs flex items-center gap-2 bg-red-500/10 text-red-600 border border-red-500/20">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+                        <span>PLEASE RESOLVE ATTENTION HIGHLIGHTS BEFORE TRANSMITTING</span>
+                      </div>
+                    ) : (
+                      <div className="p-2.5 rounded-[var(--radius-md)] font-mono text-[11px] flex items-center gap-2" style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)', color: 'var(--c-subtle)' }}>
+                        <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>Real-time client-side validation active. Fill out all required fields (*).</span>
+                      </div>
+                    )}
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting || isAutoTypingForm}
-                    className="w-full p-3 font-mono text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 transition-all hover:bg-black/5 disabled:opacity-50 rounded-[var(--radius-md)] cursor-pointer"
-                    style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}
+                    className="w-full p-3 font-mono text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2.5 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:pointer-events-none rounded-[var(--radius-md)] cursor-pointer hover:brightness-110 active:scale-[0.99]"
+                    style={{ border: '1px solid var(--c-border-focus)', backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}
                   >
                     {isSubmitting ? (
                       <div className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-current" />
                         <HoneycombLoader size="sm" color="var(--c-btn-text)" />
                         <span>TRANSMITTING PAYLOAD...</span>
                       </div>
@@ -331,22 +464,22 @@ export const Contact = memo(() => {
           {/* Right Panel: Live Dispatch Receipt & Quick Connect */}
           <div className="md:col-span-5 flex flex-col justify-between space-y-6">
             {/* Live Payload Preview */}
-            <LineReveal delay={0.3} className="p-5 sm:p-6 rounded-[var(--radius-lg)] space-y-3" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}>
-              <div className="flex items-center justify-between pb-2 border-b border-black/10">
+            <LineReveal delay={0.3} className="p-5 sm:p-6 rounded-[var(--radius-lg)] space-y-3 shadow-sm" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-card)' }}>
+              <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid var(--c-border)' }}>
                 <span className="font-mono text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--c-heading)' }}>
                   LIVE_DISPATCH_PAYLOAD
                 </span>
-                <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-black/5">
+                <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--c-input-bg)', color: 'var(--c-subtle)', border: '1px solid var(--c-border)' }}>
                   REAL-TIME PREVIEW
                 </span>
               </div>
 
-              <div className="font-mono text-xs space-y-1.5 opacity-90" style={{ color: 'var(--c-body)' }}>
-                <div><span className="font-bold opacity-60">SENDER: </span>{formData.name || '&lt;UNSPECIFIED&gt;'}</div>
-                <div><span className="font-bold opacity-60">EMAIL : </span>{formData.email || '&lt;UNSPECIFIED&gt;'}</div>
-                <div className="pt-1 border-t border-black/5">
-                  <span className="font-bold opacity-60 block mb-1">MESSAGE_BODY:</span>
-                  <div className="p-2 rounded font-body text-xs leading-relaxed max-h-[100px] overflow-y-auto bg-black/5">
+              <div className="font-mono text-xs space-y-2" style={{ color: 'var(--c-body)' }}>
+                <div><span className="font-bold" style={{ color: 'var(--c-heading)' }}>SENDER: </span>{formData.name || '<UNSPECIFIED>'}</div>
+                <div><span className="font-bold" style={{ color: 'var(--c-heading)' }}>EMAIL : </span>{formData.email || '<UNSPECIFIED>'}</div>
+                <div className="pt-2" style={{ borderTop: '1px solid var(--c-border)' }}>
+                  <span className="font-bold block mb-1.5" style={{ color: 'var(--c-heading)' }}>MESSAGE_BODY:</span>
+                  <div className="p-3 rounded font-body text-xs leading-relaxed max-h-[110px] overflow-y-auto" style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)', color: 'var(--c-body)' }}>
                     {formData.message || 'Waiting for user input or preset selection...'}
                   </div>
                 </div>
@@ -357,8 +490,8 @@ export const Contact = memo(() => {
             <LineReveal delay={0.4} className="space-y-3">
               <button
                 onClick={handleCopyEmail}
-                className="w-full p-4 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] text-left flex items-center justify-between group cursor-pointer rounded-[var(--radius-md)]"
-                style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-bg)' }}
+                className="w-full p-4 transition-all hover:border-[var(--c-border-focus)] text-left flex items-center justify-between group cursor-pointer rounded-[var(--radius-md)] shadow-sm"
+                style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-card)' }}
                 aria-label={copied ? 'Email copied to clipboard' : `Copy email address: ${EMAIL}`}
               >
                 <div className="flex items-center gap-3">
@@ -380,8 +513,8 @@ export const Contact = memo(() => {
                 href={GITHUB}
                 target="_blank"
                 rel="noreferrer"
-                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer"
-                style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)', backgroundColor: 'var(--c-bg)' }}
+                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer hover:border-[var(--c-border-focus)] shadow-sm"
+                style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)', backgroundColor: 'var(--c-card)' }}
                 onMouseEnter={handleSocialHover}
                 onMouseLeave={handleSocialLeave}
                 aria-label="GitHub"
@@ -393,8 +526,8 @@ export const Contact = memo(() => {
                 href={LINKEDIN}
                 target="_blank"
                 rel="noreferrer"
-                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer hover:bg-black/5"
-                style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)', backgroundColor: 'var(--c-bg)' }}
+                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer hover:border-[var(--c-border-focus)] shadow-sm"
+                style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)', backgroundColor: 'var(--c-card)' }}
                 onMouseEnter={handleSocialHover}
                 onMouseLeave={handleSocialLeave}
                 aria-label="LinkedIn"
@@ -405,8 +538,8 @@ export const Contact = memo(() => {
                 href={INSTAGRAM}
                 target="_blank"
                 rel="noreferrer"
-                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer hover:bg-black/5"
-                style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)', backgroundColor: 'var(--c-bg)' }}
+                className="w-11 h-11 flex items-center justify-center rounded-[var(--radius-md)] transition-colors cursor-pointer hover:border-[var(--c-border-focus)] shadow-sm"
+                style={{ border: '1px solid var(--c-border)', color: 'var(--c-heading)', backgroundColor: 'var(--c-card)' }}
                 onMouseEnter={handleSocialHover}
                 onMouseLeave={handleSocialLeave}
                 aria-label="Instagram"
@@ -415,8 +548,8 @@ export const Contact = memo(() => {
               </a>
             </LineReveal>
 
-            <LineReveal delay={0.6} className="p-6 flex items-center rounded-[var(--radius-lg)]" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-bg)' }}>
-              <p className="font-handwriting text-2xl sm:text-3xl leading-tight" style={{ color: 'var(--c-heading)' }}>
+            <LineReveal delay={0.6} className="p-6 flex items-center rounded-[var(--radius-lg)] shadow-sm" style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-card)' }}>
+              <p className="font-sans text-2xl sm:text-3xl leading-tight font-bold" style={{ color: 'var(--c-heading)' }}>
                 <WordReveal text="Folding ideas into something real." baseDelay={0.2} />
               </p>
             </LineReveal>

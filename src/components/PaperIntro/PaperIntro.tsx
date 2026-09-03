@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef, lazy, Suspense, memo } from 'react';
+import gsap from 'gsap';
 import { usePaperSound } from '../../hooks/usePaperSound';
 import { PaperState, PaperTheme } from '../../types';
 import { PaperScene, PaperSceneAPI } from './PaperScene';
@@ -47,6 +48,7 @@ export const PaperIntro = memo<PaperIntroProps>(({
   }, [playUnfold, playCrumple]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const paperRef = useRef<PaperSceneAPI | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -77,6 +79,24 @@ export const PaperIntro = memo<PaperIntroProps>(({
     setPaperState('opening');
   }, [paperState, prefersReducedMotion, setPaperState, showMoodGame]);
 
+  const handleButtonClick = useCallback(() => {
+    if (btnRef.current) {
+      gsap.killTweensOf(btnRef.current);
+      gsap.timeline()
+        .to(btnRef.current, {
+          scale: 1.15,
+          duration: 0.14,
+          ease: 'back.out(2.5)',
+        })
+        .to(btnRef.current, {
+          scale: 1,
+          duration: 0.28,
+          ease: 'elastic.out(1.2, 0.4)',
+        });
+    }
+    handleUnfold();
+  }, [handleUnfold]);
+
   useEffect(() => {
     if (paperState === 'opened') {
       onOpenComplete?.();
@@ -87,12 +107,12 @@ export const PaperIntro = memo<PaperIntroProps>(({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (paperState === 'crumpled' && (e.key === 'Enter' || e.key === ' ') && !showMoodGame) {
         e.preventDefault();
-        handleUnfold();
+        handleButtonClick();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [paperState, handleUnfold, showMoodGame]);
+  }, [paperState, handleButtonClick, showMoodGame]);
 
   const isAnimating = paperState === 'opening' || paperState === 'unfolding' || paperState === 'settling';
 
@@ -207,29 +227,49 @@ export const PaperIntro = memo<PaperIntroProps>(({
 
           <div className="flex flex-col items-center gap-4 text-center mb-16 pointer-events-auto">
             <button
+              ref={btnRef}
               id="unfold-paper-btn"
-              onClick={handleUnfold}
-              className="group relative px-7 py-3.5 transition-all duration-300 flex items-center gap-4 cursor-pointer backdrop-blur-md rounded-xl hover:scale-[1.02] active:scale-[0.98]"
+              onClick={handleButtonClick}
+              className="group relative px-7 py-3.5 transition-colors duration-300 flex items-center gap-4 cursor-pointer backdrop-blur-md rounded-[var(--radius-md)] shadow-md hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[var(--c-border-focus)]"
               style={{
-                backgroundColor: 'rgba(255, 253, 249, 0.92)',
-                color: 'var(--c-heading)',
-                border: '1.5px solid var(--c-border)',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                backgroundColor: 'var(--c-btn-bg)',
+                color: 'var(--c-btn-text)',
+                border: '1px solid var(--c-border-focus)',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--c-border-focus)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--c-border)'; }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--c-btn-bg-hover)';
+                gsap.to(e.currentTarget, { scale: 1.05, duration: 0.2, ease: 'power2.out' });
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--c-btn-bg)';
+                gsap.to(e.currentTarget, { scale: 1, duration: 0.25, ease: 'power2.out' });
+              }}
               aria-label="Click to unfold the crumpled portfolio sheet"
             >
-              <span className="font-handwriting text-2xl font-bold tracking-wide" style={{ color: 'var(--c-heading)' }}>
+              <span className="font-handwriting text-2xl font-bold tracking-wide" style={{ color: 'var(--c-btn-text)' }}>
                 click to unfold
               </span>
               
               <div className="hidden sm:flex items-center gap-1.5 ml-1">
-                <span className="inline-flex items-center justify-center px-2.5 py-1 min-w-[28px] rounded-[5px] border border-b-2 font-mono text-[10px] font-bold uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#403a34]">
+                <span
+                  className="inline-flex items-center justify-center px-2.5 py-1 min-w-[28px] rounded-[var(--radius-sm)] border font-mono text-[10px] font-bold uppercase tracking-normal shadow-sm"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    borderColor: 'rgba(255,255,255,0.25)',
+                    color: 'var(--c-btn-text)',
+                  }}
+                >
                   Space
                 </span>
-                <span className="text-[11px] font-mono text-[#8c857d]">/</span>
-                <span className="inline-flex items-center justify-center px-2.5 py-1 min-w-[28px] rounded-[5px] border border-b-2 font-mono text-[10px] font-bold uppercase tracking-normal bg-[#fcfaf7] border-[#d1c7ba] shadow-sm text-[#403a34]">
+                <span className="text-[11px] font-mono opacity-60" style={{ color: 'var(--c-btn-text)' }}>/</span>
+                <span
+                  className="inline-flex items-center justify-center px-2.5 py-1 min-w-[28px] rounded-[var(--radius-sm)] border font-mono text-[10px] font-bold uppercase tracking-normal shadow-sm"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    borderColor: 'rgba(255,255,255,0.25)',
+                    color: 'var(--c-btn-text)',
+                  }}
+                >
                   Enter
                 </span>
               </div>
@@ -257,19 +297,6 @@ export const PaperIntro = memo<PaperIntroProps>(({
             onComplete={handleMoodGameComplete}
           />
         </Suspense>
-      )}
-
-      {/* Unfolding indicator */}
-      {isAnimating && !showMoodGame && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-          <div
-            className="px-5 py-2 text-[10px] font-mono uppercase tracking-[0.2em] shadow-lg flex items-center gap-3 backdrop-blur-md rounded-full border"
-            style={{ backgroundColor: 'var(--c-modal-bg, var(--c-bg))', color: 'var(--c-heading)', borderColor: 'var(--c-border)' }}
-          >
-            <HoneycombLoader size="sm" color="var(--c-heading)" />
-            <span>UNFOLDING CANVAS...</span>
-          </div>
-        </div>
       )}
     </div>
   );
