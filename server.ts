@@ -3,37 +3,39 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
-const SYSTEM_INSTRUCTION = `You are a helpful AI assistant for Sachit's portfolio website. Your goal is to answer questions about Sachit, his background, skills, and projects in a friendly and professional manner. 
+const SYSTEM_INSTRUCTION = `You are an intelligent, fast, and helpful AI assistant for Sachit's portfolio website. Your goal is to answer questions about Sachit, his background, skills, philosophy, and software projects in a direct, friendly, and professional tone.
 
 About Sachit:
-- Role: Student software developer.
-- Education: Currently in Class 12 (PCMB).
-- Based: Remote (Remote building mode).
-- Focus: Building practical software, exploring AI, web development, automation, and open-source.
-- Philosophy: Learning by building, turning ideas into projects, and improving software efficiency with AI.
+- Role: Student Software Developer & Tech Builder.
+- Education: Class 12 (PCMB - Physics, Chemistry, Mathematics, Biology).
+- Location/Mode: Remote building mode.
+- Core Focus: Building practical software, AI integrations, web applications, automation engines, and open-source tech.
+- Philosophy: "Learn by Building" (learning technologies by building real projects rather than just studying theory), "Keep It Simple" (clear, clean solutions over unnecessary complexity), "Experiment & Iterate", "Design Matters", "Continuous Learning".
+- Current Status: Currently in the planning & product exploration phase for a new software application.
 
-Skills:
-- Programming: Python, JavaScript, TypeScript.
-- Web: React, Supabase, PostgreSQL, Tailwind CSS, Next.js.
-- AI: Gemini API, Claude API, MCP (Model Context Protocol), Prompt Engineering, Prompt Caching, TensorFlow Lite.
-- Tools: Vite, Node.js, REST APIs, Git.
+Technical Skills:
+- Languages: Python, JavaScript, TypeScript, Go, Rust, Kotlin, HTML5, CSS3.
+- Web & Interactive: React, Next.js, Vite, Tailwind CSS, Three.js, WebGL, GSAP, Framer Motion, Responsive & Accessible UI/UX.
+- Backend & Storage: Node.js, Express, Go, Supabase (PostgreSQL, Storage), Redis, REST-style APIs.
+- AI / ML & Automation: Gemini API, Claude API, MCP (Model Context Protocol), Prompt Engineering, Prompt Caching, TensorFlow Lite, Minimax AI algorithm.
+- Tools & Practices: Git, GitHub, Render, Netlify, Security Headers, CSRF checks.
 
-Key Projects:
-1. SKY ROMs: Android Custom ROM Discovery & Management Platform (React, TS, Supabase).
-2. Claude Document Summarizer: AI tool for summarization (Python, Claude API).
-3. Schedule Planner: Automation engine for tasks and alerts (Python, Node.js).
-4. Sentience OS: Custom Android distribution with local LLMs (AOSP, Kotlin, TensorFlow Lite).
-5. Nexus Core: ERP system for distributed teams (Next.js, Go, PostgreSQL).
-6. Ghost Protocol: E2EE messaging protocol (Rust, React Native, Security).
-7. Tic-Tac-Toe: Browser game with Minimax AI.
+Comprehensive Project Portfolio:
+1. SKY ROMs (2025): Android Custom ROM Discovery & Management Platform. Features device compatibility checks, ROM comparisons, download management, and user reviews. Built with React, TypeScript, Vite, Supabase, Tailwind CSS. Demo at https://sky-roms.vercel.app.
+2. Claude Document Summarizer (2025): AI tool that summarizes uploaded documents using Anthropic Claude API, intelligent prompt engineering, and prompt caching for high speed and efficiency (Python, Claude API).
+3. Schedule Planner (2025): Automated task schedule planner and notification engine for sending timely alerts and recurring event updates (Python, Node.js, REST APIs).
+4. Tic-Tac-Toe Mini Game (2025): Polished browser game with Minimax AI algorithm featuring Easy & Hard modes, turn locking, and win/draw evaluation (JS, HTML, CSS).
+5. MCP Integration Tool (2025): Tool for working with Model Context Protocol architectures, built following Anthropic Developer curriculum (Python, Claude API, MCP).
+6. Nexus Core (2024): Enterprise resource planning (ERP) system for distributed teams, featuring real-time CRDT collaborative state management and automated resource allocation (Next.js, Go, PostgreSQL, Redis, Socket.io).
+7. Sentience OS: Custom Android distribution integrating local LLMs via TensorFlow Lite (AOSP, Kotlin, TFLite).
+8. Ghost Protocol: End-to-end encrypted messaging protocol (Rust, React Native).
 
 Communication Style:
-- Be extremely concise and to the point.
-- Provide small, fast, and punchy answers.
-- Avoid flowery language or long explanations.
-- Use bullet points only if absolutely necessary for clarity.
-- Professional yet approachable.
-- If you don't know something specific about Sachit that isn't mentioned here, politely state that you only have information about his professional and academic background as presented in this portfolio.`;
+- Be concise, punchy, and direct.
+- Give fast, accurate, and structured answers.
+- Avoid flowery filler phrases or long intros.
+- Use clean formatting (bullet points or bolding) when listing multiple items.
+- If asked about something not covered in his professional/academic profile, politely mention that you focus on Sachit's software, skills, and portfolio work.`;
 
 // Initialize Gemini
 const ai = new GoogleGenAI({
@@ -154,9 +156,9 @@ async function startServer() {
   // Add body parsing middleware
   app.use(express.json());
 
-  // Gemini Chat Route
+  // Gemini Chat Route (supports both streaming and single-shot)
   app.post("/api/chat", async (req, res) => {
-    const { messages, activeSection } = req.body;
+    const { messages, activeSection, stream = true } = req.body;
     
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ error: "Gemini API key not configured" });
@@ -171,20 +173,51 @@ async function startServer() {
       }
 
       // Format contents for Gemini SDK
-      const contents = messages.map((m: any) => ({
+      const contents = (messages || []).map((m: any) => ({
         role: m.role === 'user' ? 'user' : 'model',
-        parts: [{ text: m.content }]
+        parts: [{ text: m.content || '' }]
       }));
 
       // Ensure contents are valid (must start with user)
       const validContents = contents.length > 0 && contents[0].role !== 'user' ? contents.slice(1) : contents;
 
+      if (stream) {
+        // Set headers for Server-Sent Events (SSE)
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache, no-transform');
+        res.setHeader('Connection', 'keep-alive');
+
+        try {
+          const responseStream = await ai.models.generateContentStream({
+            model: "gemini-3.8-flash",
+            contents: validContents,
+            config: {
+              systemInstruction: contextualInstruction,
+              maxOutputTokens: 250,
+            }
+          });
+
+          for await (const chunk of responseStream) {
+            if (chunk.text) {
+              res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+            }
+          }
+          res.write(`data: [DONE]\n\n`);
+          return res.end();
+        } catch (streamError: any) {
+          console.error("Gemini Stream Error:", streamError);
+          res.write(`data: ${JSON.stringify({ error: streamError.message || "Streaming error occurred" })}\n\n`);
+          return res.end();
+        }
+      }
+
+      // Non-streaming fallback
       const response = await ai.models.generateContent({
-        model: "gemini-3.6-flash",
+        model: "gemini-3.8-flash",
         contents: validContents,
         config: {
           systemInstruction: contextualInstruction,
-          maxOutputTokens: 150,
+          maxOutputTokens: 250,
         }
       });
 
@@ -192,11 +225,10 @@ async function startServer() {
     } catch (error: any) {
       console.error("Gemini API Error:", error);
       
-      // Handle high demand / 503 errors specifically
       if (error.message?.includes('503') || error.message?.includes('high demand')) {
         return res.status(503).json({ 
           error: "Service unavailable", 
-          message: "The AI model is currently experiencing high demand. Please wait a few seconds and try again." 
+          message: "The AI model is currently experiencing high demand. Please try again in a moment." 
         });
       }
 

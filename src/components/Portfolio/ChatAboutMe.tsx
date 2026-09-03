@@ -13,18 +13,18 @@ interface Message {
 
 const INITIAL_MESSAGE: Message = { 
   role: 'model', 
-  content: "Hi! I'm Sachit's AI assistant. Ask me anything about his projects (like SKY ROMs or Sentience OS), skills, or background!" 
+  content: "Hi! I'm Sachit's AI assistant. Ask me anything about his projects (like SKY ROMs, Claude Document Summarizer, Nexus Core, or Sentience OS), his tech stack, philosophy, or background!" 
 };
 
 const SUGGESTIONS: Record<string, string[]> = {
-  hero: ["Tell me about Sachit", "What's his core philosophy?"],
-  about: ["Where is he based?", "Tell me about his background"],
-  philosophy: ["Explain 'Learn by Building'", "How does he use AI?"],
-  projects: ["Tell me about SKY ROMs", "What is Nexus Core?", "What's his tech stack?"],
-  skills: ["What programming languages does he know?", "Is he familiar with Next.js?"],
-  experience: ["Tell me about his developer journey", "What has he built recently?"],
-  education: ["What is he studying?", "What is PCMB?"],
-  contact: ["How can I contact him?", "Is he available for remote work?"],
+  hero: ["Tell me about Sachit", "What is his core philosophy?"],
+  about: ["What is Class 12 PCMB?", "Where is he based?"],
+  philosophy: ["Explain 'Learn by Building'", "How does he view AI?"],
+  projects: ["Tell me about SKY ROMs", "What is Nexus Core?", "What is Claude Document Summarizer?"],
+  skills: ["What programming languages does he know?", "What AI tools does he use?"],
+  experience: ["What projects has he built?", "What are his core focus areas?"],
+  education: ["What is he currently studying?", "What subjects are in PCMB?"],
+  contact: ["How can I contact Sachit?", "Is he open to remote work?"],
 };
 
 export const ChatAboutMe = memo(() => {
@@ -80,18 +80,63 @@ export const ChatAboutMe = memo(() => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           messages: newMessages,
-          activeSection: activeSection
+          activeSection: activeSection,
+          stream: true
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.message || errorData.error || 'Failed to fetch';
+        const errorMessage = errorData.message || errorData.error || 'Failed to fetch response';
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      setMessages([...newMessages, { role: 'model', content: data.text }]);
+      if (response.headers.get('Content-Type')?.includes('text/event-stream') && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedText = '';
+        let buffer = '';
+
+        // Add model placeholder message to stream into
+        setMessages([...newMessages, { role: 'model', content: '' }]);
+        setIsLoading(false);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data: ')) continue;
+            const dataStr = trimmed.slice(6);
+            if (dataStr === '[DONE]') break;
+
+            try {
+              const parsed = JSON.parse(dataStr);
+              if (parsed.error) {
+                throw new Error(parsed.error);
+              }
+              if (parsed.text) {
+                accumulatedText += parsed.text;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { role: 'model', content: accumulatedText };
+                  return updated;
+                });
+              }
+            } catch {
+              // Ignore single token parsing errors
+            }
+          }
+        }
+      } else {
+        const data = await response.json();
+        setMessages([...newMessages, { role: 'model', content: data.text }]);
+      }
     } catch (error: any) {
       console.error('Chat error:', error);
       setMessages([...newMessages, { 
@@ -331,7 +376,7 @@ export const ChatAboutMe = memo(() => {
             </div>
             <div className="mt-3 text-center">
               <span className="text-[9px] font-mono uppercase tracking-[0.2em] opacity-30 flex items-center justify-center gap-2">
-                <MessageSquare size={10} /> GENAI-3.5-FLASH • EXPERIMENTAL
+                <MessageSquare size={10} /> GEMINI 3.8 FLASH • REAL-TIME STREAMING
               </span>
             </div>
           </form>

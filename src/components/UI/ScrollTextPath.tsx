@@ -68,11 +68,18 @@ export const ScrollTextPath = memo(({ text, className = '' }: ScrollTextPathProp
           fill="transparent"
           stroke="transparent"
         />
-        <text className="font-sans font-bold text-lg sm:text-xl md:text-2xl tracking-[0.25em] uppercase" style={{ fill: 'var(--c-subtle)' }}>
+        <text 
+          className="font-mono font-bold uppercase" 
+          style={{ 
+            fill: 'var(--c-subtle)', 
+            fontSize: '22px', 
+            letterSpacing: '0.2em' 
+          }}
+        >
           <motion.textPath
             ref={textPathRef}
             href="#wavy-path"
-            animate={simplify ? {} : { startOffset: [0, -effectiveOffset] }}
+            animate={simplify ? {} : { startOffset: ["0px", `-${effectiveOffset}px`] }}
             transition={{ repeat: Infinity, ease: "linear", duration: 18 }}
           >
             {fullText}

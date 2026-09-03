@@ -1,4 +1,5 @@
 import React, { memo, useCallback } from 'react';
+import { Printer } from 'lucide-react';
 import { PaperTheme } from '../../types';
 import { Hero } from './Hero';
 import { ScrollTextPath } from '../UI/ScrollTextPath';
@@ -35,6 +36,10 @@ export const PortfolioContainer = memo<PortfolioContainerProps>(({
   const handleExploreProjects = useCallback(() => scrollToSection('projects'), [scrollToSection]);
   const handleContactClick = useCallback(() => scrollToSection('contact'), [scrollToSection]);
 
+  const handleExportPDF = useCallback(() => {
+    window.print();
+  }, []);
+
   return (
     <main
       data-theme={theme}
@@ -66,6 +71,19 @@ export const PortfolioContainer = memo<PortfolioContainerProps>(({
           <BuildingInPublic />
           <ChatAboutMe />
           <Contact />
+
+          <div className="flex justify-center sm:justify-end mt-12 pt-6 border-t border-[var(--c-border-subtle)] no-print">
+            <button
+              type="button"
+              id="export-pdf-btn"
+              onClick={handleExportPDF}
+              className="group inline-flex items-center gap-2 px-4 py-2 text-xs font-mono tracking-wider uppercase border border-[var(--c-border)] rounded-full bg-[var(--c-surface)] text-[var(--c-text)] hover:bg-[var(--c-accent)] hover:text-white hover:border-[var(--c-accent)] transition-all duration-300 shadow-sm cursor-pointer active:scale-95"
+              title="Export clean document-ready PDF version"
+            >
+              <Printer size={13} className="transition-transform duration-300 group-hover:scale-110" />
+              <span>Export Portfolio to PDF</span>
+            </button>
+          </div>
         </div>
       </div>
     </main>
