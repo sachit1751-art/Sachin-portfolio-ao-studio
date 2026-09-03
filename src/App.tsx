@@ -69,24 +69,54 @@ export default function App() {
       initSecurity();
     }
   }, []);
-  const [paperState, setPaperState] = useState<PaperState>('crumpled');
+  const [paperState, setPaperState] = useState<PaperState>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('portfolio-intro-completed');
+      if (saved === 'true') return 'opened';
+    }
+    return 'crumpled';
+  });
   const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('kraft');
-  const [introCompleted, setIntroCompleted] = useState(false);
-  const [showContent, setShowContent] = useState(false);
+  const [introCompleted, setIntroCompleted] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('portfolio-intro-completed') === 'true';
+    }
+    return false;
+  });
+  const [showContent, setShowContent] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('portfolio-intro-completed') === 'true';
+    }
+    return false;
+  });
   const [showTransition, setShowTransition] = useState(false);
   const [showStructureRoom, setShowStructureRoom] = useState(false);
   const [showMoodTransition, setShowMoodTransition] = useState(false);
   const [showMoodGame, setShowMoodGame] = useState(false);
+
+  // Monitoring state transitions
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('[App State Monitor]', { 
+        paperState, 
+        introCompleted, 
+        showContent,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [paperState, introCompleted, showContent]);
 
   const { isUnlocked: doomUnlocked, exitStructureRoom } = useDoomSequence(paperState);
   const { simplify } = usePerformance();
   const moodTransitionFiredRef = useRef(false);
 
   const handleOpenResume = useCallback(() => {
+    console.log('[App] handleOpenResume: Setting flags to skip intro');
     setIsViewingResume(true);
     setShowContent(true);
     setIntroCompleted(true);
     setPaperState('opened');
+    sessionStorage.setItem('portfolio-intro-completed', 'true');
     try {
       if (window.location.pathname !== '/resume') {
         window.history.pushState({}, '', '/resume');
@@ -104,6 +134,12 @@ export default function App() {
   }, []);
 
   const handleNavigateSection = useCallback((id: string) => {
+    // Prevent navigation if intro isn't finished and we're not explicitly bypassing it
+    if (!introCompleted && paperState !== 'opened') {
+      console.warn('[App] handleNavigateSection: Navigation suppressed (intro active)');
+      return;
+    }
+
     setIsViewingResume(false);
     try {
       if (window.location.pathname === '/resume') {
@@ -121,7 +157,7 @@ export default function App() {
         container.scrollTo({ top: offset, behavior: 'smooth' });
       }
     }, 100);
-  }, []);
+  }, [introCompleted, paperState]);
 
   // Apply performance class to body for CSS optimizations
   useEffect(() => {
@@ -139,6 +175,7 @@ export default function App() {
     } catch {}
   }, []);
 
+  // Sync content visibility with intro state
   useEffect(() => {
     if (paperState === 'opened' && introCompleted) {
       setShowContent(true);
@@ -148,9 +185,11 @@ export default function App() {
   }, [paperState, showMoodGame, introCompleted]);
 
   const handleRecrumple = useCallback(() => {
+    console.log('[App] handleRecrumple: Resetting session and states');
     setShowContent(false);
     setIntroCompleted(false);
     setPaperState('crumpled');
+    sessionStorage.removeItem('portfolio-intro-completed');
     setShowStructureRoom(false);
     setShowTransition(false);
     setShowMoodTransition(false);
@@ -217,8 +256,15 @@ export default function App() {
             theme={theme}
             setTheme={handleThemeChange}
             onOpenComplete={() => {
+              console.log('[App] onOpenComplete triggered');
               setIntroCompleted(true);
               setShowContent(true);
+              sessionStorage.setItem('portfolio-intro-completed', 'true');
+              // Ensure we start at the top
+              setTimeout(() => {
+                const container = document.getElementById('content-scroll-container');
+                if (container) container.scrollTop = 0;
+              }, 10);
             }}
             showMoodGame={showMoodGame}
             setShowMoodGame={setShowMoodGame}

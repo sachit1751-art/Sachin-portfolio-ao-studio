@@ -41,6 +41,7 @@ export const PaperIntro = memo<PaperIntroProps>(({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const { playUnfold, playCrumple } = usePaperSound();
   const { simplify } = usePerformance();
+  const touchStartDistRef = useRef<number | null>(null);
 
   const handlePaperSound = useCallback((type: 'unfold' | 'crumple') => {
     if (type === 'unfold') playUnfold();
@@ -78,6 +79,36 @@ export const PaperIntro = memo<PaperIntroProps>(({
     }
     setPaperState('opening');
   }, [paperState, prefersReducedMotion, setPaperState, showMoodGame]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (paperState !== 'crumpled' || e.touches.length !== 2) {
+      touchStartDistRef.current = null;
+      return;
+    }
+
+    const dist = Math.hypot(
+      e.touches[0].pageX - e.touches[1].pageX,
+      e.touches[0].pageY - e.touches[1].pageY
+    );
+    touchStartDistRef.current = dist;
+  }, [paperState]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (paperState !== 'crumpled' || e.touches.length !== 2 || touchStartDistRef.current === null) {
+      return;
+    }
+
+    const dist = Math.hypot(
+      e.touches[0].pageX - e.touches[1].pageX,
+      e.touches[0].pageY - e.touches[1].pageY
+    );
+
+    // If fingers move apart by more than 50px, trigger unfold
+    if (dist > touchStartDistRef.current + 50) {
+      touchStartDistRef.current = null;
+      handleUnfold();
+    }
+  }, [paperState, handleUnfold]);
 
   const handleButtonClick = useCallback(() => {
     if (btnRef.current) {
@@ -137,7 +168,13 @@ export const PaperIntro = memo<PaperIntroProps>(({
   }, [setShowMoodGame, exitGame]);
 
   return (
-    <div data-theme={theme} className="relative w-full h-screen overflow-hidden bg-[var(--c-bg)] transition-colors duration-500">
+    <div 
+      data-theme={theme} 
+      className="relative w-full h-screen overflow-hidden bg-[var(--c-bg)] transition-colors duration-500"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      style={{ touchAction: paperState === 'crumpled' ? 'none' : 'auto' }}
+    >
       {/* Background layer: Paper texture background + radial vignette + video */}
       <div className="absolute inset-0 z-0 overflow-hidden paper-grain pointer-events-none">
         <div 
@@ -201,7 +238,7 @@ export const PaperIntro = memo<PaperIntroProps>(({
           <header className="flex items-center justify-between w-full max-w-5xl">
             <div className="relative">
               <div 
-                className="absolute -top-7 -left-1 font-handwriting text-sm font-bold select-none hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-sm"
+                className="absolute -top-7 -left-1 font-handwriting text-sm font-bold select-none flex items-center gap-1.5 px-2.5 py-0.5 rounded-sm"
                 style={{
                   color: 'var(--c-heading)',
                   backgroundColor: 'rgba(255, 253, 249, 0.85)',
@@ -211,7 +248,8 @@ export const PaperIntro = memo<PaperIntroProps>(({
                 }}
               >
                 <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--c-heading)' }} />
-                click to unfold
+                <span className="sm:hidden">pinch to unfold</span>
+                <span className="hidden sm:inline">click to unfold</span>
               </div>
               <div className="font-mono text-[10px] tracking-[0.25em] uppercase flex items-center gap-2" style={{ color: 'var(--c-subtle)' }}>
                 <span className="w-1.5 h-1.5" style={{ backgroundColor: 'var(--c-heading)' }} />

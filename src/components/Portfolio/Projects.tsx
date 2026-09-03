@@ -268,10 +268,17 @@ export const Projects = memo(() => {
                   </p>
                 </div>
 
-                {/* Inline Quick Details Dropdown */}
+                {/* Print-only Full Details (Always visible on paper) */}
+                <div className="hidden print:block mt-4 text-xs leading-relaxed space-y-2 border-t border-gray-100 pt-3">
+                  <p className="whitespace-pre-line font-body text-gray-700">
+                    {project.longDescription || project.description}
+                  </p>
+                </div>
+
+                {/* Inline Quick Details Dropdown (UI Only) */}
                 {isExpanded && (
                   <div
-                    className="my-3 p-4 rounded-[var(--radius-md)] text-xs font-body leading-relaxed space-y-3 transition-all duration-200"
+                    className="my-3 p-4 rounded-[var(--radius-md)] text-xs font-body leading-relaxed space-y-3 transition-all duration-200 print:hidden"
                     style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
                   >
                     <div>

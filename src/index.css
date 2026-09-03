@@ -391,6 +391,29 @@
   border-radius: 3px;
 }
 
+/* Custom scrollbar utilities */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--c-border);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--c-muted);
+}
+
+.custom-scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ═══════════════════════════════════════════════
    REDUCED MOTION
    ═══════════════════════════════════════════════ */
@@ -1684,7 +1707,7 @@ section[id] {
   }
 
   .structure-room-content {
-    padding: 24px 20px;
+    padding: 20px 16px;
   }
 
   .sr-unfold-stages {
@@ -1697,16 +1720,32 @@ section[id] {
 
   /* Newsprint responsive */
   .sr-masthead-title {
-    font-size: 32px !important;
+    font-size: 28px !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .sr-masthead-subtitle {
+    font-size: 10px !important;
+    padding: 0 16px !important;
+  }
+
+  .sr-masthead {
+    padding: 0 16px !important;
+  }
+
+  .sr-editorial-content {
+    padding: 24px 16px !important;
   }
 
   .sr-editorial-columns {
     grid-template-columns: 1fr !important;
+    gap: 32px !important;
   }
 
   .sr-tabs-bar {
     overflow-x: auto;
     justify-content: flex-start !important;
+    padding: 0 16px !important;
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
@@ -1717,8 +1756,8 @@ section[id] {
 
   .sr-tab-item {
     white-space: nowrap;
-    font-size: 12px !important;
-    padding: 8px 12px !important;
+    font-size: 11px !important;
+    padding: 10px 12px !important;
   }
 
   .sr-tab-separator {
@@ -1731,6 +1770,59 @@ section[id] {
 
   .sr-decisions-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  .sr-section-title {
+    font-size: 20px !important;
+  }
+
+  .sr-section-numeral {
+    font-size: 28px !important;
+  }
+
+  .sr-section-desc {
+    font-size: 13px !important;
+  }
+
+  .sr-lead {
+    font-size: 15px !important;
+  }
+
+  .sr-arch-box {
+    min-width: 160px !important;
+    padding: 12px 16px !important;
+  }
+
+  .sr-file-desc {
+    margin-left: 16px !important;
+    padding-left: 16px !important;
+    font-size: 11px !important;
+  }
+
+  .sr-pull-quote p {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .sr-masthead-title {
+    font-size: 20px !important;
+  }
+  
+  .sr-back-link span {
+    font-size: 9px !important;
+  }
+
+  .sr-masthead-date, .sr-masthead-status {
+    font-size: 8px !important;
+  }
+
+  .sr-section-numeral {
+    font-size: 24px !important;
+  }
+
+  .sr-section-title {
+    font-size: 18px !important;
   }
 }
 
@@ -3552,167 +3644,154 @@ section[id] {
   display: none;
 }
 
-/* Print Styles for Resume & Document Output */
+/* ═══════════════════════════════════════════════
+   PRINT ARCHITECTURE: PHYSICAL PAPER ADAPTATION
+   ═══════════════════════════════════════════════ */
+
 @page {
-  size: portrait;
-  margin: 0;
+  size: A4 portrait;
+  margin: 15mm 15mm 20mm 15mm;
 }
 
 @media print {
-  /* Suppress all interactive UI, backgrounds, navigations, audio, video, and decorative widgets */
-  header,
-  nav,
-  footer,
-  aside,
-  video,
-  audio,
+  /* 1. CORE RESET: Strip digital-only effects */
+  *, *::before, *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    transition: none !important;
+    animation: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    overflow: visible !important;
+    height: auto !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+  }
+
+  #root, main {
+    position: static !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* 2. NAVIGATION & UI STRIPPING: Hide non-essential/interactive elements */
+  nav, 
+  footer, 
+  header .jellyfish-btn,
+  .theme-toggle-btn,
+  #recrumple-btn,
   .no-print,
+  .gsap-scroll-indicator,
+  .bg-text-path,
+  .scroll-text-path,
+  .chat-bubble-container,
+  .contact-form-container,
+  button,
+  .mood-game-container,
   .resume-controls,
   .resume-metadata-bar,
   .resume-fallback-bar,
-  .jellyfish-btn,
-  .theme-toggle-btn,
+  .cursor-hint,
+  .structure-room-tabs,
+  .sr-tabs-bar,
+  .sr-masthead-rule,
+  .sr-back-link,
   #content-scroll-container > header {
     display: none !important;
     visibility: hidden !important;
   }
 
-  /* Reset document flow and colors for pure printable output */
-  *,
-  *::before,
-  *::after {
+  /* 3. LAYOUT FLATTENING: Force single-column for physical readability */
+  #physical-paper-sheet {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
     box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  html,
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-    overflow: visible !important;
-    height: auto !important;
-    min-height: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  #root,
-  .fixed.inset-0 {
-    position: static !important;
-    inset: auto !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 100% !important;
-    overflow: visible !important;
-    animation: none !important;
-    transform: none !important;
-  }
-
-  #content-scroll-container {
-    position: static !important;
-    padding-top: 0 !important;
-    overflow: visible !important;
-    height: auto !important;
-    width: 100% !important;
-    margin: 0 !important;
-  }
-
-  .resume-viewer-main {
-    position: static !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: auto !important;
-    background: #ffffff !important;
-    transform: none !important;
-    animation: none !important;
-  }
-
-  .resume-viewer-main > div {
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    gap: 0 !important;
-  }
-
-  .resume-viewer-container {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: auto !important;
-    background: #ffffff !important;
     border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
     overflow: visible !important;
   }
 
-  .resume-pdf-frame {
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    gap: 0 !important;
-    background: transparent !important;
+  .grid {
+    display: block !important;
   }
 
-  .resume-page-card {
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    margin: 0 auto !important;
-    padding: 20mm 15mm !important;
-    background: #ffffff !important;
-    color: #000000 !important;
-    page-break-after: always !important;
-    break-after: page !important;
-    width: 100% !important;
-    max-width: 100% !important;
+  section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 2rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid #eee !important;
   }
 
-  .resume-page-card h1,
-  .resume-page-card h2,
-  .resume-page-card h3,
-  .resume-page-card p,
-  .resume-page-card span,
-  .resume-page-card li,
-  .resume-page-card strong {
-    color: #000000 !important;
+  /* 4. TYPOGRAPHY: High-contrast newsprint style */
+  h1, h2, h3 {
+    color: #000 !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
-  .resume-page-card section,
-  .resume-page-card header,
-  .resume-page-card section > div,
-  .resume-page-card .grid > div,
-  .resume-page-card li {
+  h2 { font-size: 1.8rem !important; margin-bottom: 1rem !important; }
+  h3 { font-size: 1.4rem !important; margin-top: 1.5rem !important; }
+
+  p { orphans: 3; widows: 3; }
+
+  /* 5. PROJECT DETAILS: Ensure clean rendering of project grid */
+  .gsap-project-card {
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    margin-bottom: 1.5rem !important;
+    padding: 1rem !important;
+    display: block !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
-  .resume-page-card a {
-    color: #000000 !important;
-    text-decoration: none !important;
+  .gsap-project-card button,
+  .gsap-project-card .quick-details-trigger {
+    display: none !important;
   }
 
-  .resume-pdf-frame iframe {
-    width: 100% !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    border: none !important;
-    margin: 0 !important;
+  /* Ensure tech tags are visible but clean */
+  .gsap-project-card .flex-wrap {
+    gap: 0.5rem !important;
+  }
+
+  .gsap-project-card .flex-wrap span {
+    border: 1px solid #eee !important;
+    padding: 2px 6px !important;
+    font-size: 8pt !important;
+  }
+
+  /* 6. RESUME SPECIFIC: Full document rendering */
+  .resume-page-card {
     padding: 0 !important;
-    display: block !important;
+    margin: 0 !important;
+    width: 100% !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 7. LINKS: Show URLs after text for utility */
+  a[href]:not([href^="#"]):not([href^="javascript:"])::after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    color: #333;
+    font-style: italic;
+  }
+
+  /* 8. IMAGE & ASSET PROTECTION */
+  img {
+    max-width: 100% !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }

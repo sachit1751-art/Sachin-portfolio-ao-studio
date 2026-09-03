@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 const SYSTEM_INSTRUCTION = `You are a helpful AI assistant for Sachit's portfolio website. Your goal is to answer questions about Sachit, his background, skills, and projects in a friendly and professional manner. 
 
@@ -28,16 +28,22 @@ Key Projects:
 7. Tic-Tac-Toe: Browser game with Minimax AI.
 
 Communication Style:
+- Be extremely concise and to the point.
+- Provide small, fast, and punchy answers.
+- Avoid flowery language or long explanations.
+- Use bullet points only if absolutely necessary for clarity.
 - Professional yet approachable.
-- Concise but informative.
 - If you don't know something specific about Sachit that isn't mentioned here, politely state that you only have information about his professional and academic background as presented in this portfolio.`;
 
 // Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
-  systemInstruction: SYSTEM_INSTRUCTION,
-}, { apiVersion: "v1beta" });
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  httpOptions: {
+    headers: {
+      'User-Agent': 'aistudio-build',
+    }
+  }
+});
 
 interface ContributionDay {
   date: string;
@@ -164,34 +170,36 @@ async function startServer() {
         contextualInstruction += `\n\n[USER CONTEXT]: The user is currently viewing the "${sectionLabel}" section. If they ask about "this" or "what I'm looking at", refer to the content in this section.`;
       }
 
-      // Use a fresh model instance for this request to apply the dynamic system instruction
-      const chatModel = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
-        systemInstruction: contextualInstruction,
-      }, { apiVersion: "v1beta" });
-
-      // Format history for Gemini SDK
-      // The SDK expects history as an array of { role: 'user' | 'model', parts: [{ text: string }] }
-      const history = messages.slice(0, -1).map((m: any) => ({
+      // Format contents for Gemini SDK
+      const contents = messages.map((m: any) => ({
         role: m.role === 'user' ? 'user' : 'model',
         parts: [{ text: m.content }]
       }));
 
-      // Ensure history is valid (must start with user if present)
-      const validHistory = history.length > 0 && history[0].role !== 'user' ? history.slice(1) : history;
+      // Ensure contents are valid (must start with user)
+      const validContents = contents.length > 0 && contents[0].role !== 'user' ? contents.slice(1) : contents;
 
-      const chat = chatModel.startChat({
-        history: validHistory,
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: validContents,
+        config: {
+          systemInstruction: contextualInstruction,
+          maxOutputTokens: 150,
+        }
       });
 
-      const lastMessage = messages[messages.length - 1].content;
-      const result = await chat.sendMessage(lastMessage);
-      const response = await result.response;
-      const text = response.text();
-
-      res.json({ text });
+      res.json({ text: response.text });
     } catch (error: any) {
       console.error("Gemini API Error:", error);
+      
+      // Handle high demand / 503 errors specifically
+      if (error.message?.includes('503') || error.message?.includes('high demand')) {
+        return res.status(503).json({ 
+          error: "Service unavailable", 
+          message: "The AI model is currently experiencing high demand. Please wait a few seconds and try again." 
+        });
+      }
+
       res.status(500).json({ error: "Failed to generate response", message: error.message });
     }
   });

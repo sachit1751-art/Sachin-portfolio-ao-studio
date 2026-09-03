@@ -16,6 +16,17 @@ const INITIAL_MESSAGE: Message = {
   content: "Hi! I'm Sachit's AI assistant. Ask me anything about his projects (like SKY ROMs or Sentience OS), skills, or background!" 
 };
 
+const SUGGESTIONS: Record<string, string[]> = {
+  hero: ["Tell me about Sachit", "What's his core philosophy?"],
+  about: ["Where is he based?", "Tell me about his background"],
+  philosophy: ["Explain 'Learn by Building'", "How does he use AI?"],
+  projects: ["Tell me about SKY ROMs", "What is Nexus Core?", "What's his tech stack?"],
+  skills: ["What programming languages does he know?", "Is he familiar with Next.js?"],
+  experience: ["Tell me about his developer journey", "What has he built recently?"],
+  education: ["What is he studying?", "What is PCMB?"],
+  contact: ["How can I contact him?", "Is he available for remote work?"],
+};
+
 export const ChatAboutMe = memo(() => {
   const activeSection = useActiveSection();
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -27,13 +38,26 @@ export const ChatAboutMe = memo(() => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  const scrollToBottom = (instant = false) => {
+    if (scrollRef.current) {
+      const scrollContainer = scrollRef.current;
+      scrollContainer.scrollTo({
+        top: scrollContainer.scrollHeight,
+        behavior: instant ? 'auto' : 'smooth'
+      });
+    }
   };
+
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     localStorage.setItem('portfolio-chat-history', JSON.stringify(messages));
-    scrollToBottom();
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      scrollToBottom(true);
+    } else {
+      scrollToBottom();
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -42,12 +66,10 @@ export const ChatAboutMe = memo(() => {
     }
   }, [isLoading]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const sendMessage = async (content: string) => {
+    if (!content.trim() || isLoading) return;
 
-    const userMessage = input.trim();
-    setInput('');
+    const userMessage = content.trim();
     const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
     setMessages(newMessages);
     setIsLoading(true);
@@ -79,6 +101,14 @@ export const ChatAboutMe = memo(() => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    const content = input;
+    setInput('');
+    await sendMessage(content);
   };
 
   const clearChat = () => {
@@ -142,12 +172,15 @@ export const ChatAboutMe = memo(() => {
                 <motion.div
                   key={i}
                   layout
-                  initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ 
-                    duration: 0.5, 
-                    ease: [0.16, 1, 0.3, 1], // Custom "out" curve for smooth lift
-                    layout: { duration: 0.3 } 
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 150,
+                    opacity: { duration: 0.4 },
+                    scale: { duration: 0.4 },
+                    layout: { duration: 0.3 }
                   }}
                   className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
@@ -187,8 +220,13 @@ export const ChatAboutMe = memo(() => {
             </AnimatePresence>
             {isLoading && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ 
+                  type: "spring",
+                  damping: 20,
+                  stiffness: 150
+                }}
                 className="flex justify-start pb-4"
               >
                 <div className="flex gap-4">
@@ -228,6 +266,33 @@ export const ChatAboutMe = memo(() => {
               </motion.div>
             )}
             <div ref={messagesEndRef} className="h-px" />
+          </div>
+
+          {/* Suggested Questions */}
+          <div className="px-4 py-3 bg-[var(--c-bg)] border-t border-b overflow-x-auto custom-scrollbar-hide" style={{ borderColor: 'var(--c-border)' }}>
+            <div className="flex gap-2 min-w-max">
+              <AnimatePresence mode="wait">
+                {(SUGGESTIONS[activeSection] || SUGGESTIONS.hero).map((suggestion, idx) => (
+                  <motion.button
+                    key={`${activeSection}-${idx}`}
+                    initial={{ opacity: 0, scale: 0.9, x: 10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, x: -10 }}
+                    transition={{ delay: idx * 0.1 }}
+                    onClick={() => sendMessage(suggestion)}
+                    className="px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                    style={{ 
+                      backgroundColor: 'var(--c-input-bg)',
+                      border: '1px solid var(--c-border)',
+                      color: 'var(--c-muted)'
+                    }}
+                    disabled={isLoading}
+                  >
+                    {suggestion}
+                  </motion.button>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Chat Input */}
