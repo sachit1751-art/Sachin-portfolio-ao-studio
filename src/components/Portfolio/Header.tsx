@@ -43,6 +43,7 @@ const ALL_SECTIONS = [
   'strengths',
   'building-in-public',
   'contact',
+  'quick-contact',
 ];
 
 export const Header = memo<HeaderProps>(({

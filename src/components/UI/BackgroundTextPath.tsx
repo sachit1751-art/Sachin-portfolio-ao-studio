@@ -5,15 +5,12 @@ import { usePerformance } from '../../hooks/usePerformance';
 export const BackgroundTextPath = memo(() => {
   const { simplify } = usePerformance();
   const text = "SACHIT • DEVELOPER • AI • DESIGN • CREATE • ";
-  // Reduced repeat for efficiency, especially if simplified
-  const repeatedText = text.repeat(simplify ? 10 : 40); 
-
-  if (simplify) return null; // Remove entirely on low-end devices to save paint cost
+  const repeatedText = text.repeat(simplify ? 16 : 40);
 
   return (
     <div 
-      className="fixed inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center" 
-      style={{ opacity: 0.03 }}
+      className="fixed inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center select-none" 
+      style={{ opacity: 0.07 }}
     >
       <svg
         viewBox="0 0 1000 1000"
@@ -36,7 +33,7 @@ export const BackgroundTextPath = memo(() => {
           fill="none"
         />
 
-        <g className="font-sans font-black uppercase tracking-[0.6em]" style={{ fill: 'var(--c-heading)' }}>
+        <g className="font-sans font-black uppercase tracking-[0.5em]" style={{ fill: 'var(--c-heading)', fontSize: '36px' }}>
           <text>
             <motion.textPath
               href="#bg-wavy-1"

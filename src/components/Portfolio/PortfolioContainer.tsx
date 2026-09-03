@@ -16,6 +16,7 @@ import { Strengths } from './Strengths';
 import { BuildingInPublic } from './BuildingInPublic';
 import { ChatAboutMe } from './ChatAboutMe';
 import { Contact } from './Contact';
+import { QuickContact } from './QuickContact';
 
 interface PortfolioContainerProps {
   theme: PaperTheme;
@@ -71,6 +72,7 @@ export const PortfolioContainer = memo<PortfolioContainerProps>(({
           <BuildingInPublic />
           <ChatAboutMe />
           <Contact />
+          <QuickContact />
 
           <div className="flex justify-center sm:justify-end mt-12 pt-6 border-t border-[var(--c-border-subtle)] no-print">
             <button

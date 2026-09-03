@@ -12,16 +12,14 @@ export function usePerformance() {
     const handleMotionChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     motionQuery.addEventListener('change', handleMotionChange);
 
-    // Simple heuristic for "low power" or "low end"
-    // 1. Check hardwareConcurrency (CPU cores)
-    // 2. Check deviceMemory (available RAM in GB - only in Chrome/Edge)
+    // Only flag ultra low-spec devices (1 core or <= 1GB memory) or saveData mode
     const isLowSpec = 
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
-      ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4);
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 1) ||
+      ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 1);
     
-    // 3. Check connection speed
+    // Check connection speed
     const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
-    const isSlowNetwork = conn && (conn.saveData || /2g|3g/.test(conn.effectiveType));
+    const isSlowNetwork = Boolean(conn && (conn.saveData || /2g/.test(conn.effectiveType)));
     
     setIsLowPower(isLowSpec || isSlowNetwork);
 
