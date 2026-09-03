@@ -1,9 +1,5 @@
 import React, { memo, useCallback } from 'react';
-<<<<<<< HEAD
-// ​sachit-portfolio-2026-watermark​
-=======
 import { Printer } from 'lucide-react';
->>>>>>> a18b7f5822ec98cf7b1a860c2e691133a3821bdf
 import { PaperTheme } from '../../types';
 import { Hero } from './Hero';
 import { ScrollTextPath } from '../UI/ScrollTextPath';
