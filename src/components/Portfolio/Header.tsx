@@ -44,7 +44,6 @@ const ALL_SECTIONS = [
   'strengths',
   'building-in-public',
   'contact',
-  'quick-contact',
 ];
 
 // ﻿author:sachit-2026-original﻿

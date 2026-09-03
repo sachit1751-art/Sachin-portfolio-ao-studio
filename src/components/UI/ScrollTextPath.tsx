@@ -1,5 +1,4 @@
 import React, { memo, useRef, useEffect, useState, useCallback } from 'react';
-import { motion } from 'motion/react';
 import { usePerformance } from '../../hooks/usePerformance';
 
 interface ScrollTextPathProps {
@@ -76,14 +75,14 @@ export const ScrollTextPath = memo(({ text, className = '' }: ScrollTextPathProp
             letterSpacing: '0.2em' 
           }}
         >
-          <motion.textPath
+          <textPath
             ref={textPathRef}
             href="#wavy-path"
-            animate={simplify ? {} : { startOffset: ["0px", `-${effectiveOffset}px`] }}
-            transition={{ repeat: Infinity, ease: "linear", duration: 18 }}
+            className={simplify ? '' : 'scroll-text-path-anim'}
+            style={{ '--scroll-text-offset': `-${effectiveOffset}px` } as React.CSSProperties}
           >
             {fullText}
-          </motion.textPath>
+          </textPath>
         </text>
       </svg>
     </div>

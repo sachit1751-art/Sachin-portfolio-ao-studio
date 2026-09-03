@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { Printer } from 'lucide-react';
-import { PaperTheme } from '../../types';
+import { PaperTheme, PaperState } from '../../types';
 import { Hero } from './Hero';
 import { ScrollTextPath } from '../UI/ScrollTextPath';
 import { BackgroundTextPath } from '../UI/BackgroundTextPath';
@@ -16,16 +16,17 @@ import { Strengths } from './Strengths';
 import { BuildingInPublic } from './BuildingInPublic';
 import { ChatAboutMe } from './ChatAboutMe';
 import { Contact } from './Contact';
-import { QuickContact } from './QuickContact';
 
 interface PortfolioContainerProps {
   theme: PaperTheme;
+  paperState?: PaperState;
   onViewResume?: () => void;
 }
 
 // ﻿sachit-2026-original﻿
 export const PortfolioContainer = memo<PortfolioContainerProps>(({
   theme,
+  paperState = 'opened',
   onViewResume,
 }) => {
   const scrollToSection = useCallback((id: string) => {
@@ -71,9 +72,8 @@ export const PortfolioContainer = memo<PortfolioContainerProps>(({
           <Education />
           <Strengths />
           <BuildingInPublic />
-          <ChatAboutMe />
+          <ChatAboutMe theme={theme} paperState={paperState} />
           <Contact />
-          <QuickContact />
 
           <div className="flex justify-center sm:justify-end mt-12 pt-6 border-t border-[var(--c-border-subtle)] no-print">
             <button

@@ -11,6 +11,7 @@ import { DesignDecisions } from './DesignDecisions';
 import { MoodGame } from './MoodGame';
 import { ProceduralEngine } from './ProceduralEngine';
 import { Settings } from './Settings';
+import { ChatAboutMe } from '../components/Portfolio/ChatAboutMe';
 import { PaperTheme } from '../types';
 
 interface StructureRoomProps {
@@ -152,6 +153,13 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, o
 
       {/* Footer Rule */}
       <div className="sr-masthead-rule sr-footer-rule" />
+
+      {/* Compact Floating Chat Assistant — Does not block architecture flow charts */}
+      <ChatAboutMe 
+        theme={theme} 
+        mode="compact-floating" 
+        activeTab={activeTab} 
+      />
     </div>
   );
 };

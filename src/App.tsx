@@ -473,6 +473,7 @@ export default function App() {
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="UNFOLDING PORTFOLIO..." color="var(--c-heading)" /></div>}>
                 <PortfolioContainer
                   theme={theme}
+                  paperState={paperState}
                   onViewResume={handleOpenResume}
                 />
               </Suspense>

@@ -1,39 +1,32 @@
 import express from "express";
 // ​‌sachit-portfolio-2026-original-author‌​
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
+// Read machine-readable llms.txt context
+let LLMS_TXT_CONTENT = "";
+try {
+  const llmsPath = path.join(process.cwd(), "public", "llms.txt");
+  if (fs.existsSync(llmsPath)) {
+    LLMS_TXT_CONTENT = fs.readFileSync(llmsPath, "utf-8");
+  }
+} catch (e) {
+  console.warn("Could not read public/llms.txt:", e);
+}
+
 const SYSTEM_INSTRUCTION = `You are an intelligent, fast, and helpful AI assistant for Sachit's portfolio website. Your goal is to answer questions about Sachit, his background, skills, philosophy, and software projects in a direct, friendly, and professional tone.
 
-About Sachit:
-- Role: Student Software Developer & Tech Builder.
-- Education: Class 12 (PCMB - Physics, Chemistry, Mathematics, Biology).
-- Location/Mode: Remote building mode.
-- Core Focus: Building practical software, AI integrations, web applications, automation engines, and open-source tech.
-- Philosophy: "Learn by Building" (learning technologies by building real projects rather than just studying theory), "Keep It Simple" (clear, clean solutions over unnecessary complexity), "Experiment & Iterate", "Design Matters", "Continuous Learning".
-- Current Status: Currently in the planning & product exploration phase for a new software application.
+You operate with full context provided by the site's machine-readable \`/llms.txt\` document below:
 
-Technical Skills:
-- Languages: Python, JavaScript, TypeScript, Go, Rust, Kotlin, HTML5, CSS3.
-- Web & Interactive: React, Next.js, Vite, Tailwind CSS, Three.js, WebGL, GSAP, Framer Motion, Responsive & Accessible UI/UX.
-- Backend & Storage: Node.js, Express, Go, Supabase (PostgreSQL, Storage), Redis, REST-style APIs.
-- AI / ML & Automation: Gemini API, Claude API, MCP (Model Context Protocol), Prompt Engineering, Prompt Caching, TensorFlow Lite, Minimax AI algorithm.
-- Tools & Practices: Git, GitHub, Render, Netlify, Security Headers, CSRF checks.
+---
+${LLMS_TXT_CONTENT}
+---
 
-Comprehensive Project Portfolio:
-1. SKY ROMs (2025): Android Custom ROM Discovery & Management Platform. Features device compatibility checks, ROM comparisons, download management, and user reviews. Built with React, TypeScript, Vite, Supabase, Tailwind CSS. Demo at https://sky-roms.vercel.app.
-2. Claude Document Summarizer (2025): AI tool that summarizes uploaded documents using Anthropic Claude API, intelligent prompt engineering, and prompt caching for high speed and efficiency (Python, Claude API).
-3. Schedule Planner (2025): Automated task schedule planner and notification engine for sending timely alerts and recurring event updates (Python, Node.js, REST APIs).
-4. Tic-Tac-Toe Mini Game (2025): Polished browser game with Minimax AI algorithm featuring Easy & Hard modes, turn locking, and win/draw evaluation (JS, HTML, CSS).
-5. MCP Integration Tool (2025): Tool for working with Model Context Protocol architectures, built following Anthropic Developer curriculum (Python, Claude API, MCP).
-6. Nexus Core (2024): Enterprise resource planning (ERP) system for distributed teams, featuring real-time CRDT collaborative state management and automated resource allocation (Next.js, Go, PostgreSQL, Redis, Socket.io).
-7. Sentience OS: Custom Android distribution integrating local LLMs via TensorFlow Lite (AOSP, Kotlin, TFLite).
-8. Ghost Protocol: End-to-end encrypted messaging protocol (Rust, React Native).
-
-Communication Style:
+Communication Style & Instructions:
 - Be concise, punchy, and direct.
-- Give fast, accurate, and structured answers.
+- Give fast, accurate, and structured answers grounded strictly in Sachit's actual portfolio data.
 - Avoid flowery filler phrases or long intros.
 - Use clean formatting (bullet points or bolding) when listing multiple items.
 - If asked about something not covered in his professional/academic profile, politely mention that you focus on Sachit's software, skills, and portfolio work.`;
@@ -160,16 +153,24 @@ async function startServer() {
 
   // Gemini Chat Route (supports both streaming and single-shot)
   app.post("/api/chat", async (req, res) => {
-    const { messages, activeSection, stream = true } = req.body;
+    const { messages, activeSection, conversationContext, stream = true } = req.body;
     
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ error: "Gemini API key not configured" });
     }
 
     try {
-      // Add contextual info about what the user is currently viewing
+      // Add contextual info about what the user is currently viewing & local app state
       let contextualInstruction = SYSTEM_INSTRUCTION;
-      if (activeSection) {
+
+      if (conversationContext) {
+        const { theme, paperState, activeRoute, projectSummaries } = conversationContext;
+        contextualInstruction += `\n\n[DYNAMIC APP CONTEXT]:
+- Selected Theme: ${theme || 'kraft'}
+- Paper Intro State: ${paperState || 'opened'}
+- Current Section/Route: ${activeRoute || activeSection || 'home'}
+- Featured Project Summaries: ${JSON.stringify(projectSummaries || [])}`;
+      } else if (activeSection) {
         const sectionLabel = activeSection.replace(/-/g, ' ');
         contextualInstruction += `\n\n[USER CONTEXT]: The user is currently viewing the "${sectionLabel}" section. If they ask about "this" or "what I'm looking at", refer to the content in this section.`;
       }
@@ -257,6 +258,18 @@ async function startServer() {
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
+
+  // Machine-readable llms.txt standard endpoints
+  const serveLlmsTxt = (req: express.Request, res: express.Response) => {
+    const llmsPath = path.join(process.cwd(), "public", "llms.txt");
+    if (fs.existsSync(llmsPath)) {
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
+      return res.sendFile(llmsPath);
+    }
+    res.status(404).send("llms.txt file not found");
+  };
+  app.get("/llms.txt", serveLlmsTxt);
+  app.get("/.well-known/llms.txt", serveLlmsTxt);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

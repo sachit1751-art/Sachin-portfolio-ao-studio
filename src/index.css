@@ -97,7 +97,14 @@
     font-family: inherit;
   }
 
-  /* Performance Optimizations for Low-End Devices */
+  /* Performance Optimizations & Mobile Blur Adjustments */
+  @media (max-width: 768px) {
+    .backdrop-blur-xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-2xl {
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+    }
+  }
+
   .perf-simplify *, .perf-simplify *::before, .perf-simplify *::after {
     animation-delay: 0s !important;
     transition-delay: 0s !important;
@@ -113,10 +120,44 @@
     filter: none !important;
   }
 
-  /* Optimize off-screen content */
+  /* GPU Compositor Animations for Background SVG Text Paths */
+  @keyframes bgTextPathMove1 {
+    0% { startOffset: 0%; }
+    100% { startOffset: -50%; }
+  }
+  @keyframes bgTextPathMove2 {
+    0% { startOffset: -50%; }
+    100% { startOffset: 0%; }
+  }
+  @keyframes bgTextPathMove3 {
+    0% { startOffset: 0%; }
+    100% { startOffset: -50%; }
+  }
+  @keyframes scrollTextPathMove {
+    0% { startOffset: 0px; }
+    100% { startOffset: var(--scroll-text-offset, -300px); }
+  }
+
+  .bg-text-path-1 {
+    animation: bgTextPathMove1 220s linear infinite;
+    will-change: startOffset;
+  }
+  .bg-text-path-2 {
+    animation: bgTextPathMove2 260s linear infinite;
+    will-change: startOffset;
+  }
+  .bg-text-path-3 {
+    animation: bgTextPathMove3 240s linear infinite;
+    will-change: startOffset;
+  }
+  .scroll-text-path-anim {
+    animation: scrollTextPathMove 22s linear infinite;
+    will-change: startOffset;
+  }
+
+  /* Optimize off-screen section rendering */
   section {
-    content-visibility: auto;
-    contain-intrinsic-size: 1px 500px;
+    contain: layout style;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -958,10 +999,24 @@ section[id] {
   50% { opacity: 0.4; }
 }
 
+@keyframes structureRoomFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .structure-room-layout {
   display: flex;
   flex: 1;
   overflow: hidden;
+  will-change: transform, opacity;
+  contain: content;
+  animation: structureRoomFadeIn 0.35s ease-out forwards;
 }
 
 .structure-room-nav {

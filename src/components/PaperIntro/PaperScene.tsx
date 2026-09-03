@@ -96,9 +96,9 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
 
   const width = 3.8;
   const height = 5.1;
-  // Reduce segments on low-end devices
-  const segmentsX = simplify ? 24 : 50;
-  const segmentsY = simplify ? 32 : 66;
+  // Optimized segments density — maintains tactile paper crumple folds while reducing vertex array overhead
+  const segmentsX = simplify ? 18 : 32;
+  const segmentsY = simplify ? 24 : 44;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -121,8 +121,8 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       powerPreference: 'high-performance',
     });
     renderer.setSize(widthPx, heightPx);
-    // Low end: stick to 1.0 pixel ratio. Mobile: 1.5 max. Desktop: 2 max.
-    const maxPixelRatio = simplify ? 1.0 : (isMobile ? 1.5 : 2.0);
+    // Cap pixel ratio to 1.25 for mobile, 1.5 for desktop to avoid high-DPI fragment shader fill-rate lag
+    const maxPixelRatio = simplify ? 1.0 : (isMobile ? 1.25 : 1.5);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
     
     if (!simplify) {
@@ -396,21 +396,28 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         const t = Math.max(0, Math.min(1, prog));
         const ease = t * t * (3 - 2 * t);
 
-        for (let i = 0; i < vertexCount; i++) {
-          const i3 = i * 3;
-          const dmg = damageOffsetsRef.current.get(i);
-          const dx = dmg ? dmg.x : 0;
-          const dy = dmg ? dmg.y : 0;
-          const dz = dmg ? dmg.z : 0;
-          arr[i3] = crumpled[i3] + (flat[i3] - crumpled[i3]) * ease + dx;
-          arr[i3 + 1] = crumpled[i3 + 1] + (flat[i3 + 1] - crumpled[i3 + 1]) * ease + dy;
-          arr[i3 + 2] = crumpled[i3 + 2] + (flat[i3 + 2] - crumpled[i3 + 2]) * ease + dz;
-        }
-        pos.needsUpdate = true;
-        // Only recompute normals during unfold animation — skip when open
-        if (!isFullyOpen && Math.abs(ctrl.progress - prevProgressRef.current) > 0.001) {
-          geometry.computeVertexNormals();
-          prevProgressRef.current = ctrl.progress;
+        const hasProgressChanged = Math.abs(prog - prevProgressRef.current) > 0.0001;
+        const hasDamage = damageOffsetsRef.current.size > 0;
+
+        // Skip Float32Array loop once fully open and progress is stable
+        if (hasProgressChanged || prog < 0.999 || hasDamage) {
+          for (let i = 0; i < vertexCount; i++) {
+            const i3 = i * 3;
+            const dmg = damageOffsetsRef.current.get(i);
+            const dx = dmg ? dmg.x : 0;
+            const dy = dmg ? dmg.y : 0;
+            const dz = dmg ? dmg.z : 0;
+            arr[i3] = crumpled[i3] + (flat[i3] - crumpled[i3]) * ease + dx;
+            arr[i3 + 1] = crumpled[i3 + 1] + (flat[i3 + 1] - crumpled[i3 + 1]) * ease + dy;
+            arr[i3 + 2] = crumpled[i3 + 2] + (flat[i3 + 2] - crumpled[i3 + 2]) * ease + dz;
+          }
+          pos.needsUpdate = true;
+
+          // Only recompute normals during active unfold animation
+          if (!isFullyOpen && hasProgressChanged) {
+            geometry.computeVertexNormals();
+          }
+          prevProgressRef.current = prog;
         }
 
         // Idle wobble fades out fast
