@@ -22,7 +22,7 @@ export function usePaperSound() {
     timeoutRef.current = setTimeout(() => {
       audio.pause();
       audio.currentTime = 0;
-    }, 2800);
+    }, 2900);
   }, []);
 
   const playCrumple = useCallback(() => {
@@ -33,7 +33,7 @@ export function usePaperSound() {
     timeoutRef.current = setTimeout(() => {
       audio.pause();
       audio.currentTime = 0;
-    }, 1600);
+    }, 2900);
   }, []);
 
   useEffect(() => {

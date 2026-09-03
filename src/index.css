@@ -72,13 +72,18 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    text-rendering: optimizeSpeed;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
     font-family: var(--font-body);
     background-color: var(--c-bg, #F8F6F0);
     color: var(--c-heading);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     /* Hardware acceleration for body */
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -467,6 +472,22 @@
 @keyframes contentFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes portfolioFadeEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-portfolio-enter {
+  animation: portfolioFadeEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
 }
 
 /* Typewriter animation */

@@ -11,6 +11,7 @@ import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
 import { initSecurity } from './utils/security';
 import { initFontLoader } from './utils/fontLoader';
+import { resetSharedObservers } from './utils/observer';
 
 // Lazy-load heavy components not needed on initial render
 const PortfolioContainer = lazy(() => import('./components/Portfolio/PortfolioContainer').then(m => ({ default: m.PortfolioContainer })));
@@ -283,15 +284,10 @@ export default function App() {
     }
   }, [paperState, showMoodGame, introCompleted]);
 
-  // Header synchronization delay check - ensures header renders after intro confirms fully opened
+  // Header synchronization - ready when intro confirms opened
   useEffect(() => {
     if (paperState === 'opened' && introCompleted) {
-      console.log('[App Header Sync Effect] Intro confirmed opened. Scheduling delay check before rendering Header.');
-      const timer = setTimeout(() => {
-        console.log('[App Header Sync Effect] Delay check passed. Setting headerReady = true.');
-        setHeaderReady(true);
-      }, 50);
-      return () => clearTimeout(timer);
+      setHeaderReady(true);
     } else {
       setHeaderReady(false);
     }
@@ -299,6 +295,10 @@ export default function App() {
 
   const handleRecrumple = useCallback(() => {
     console.log('[App] handleRecrumple: Resetting session and states');
+    resetSharedObservers();
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
     setShowContent(false);
     setIntroCompleted(false);
     setHeaderReady(false);
@@ -395,7 +395,7 @@ export default function App() {
         </a>
       )}
 
-      {/* 3D Paper Scene - Lazy loaded in background */}
+      {/* 3D Paper Scene */}
       <div className="fixed inset-0 z-10">
         <Suspense fallback={null}>
           <LazyPaperIntro
@@ -404,14 +404,13 @@ export default function App() {
             theme={theme}
             setTheme={handleThemeChange}
             onOpenComplete={() => {
-              console.log('[App] onOpenComplete triggered');
               setIntroCompleted(true);
               setShowContent(true);
-              // Ensure we start at the top
-              setTimeout(() => {
+              setHeaderReady(true);
+              requestAnimationFrame(() => {
                 const container = document.getElementById('content-scroll-container');
                 if (container) container.scrollTop = 0;
-              }, 10);
+              });
             }}
             showMoodGame={showMoodGame}
             setShowMoodGame={setShowMoodGame}
@@ -423,7 +422,7 @@ export default function App() {
       {/* Portfolio Content */}
       {showContent && introCompleted && !showStructureRoom && !showMoodGame && (
         <div
-          className="fixed inset-0 z-20"
+          className="fixed inset-0 z-20 animate-portfolio-enter"
           data-theme={theme}
         >
           {headerReady && (

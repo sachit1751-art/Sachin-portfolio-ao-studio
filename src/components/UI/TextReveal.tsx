@@ -24,7 +24,7 @@ function useScrollReveal() {
       (isIntersecting) => {
         if (isIntersecting) setVisible(true);
       },
-      { root: scroller, threshold: 0, rootMargin: '0px 0px -15% 0px' }
+      { root: scroller, threshold: 0, rootMargin: '0px 0px -5% 0px' }
     );
   }, [simplify]);
 
