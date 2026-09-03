@@ -1,6 +1,43 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const SYSTEM_INSTRUCTION = `You are a helpful AI assistant for Sachit's portfolio website. Your goal is to answer questions about Sachit, his background, skills, and projects in a friendly and professional manner. 
+
+About Sachit:
+- Role: Student software developer.
+- Education: Currently in Class 12 (PCMB).
+- Based: Remote (Remote building mode).
+- Focus: Building practical software, exploring AI, web development, automation, and open-source.
+- Philosophy: Learning by building, turning ideas into projects, and improving software efficiency with AI.
+
+Skills:
+- Programming: Python, JavaScript, TypeScript.
+- Web: React, Supabase, PostgreSQL, Tailwind CSS, Next.js.
+- AI: Gemini API, Claude API, MCP (Model Context Protocol), Prompt Engineering, Prompt Caching, TensorFlow Lite.
+- Tools: Vite, Node.js, REST APIs, Git.
+
+Key Projects:
+1. SKY ROMs: Android Custom ROM Discovery & Management Platform (React, TS, Supabase).
+2. Claude Document Summarizer: AI tool for summarization (Python, Claude API).
+3. Schedule Planner: Automation engine for tasks and alerts (Python, Node.js).
+4. Sentience OS: Custom Android distribution with local LLMs (AOSP, Kotlin, TensorFlow Lite).
+5. Nexus Core: ERP system for distributed teams (Next.js, Go, PostgreSQL).
+6. Ghost Protocol: E2EE messaging protocol (Rust, React Native, Security).
+7. Tic-Tac-Toe: Browser game with Minimax AI.
+
+Communication Style:
+- Professional yet approachable.
+- Concise but informative.
+- If you don't know something specific about Sachit that isn't mentioned here, politely state that you only have information about his professional and academic background as presented in this portfolio.`;
+
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  systemInstruction: SYSTEM_INSTRUCTION,
+}, { apiVersion: "v1beta" });
 
 interface ContributionDay {
   date: string;
@@ -107,6 +144,57 @@ async function fetchGitHubContributions(username: string): Promise<ContributionD
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Add body parsing middleware
+  app.use(express.json());
+
+  // Gemini Chat Route
+  app.post("/api/chat", async (req, res) => {
+    const { messages, activeSection } = req.body;
+    
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: "Gemini API key not configured" });
+    }
+
+    try {
+      // Add contextual info about what the user is currently viewing
+      let contextualInstruction = SYSTEM_INSTRUCTION;
+      if (activeSection) {
+        const sectionLabel = activeSection.replace(/-/g, ' ');
+        contextualInstruction += `\n\n[USER CONTEXT]: The user is currently viewing the "${sectionLabel}" section. If they ask about "this" or "what I'm looking at", refer to the content in this section.`;
+      }
+
+      // Use a fresh model instance for this request to apply the dynamic system instruction
+      const chatModel = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        systemInstruction: contextualInstruction,
+      }, { apiVersion: "v1beta" });
+
+      // Format history for Gemini SDK
+      // The SDK expects history as an array of { role: 'user' | 'model', parts: [{ text: string }] }
+      const history = messages.slice(0, -1).map((m: any) => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.content }]
+      }));
+
+      // Ensure history is valid (must start with user if present)
+      const validHistory = history.length > 0 && history[0].role !== 'user' ? history.slice(1) : history;
+
+      const chat = chatModel.startChat({
+        history: validHistory,
+      });
+
+      const lastMessage = messages[messages.length - 1].content;
+      const result = await chat.sendMessage(lastMessage);
+      const response = await result.response;
+      const text = response.text();
+
+      res.json({ text });
+    } catch (error: any) {
+      console.error("Gemini API Error:", error);
+      res.status(500).json({ error: "Failed to generate response", message: error.message });
+    }
+  });
 
   // API Route for GitHub contributions
   app.get("/api/github-contributions", async (req, res) => {

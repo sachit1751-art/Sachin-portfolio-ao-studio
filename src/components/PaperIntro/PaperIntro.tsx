@@ -21,7 +21,7 @@ interface PaperIntroProps {
   paperState: PaperState;
   setPaperState: (state: PaperState) => void;
   theme: PaperTheme;
-  setTheme: (theme: PaperTheme) => void;
+  setTheme: (theme: PaperTheme, event?: React.MouseEvent | MouseEvent) => void;
   onOpenComplete?: () => void;
   showMoodGame: boolean;
   setShowMoodGame: (v: boolean) => void;

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { PaperTheme } from '../../types';
-import { RotateCcw, Menu, X, ArrowUpRight, FileText, Sparkles, Compass } from 'lucide-react';
+import { RotateCcw, ArrowUpRight, FileText, Sparkles, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { AnimatedMenuIcon } from '../UI/AnimatedMenuIcon';
 
 interface HeaderProps {
   theme: PaperTheme;
-  setTheme: (theme: PaperTheme) => void;
+  setTheme: (theme: PaperTheme, event?: React.MouseEvent | MouseEvent) => void;
   onRecrumple: () => void;
   onViewResume?: () => void;
   isViewingResume?: boolean;
@@ -52,7 +53,7 @@ export const Header = memo<HeaderProps>(({
   isViewingResume = false,
   onNavigateSection,
 }) => {
-  const [activeSection, setActiveSection] = useState('about');
+  const [activeSection, setActiveSection] = useState('hero');
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -145,25 +146,28 @@ export const Header = memo<HeaderProps>(({
 
     const onScroll = () => {
       if (ticking) return;
-      if (isScrollingRef.current) return;
       ticking = true;
 
       requestAnimationFrame(() => {
         const scrollTop = container.scrollTop;
+
         const newScrolled = scrollTop > 20;
         setScrolled(prev => prev !== newScrolled ? newScrolled : prev);
 
-        cachePositions();
-        const midpoint = scrollTop + 100;
-        let found = 'hero';
+        if (!isScrollingRef.current) {
+          cachePositions();
+          const midpoint = scrollTop + 150;
+          let found = 'hero';
 
-        for (const pos of cachedPositions) {
-          if (pos.top <= midpoint) {
-            found = pos.id;
+          for (const pos of cachedPositions) {
+            if (pos.top <= midpoint) {
+              found = pos.id;
+            }
           }
-        }
 
-        setActiveSection(prev => prev !== found ? found : prev);
+          setActiveSection(prev => prev !== found ? found : prev);
+        }
+        
         ticking = false;
       });
     };
@@ -255,16 +259,36 @@ export const Header = memo<HeaderProps>(({
         }}
       >
         <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-3 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
-          {/* Logo */}
-          <button
-            onClick={() => handleNavClick('hero')}
-            className="flex items-center gap-3 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded py-1"
-            aria-label="Go to top"
-          >
-            <span className="text-2xl sm:text-3xl font-handwriting font-bold leading-tight" style={{ color: 'var(--c-name)' }}>
-              Sachit
-            </span>
-          </button>
+          {/* Logo + Section Indicator */}
+          <div className="flex items-center gap-3 sm:gap-6">
+            <button
+              onClick={() => handleNavClick('hero')}
+              className="flex items-center gap-3 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded py-1"
+              aria-label="Go to top"
+            >
+              <span className="text-2xl sm:text-3xl font-handwriting font-bold leading-tight" style={{ color: 'var(--c-name)' }}>
+                Sachit
+              </span>
+            </button>
+
+            {/* Mobile Section Label */}
+            <AnimatePresence mode="wait">
+              {scrolled && (
+                <motion.div
+                  key={activeSection}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  className="sm:hidden flex items-center gap-2"
+                >
+                  <span className="w-1 h-1 rounded-full bg-[var(--c-dot)]" />
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest opacity-60">
+                    {activeSection.replace('-', ' ')}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Desktop Nav */}
           <nav
@@ -312,7 +336,7 @@ export const Header = memo<HeaderProps>(({
                 {THEMES.map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => setTheme(t.id)}
+                    onClick={(e) => setTheme(t.id, e)}
                     title={t.label}
                     className="w-4 h-4 rounded-full border transition-all duration-200 mx-0.5"
                     style={{
@@ -359,7 +383,7 @@ export const Header = memo<HeaderProps>(({
               {THEMES.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => setTheme(t.id)}
+                  onClick={(e) => setTheme(t.id, e)}
                   title={t.label}
                   className="w-3.5 h-3.5 rounded-full border transition-all duration-200 mx-0.5"
                   style={{
@@ -399,7 +423,7 @@ export const Header = memo<HeaderProps>(({
               aria-expanded={mobileOpen}
               aria-controls="mobile-fullscreen-menu"
             >
-              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              <AnimatedMenuIcon isOpen={mobileOpen} size={18} />
             </button>
           </div>
         </div>
@@ -456,7 +480,7 @@ export const Header = memo<HeaderProps>(({
               }}
               aria-label="Close navigation menu"
             >
-              <X className="w-5 h-5" />
+              <AnimatedMenuIcon isOpen={true} size={20} />
             </button>
           </div>
 
@@ -547,7 +571,7 @@ export const Header = memo<HeaderProps>(({
                 {THEMES.map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => setTheme(t.id)}
+                    onClick={(e) => setTheme(t.id, e)}
                     className="p-3 rounded-xl text-left flex items-center gap-3 transition-all cursor-pointer active:scale-95"
                     style={{
                       backgroundColor: 'var(--c-input-bg)',

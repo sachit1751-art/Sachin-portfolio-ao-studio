@@ -4,7 +4,7 @@ import { PaperTheme } from '../types';
 
 interface SettingsProps {
   theme: PaperTheme;
-  setTheme: (theme: PaperTheme) => void;
+  setTheme: (theme: PaperTheme, event?: React.MouseEvent | MouseEvent) => void;
 }
 
 const THEMES: { id: PaperTheme; label: string; color: string; desc: string }[] = [
@@ -66,7 +66,7 @@ export const Settings: React.FC<SettingsProps> = ({ theme, setTheme }) => {
             {THEMES.map((t) => (
               <button
                 key={t.id}
-                onClick={() => setTheme(t.id)}
+                onClick={(e) => setTheme(t.id, e)}
                 className={`sr-tech-card ${theme === t.id ? 'expanded' : ''}`}
                 style={{ textAlign: 'left' }}
               >

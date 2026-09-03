@@ -28,8 +28,10 @@ import {
   Shield,
   Tag,
 } from 'lucide-react';
+import { AnimatedMenuIcon } from '../UI/AnimatedMenuIcon';
 import { CharReveal } from '../UI/TextReveal';
 import { usePerformance } from '../../hooks/usePerformance';
+import { ScrollReveal } from '../UI/ScrollReveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -129,19 +131,6 @@ const projects: Project[] = [
     featured: false,
   },
   {
-    id: 'sentience-os',
-    title: 'Sentience OS',
-    category: 'Android OS',
-    filterCategories: ['ANDROID', 'AI'],
-    year: '2025',
-    description:
-      'Custom Android distribution with integrated local LLMs for proactive privacy hardening and context-aware automation.',
-    longDescription:
-      'Sentience OS is a research-driven Android distribution that integrates local Large Language Models (LLMs) directly into the system layer. It provides proactive privacy hardening and context-aware automation without ever sending data to the cloud.\n\nKey Features: On-device AI inference, automated permission management, semantic system search, real-time privacy auditing.\n\nTech Stack: AOSP, C++, Kotlin, TensorFlow Lite, Python.',
-    tags: ['AOSP', 'Kotlin', 'TensorFlow Lite', 'AI'],
-    featured: true,
-  },
-  {
     id: 'nexus-core',
     title: 'Nexus Core',
     category: 'Enterprise Web',
@@ -153,19 +142,6 @@ const projects: Project[] = [
       'Nexus Core is a highly scalable enterprise resource planning system designed for the modern distributed workforce. It leverages CRDTs for seamless real-time collaboration and includes a robust automation engine for resource management.\n\nKey Features: Real-time multi-user editing, automated billing workflows, predictive resource scaling, comprehensive analytics dashboard.\n\nTech Stack: Next.js, Go, PostgreSQL, Redis, Socket.io.',
     tags: ['Next.js', 'Go', 'PostgreSQL', 'Redis'],
     featured: true,
-  },
-  {
-    id: 'ghost-protocol',
-    title: 'Ghost Protocol',
-    category: 'Security',
-    filterCategories: ['ANDROID', 'WEB'],
-    year: '2024',
-    description:
-      'Military-grade end-to-end encrypted messaging protocol with zero-knowledge proof identity verification and decentralized relay nodes.',
-    longDescription:
-      'Ghost Protocol is a high-security communication platform focusing on absolute anonymity and data integrity. It utilizes ZK-proofs for identity verification and routes traffic through a decentralized network of volunteer-operated relay nodes.\n\nKey Features: E2EE messaging, ZK-proof authentication, metadata obfuscation, self-destructing data packets.\n\nTech Stack: Rust, WebAssembly, React Native, Libp2p.',
-    tags: ['Rust', 'Wasm', 'React Native', 'Security'],
-    featured: false,
   },
 ];
 
@@ -232,8 +208,9 @@ export const Projects = memo(() => {
   }, [simplify]);
 
   return (
-    <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
+    <ScrollReveal>
+      <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
         <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
           <CharReveal text="Featured" /> <CharReveal text="Projects" baseDelay={0.2} />
         </h2>
@@ -361,7 +338,7 @@ export const Projects = memo(() => {
                     aria-expanded={isExpanded}
                   >
                     <span>{isExpanded ? 'Hide Details' : 'Quick Details'}</span>
-                    {isExpanded ? <ChevronUp className="w-3.5 h-3.5 opacity-75" /> : <ChevronDown className="w-3.5 h-3.5 opacity-75" />}
+                    <AnimatedMenuIcon isOpen={isExpanded} variant="chevron" size={14} />
                   </button>
 
                   {project.demoUrl && (
@@ -387,6 +364,7 @@ export const Projects = memo(() => {
         })}
       </div>
     </section>
+    </ScrollReveal>
   );
 });
 

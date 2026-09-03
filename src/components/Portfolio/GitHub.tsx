@@ -1,4 +1,5 @@
 import React, { useState, memo } from 'react';
+import { PaperTheme } from '../../types';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 import { GitHubIcon } from '../UI/Icons';
@@ -7,7 +8,11 @@ import { GitHubContributions } from '../GitHubContributions';
 const GITHUB_USERNAME = 'sachit1751-art';
 const GITHUB_URL = `https://github.com/${GITHUB_USERNAME}`;
 
-export const GitHubSection = memo(() => {
+interface GitHubSectionProps {
+  theme?: PaperTheme;
+}
+
+export const GitHubSection = memo<GitHubSectionProps>(({ theme }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -97,7 +102,7 @@ export const GitHubSection = memo(() => {
         </div>
 
         {/* Dynamic GitHub Contribution Heatmap / Calendar */}
-        <GitHubContributions username={GITHUB_USERNAME} />
+        <GitHubContributions username={GITHUB_USERNAME} theme={theme} />
       </section>
     </ScrollReveal>
   );

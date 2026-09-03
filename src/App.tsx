@@ -6,6 +6,7 @@ import { HoneycombLoader } from './components/UI/HoneycombLoader';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
 import { initSecurity } from './utils/security';
+import { initFontLoader } from './utils/fontLoader';
 
 // Lazy-load heavy components not needed on initial render
 const PortfolioContainer = lazy(() => import('./components/Portfolio/PortfolioContainer').then(m => ({ default: m.PortfolioContainer })));
@@ -28,6 +29,7 @@ export default function App() {
   const [isViewingResume, setIsViewingResume] = useState(false);
 
   useEffect(() => {
+    initFontLoader();
     // Route handling for SPA
     const path = window.location.pathname;
     if (path === '/resume' || path === '/resume/' || path === '/resume.html') {
@@ -168,6 +170,31 @@ export default function App() {
     setShowMoodTransition(true);
   }, []);
 
+  const handleThemeChange = useCallback((newTheme: 'cotton' | 'kraft' | 'blueprint' | 'slate', event?: React.MouseEvent | MouseEvent) => {
+    // If browser doesn't support View Transitions or it's a reduced motion user, just switch
+    if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTheme(newTheme);
+      return;
+    }
+
+    // Get click coordinates
+    const x = event ? event.clientX : window.innerWidth / 2;
+    const y = event ? event.clientY : window.innerHeight / 2;
+
+    // Set CSS variables for the animation
+    document.documentElement.style.setProperty('--transition-x', `${x}px`);
+    document.documentElement.style.setProperty('--transition-y', `${y}px`);
+    document.documentElement.setAttribute('data-theme-transition', 'circular');
+
+    const transition = document.startViewTransition(() => {
+      setTheme(newTheme);
+    });
+
+    transition.finished.finally(() => {
+      document.documentElement.removeAttribute('data-theme-transition');
+    });
+  }, []);
+
   return (
     <div data-theme={theme} className="relative min-h-screen bg-[var(--c-bg)] font-sans antialiased overflow-x-hidden transition-colors duration-500">
       {is404 && <NotFound />}
@@ -188,7 +215,7 @@ export default function App() {
             paperState={paperState}
             setPaperState={setPaperState}
             theme={theme}
-            setTheme={setTheme}
+            setTheme={handleThemeChange}
             onOpenComplete={() => {
               setIntroCompleted(true);
               setShowContent(true);
@@ -211,7 +238,7 @@ export default function App() {
         >
           <Header
             theme={theme}
-            setTheme={setTheme}
+            setTheme={handleThemeChange}
             onRecrumple={handleRecrumple}
             onViewResume={handleOpenResume}
             isViewingResume={isViewingResume}
@@ -258,7 +285,7 @@ export default function App() {
           <Suspense fallback={<HeavyFallback />}>
             <LazyStructureRoom
               theme={theme}
-              setTheme={setTheme}
+              setTheme={handleThemeChange}
               onExit={() => {
                 exitStructureRoom();
                 setShowStructureRoom(false);

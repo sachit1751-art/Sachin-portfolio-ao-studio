@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { AnimatedMenuIcon } from '../components/UI/AnimatedMenuIcon';
 import { motion, AnimatePresence } from 'motion/react';
 import { Architecture } from './Architecture';
 import { FileStructure } from './FileStructure';
@@ -14,7 +14,7 @@ import { PaperTheme } from '../types';
 
 interface StructureRoomProps {
   theme: PaperTheme;
-  setTheme: (theme: PaperTheme) => void;
+  setTheme: (theme: PaperTheme, event?: React.MouseEvent | MouseEvent) => void;
   onExit: () => void;
 }
 
@@ -54,8 +54,8 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, o
       <header className="sr-masthead">
         <div className="sr-masthead-rule" />
         <div className="sr-masthead-top">
-          <button onClick={onExit} className="sr-back-link">
-            <ArrowLeft className="w-3 h-3" />
+          <button onClick={onExit} className="sr-back-link group">
+            <AnimatedMenuIcon isOpen={true} variant="arrow" size={14} />
             <span>Back to Portfolio</span>
           </button>
           <span className="sr-masthead-date">Vol. I — 2026</span>
@@ -97,7 +97,7 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, o
             onClick={onExit} 
             className="hover:opacity-100 transition-opacity flex items-center gap-1 cursor-pointer flex-shrink-0"
           >
-            <ArrowLeft className="w-3 h-3" /> Portfolio
+            <AnimatedMenuIcon isOpen={true} variant="arrow" size={14} /> Portfolio
           </motion.button>
           
           <motion.span 

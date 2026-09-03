@@ -13,6 +13,7 @@ import { Experience } from './Experience';
 import { Education } from './Education';
 import { Strengths } from './Strengths';
 import { BuildingInPublic } from './BuildingInPublic';
+import { ChatAboutMe } from './ChatAboutMe';
 import { Contact } from './Contact';
 
 interface PortfolioContainerProps {
@@ -58,11 +59,12 @@ export const PortfolioContainer = memo<PortfolioContainerProps>(({
           <Projects />
           <Skills />
           <CurrentlyBuilding />
-          <GitHubSection />
+          <GitHubSection theme={theme} />
           <Experience />
           <Education />
           <Strengths />
           <BuildingInPublic />
+          <ChatAboutMe />
           <Contact />
         </div>
       </div>

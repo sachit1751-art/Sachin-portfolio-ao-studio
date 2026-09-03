@@ -24,12 +24,37 @@
   font-display: swap;
 }
 
+/* Fallback font definitions with size-adjust to match custom font metrics */
+/* Prevents Layout Shift (CLS) during font loading */
+@font-face {
+  font-family: 'Kalam-Fallback';
+  src: local('Comic Sans MS'), local('Chalkboard SE'), local('cursive');
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+  size-adjust: 105%;
+}
+
+@font-face {
+  font-family: 'Courier-Fallback';
+  src: local('Courier New'), local('Courier'), local('monospace');
+  ascent-override: 90%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+  size-adjust: 98%;
+}
+
 @layer base {
   :root {
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
     --radius-xl: 20px;
+
+    /* Font Variables */
+    --font-handwriting: 'Kalam', 'Kalam-Fallback', cursive;
+    --font-mono: 'Courier Prime', 'Courier-Fallback', 'JetBrains Mono', monospace;
+    --font-body: 'Courier Prime', 'Courier-Fallback', monospace;
   }
 
   /* Global Accessibility & Performance */
@@ -49,12 +74,25 @@
   }
 
   body {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--font-body);
     background-color: var(--c-bg, #F8F6F0);
     color: var(--c-heading);
     /* Hardware acceleration for body */
     transform: translateZ(0);
     backface-visibility: hidden;
+    
+    /* Font Loading Reveal */
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+  }
+
+  body[data-fonts-loaded="true"] {
+    opacity: 1;
+  }
+
+  /* Ensure all interactive elements inherit the correct font */
+  button, input, select, textarea {
+    font-family: inherit;
   }
 
   /* Performance Optimizations for Low-End Devices */
@@ -80,45 +118,45 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Kalam', cursive;
+    font-family: var(--font-handwriting);
   }
 
   .font-serif {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--font-body);
   }
 
   code, pre, .font-mono {
-    font-family: 'Courier Prime', 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
   }
 
   .font-handwriting {
-    font-family: 'Kalam', cursive;
+    font-family: var(--font-handwriting);
   }
 
   .font-body {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--font-body);
   }
 
   .font-sans {
-    font-family: 'Kalam', cursive;
+    font-family: var(--font-handwriting);
   }
 }
 
 /* Font overrides OUTSIDE @layer to beat Tailwind v4 utilities */
 .font-sans {
-  font-family: 'Kalam', cursive !important;
+  font-family: var(--font-handwriting) !important;
 }
 
 .font-handwriting {
-  font-family: 'Kalam', cursive !important;
+  font-family: var(--font-handwriting) !important;
 }
 
 .font-body {
-  font-family: 'Courier Prime', monospace !important;
+  font-family: var(--font-body) !important;
 }
 
 .font-serif {
-  font-family: 'Courier Prime', monospace !important;
+  font-family: var(--font-body) !important;
 }
 
 @layer base {
@@ -159,11 +197,12 @@
     --c-tab-active-bg: rgba(26,25,23,0.85);
     --c-tab-active-text: #F9F8F6;
     --c-dot: #1A1917;
-    --c-git-0: #ebedf0;
-    --c-git-1: #9be9a8;
-    --c-git-2: #40c463;
-    --c-git-3: #30a14e;
-    --c-git-4: #216e39;
+    --c-git-0: rgba(26, 25, 23, 0.05);
+    --c-git-1: #dcd8cf;
+    --c-git-2: #9b978c;
+    --c-git-3: #54514a;
+    --c-git-4: #1A1917;
+    --c-git-border: rgba(26, 25, 23, 0.12);
   }
 
   [data-theme="kraft"] {
@@ -195,11 +234,12 @@
     --c-tab-active-bg: rgba(36,31,26,0.85);
     --c-tab-active-text: #F4EDE0;
     --c-dot: #241F1A;
-    --c-git-0: #ebedf0;
-    --c-git-1: #9be9a8;
-    --c-git-2: #40c463;
-    --c-git-3: #30a14e;
-    --c-git-4: #216e39;
+    --c-git-0: rgba(36, 31, 26, 0.06);
+    --c-git-1: #decbb4;
+    --c-git-2: #c89962;
+    --c-git-3: #9a602a;
+    --c-git-4: #4a2c0f;
+    --c-git-border: rgba(36, 31, 26, 0.14);
   }
 
   [data-theme="blueprint"] {
@@ -231,11 +271,12 @@
     --c-tab-active-bg: rgba(234,239,244,0.85);
     --c-tab-active-text: #1a334d;
     --c-dot: #EAEFF4;
-    --c-git-0: #161b22;
-    --c-git-1: #0e4429;
-    --c-git-2: #006d32;
-    --c-git-3: #26a641;
-    --c-git-4: #39d353;
+    --c-git-0: rgba(234, 239, 244, 0.06);
+    --c-git-1: #164e7a;
+    --c-git-2: #0284c7;
+    --c-git-3: #38bdf8;
+    --c-git-4: #bae6fd;
+    --c-git-border: rgba(234, 239, 244, 0.15);
   }
 
   [data-theme="slate"] {
@@ -267,11 +308,12 @@
     --c-tab-active-bg: rgba(232,231,228,0.85);
     --c-tab-active-text: #232428;
     --c-dot: #E8E7E4;
-    --c-git-0: #161b22;
-    --c-git-1: #0e4429;
-    --c-git-2: #006d32;
-    --c-git-3: #26a641;
-    --c-git-4: #39d353;
+    --c-git-0: rgba(232, 231, 228, 0.06);
+    --c-git-1: #373a46;
+    --c-git-2: #5d6379;
+    --c-git-3: #9aa2bc;
+    --c-git-4: #e8ebf8;
+    --c-git-border: rgba(232, 231, 228, 0.14);
   }
 
   /* Focus-visible styles — visible keyboard focus ring for all interactive elements */
@@ -655,7 +697,7 @@ section[id] {
 }
 
 .floating-piece-letter {
-  font-family: 'Kalam', cursive;
+  font-family: var(--font-handwriting);
   font-size: 28px;
   font-weight: bold;
   color: #2a2520;
@@ -735,7 +777,7 @@ section[id] {
 .doom-terminal-dot:nth-child(3) { background: #28c840; }
 
 .doom-terminal-title {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #666;
   margin-left: 8px;
@@ -744,7 +786,7 @@ section[id] {
 
 .doom-terminal-body {
   padding: 24px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   line-height: 2;
   color: #28c840;
@@ -836,7 +878,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--c-subtle);
   cursor: pointer;
@@ -855,7 +897,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: bold;
   letter-spacing: 0.15em;
@@ -870,7 +912,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: #28c840;
   letter-spacing: 0.1em;
@@ -910,7 +952,7 @@ section[id] {
   gap: 10px;
   width: 100%;
   padding: 10px 20px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--c-subtle);
   cursor: pointer;
@@ -985,7 +1027,7 @@ section[id] {
    ═══════════════════════════════════════════════ */
 
 .sr-section-title {
-  font-family: 'Kalam', cursive;
+  font-family: var(--font-handwriting);
   font-size: 32px;
   font-weight: bold;
   color: var(--c-heading);
@@ -993,7 +1035,7 @@ section[id] {
 }
 
 .sr-section-desc {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 15px;
   color: var(--c-body);
   line-height: 1.6;
@@ -1009,7 +1051,7 @@ section[id] {
   background: var(--c-card-gradient-from);
   border-radius: 6px;
   margin-top: 32px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.6;
@@ -1040,7 +1082,7 @@ section[id] {
   transition: all 0.3s ease-out;
   text-align: center;
   min-width: 220px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   border-radius: 4px;
 }
 
@@ -1092,7 +1134,7 @@ section[id] {
   background: var(--c-card-gradient-from);
   border: 1px solid var(--c-border);
   border-radius: 4px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.6;
@@ -1119,7 +1161,7 @@ section[id] {
 }
 
 .sr-file-tree-root {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: bold;
   color: var(--c-heading);
@@ -1160,7 +1202,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   cursor: pointer;
   background: none;
@@ -1189,7 +1231,7 @@ section[id] {
 
 .sr-file-desc {
   padding: 8px 16px 8px 32px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: var(--c-subtle);
   line-height: 1.5;
@@ -1242,7 +1284,7 @@ section[id] {
 }
 
 .sr-tech-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: bold;
   color: var(--c-heading);
@@ -1270,7 +1312,7 @@ section[id] {
 
 .sr-tech-label {
   display: block;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1279,7 +1321,7 @@ section[id] {
 }
 
 .sr-tech-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.5;
@@ -1342,7 +1384,7 @@ section[id] {
 }
 
 .sr-timeline-time {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: var(--c-muted);
   text-transform: uppercase;
@@ -1350,7 +1392,7 @@ section[id] {
 }
 
 .sr-timeline-label {
-  font-family: 'Kalam', cursive;
+  font-family: var(--font-handwriting);
   font-size: 16px;
   font-weight: bold;
   color: var(--c-heading);
@@ -1358,7 +1400,7 @@ section[id] {
 }
 
 .sr-timeline-tech {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: var(--c-subtle);
 }
@@ -1368,7 +1410,7 @@ section[id] {
   background: var(--c-card-gradient-from);
   border: 1px solid var(--c-border);
   border-radius: 4px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--c-body);
   line-height: 1.6;
@@ -1398,20 +1440,20 @@ section[id] {
 }
 
 .sr-unfold-stage-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: bold;
   color: var(--c-heading);
 }
 
 .sr-unfold-stage-duration {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: var(--c-muted);
 }
 
 .sr-unfold-stage-easing {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: var(--c-subtle);
   margin-bottom: 8px;
@@ -1424,7 +1466,7 @@ section[id] {
 }
 
 .sr-unfold-props li {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: var(--c-body);
   padding: 2px 0;
@@ -1439,7 +1481,7 @@ section[id] {
 }
 
 .sr-perf-subtitle {
-  font-family: 'Kalam', cursive;
+  font-family: var(--font-handwriting);
   font-size: 20px;
   font-weight: bold;
   color: var(--c-heading);
@@ -1469,7 +1511,7 @@ section[id] {
 }
 
 .sr-perf-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: bold;
   color: var(--c-heading);
@@ -1477,7 +1519,7 @@ section[id] {
 }
 
 .sr-perf-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: var(--c-body);
 }
@@ -1495,7 +1537,7 @@ section[id] {
 }
 
 .sr-score-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--c-body);
   min-width: 130px;
@@ -1515,7 +1557,7 @@ section[id] {
 }
 
 .sr-score-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: bold;
   min-width: 32px;
@@ -1523,7 +1565,7 @@ section[id] {
 }
 
 .sr-perf-note {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: var(--c-muted);
   margin-top: 12px;
@@ -1557,7 +1599,7 @@ section[id] {
   gap: 10px;
   width: 100%;
   padding: 14px 16px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 15px;
   color: var(--c-heading);
   cursor: pointer;
@@ -1585,14 +1627,41 @@ section[id] {
 }
 
 .sr-decision-answer p {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: var(--c-body);
   line-height: 1.7;
 }
 
-.sr-decision-answer strong {
-  color: var(--c-heading);
+/* ═══════════════════════════════════════════════
+   VIEW TRANSITIONS — Circular Theme Toggle
+   ═══════════════════════════════════════════════ */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+[data-theme-transition="circular"]::view-transition-new(root) {
+  animation: 700ms cubic-bezier(0.4, 0, 0.2, 1) both circular-reveal;
+}
+
+@keyframes circular-reveal {
+  from {
+    clip-path: circle(0% at var(--transition-x) var(--transition-y));
+  }
+  to {
+    clip-path: circle(150% at var(--transition-x) var(--transition-y));
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1712,7 +1781,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #9e9c97;
   background: none;
@@ -1729,7 +1798,7 @@ section[id] {
 }
 
 .sr-masthead-date {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #9e9c97;
   letter-spacing: 0.1em;
@@ -1739,7 +1808,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: #28c840;
   letter-spacing: 0.12em;
@@ -1758,7 +1827,7 @@ section[id] {
 }
 
 .sr-masthead-title {
-  font-family: 'Kalam', cursive;
+  font-family: var(--font-handwriting);
   font-size: clamp(32px, 8vw, 48px);
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -1769,7 +1838,7 @@ section[id] {
 }
 
 .sr-masthead-subtitle {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #9e9c97;
   letter-spacing: 0.08em;
@@ -1793,7 +1862,7 @@ section[id] {
   align-items: center;
   gap: 5px;
   padding: 12px 18px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: #9e9c97;
   background: none;
@@ -1824,7 +1893,7 @@ section[id] {
 }
 
 .sr-tab-numeral {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: #706e69;
 }
@@ -1868,7 +1937,7 @@ section[id] {
 }
 
 .sr-section-numeral {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 42px;
   font-weight: 900;
   color: #e8e7e4;
@@ -1876,7 +1945,7 @@ section[id] {
 }
 
 .sr-section-title {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 28px;
   font-weight: 700;
   color: #e8e7e4;
@@ -1886,7 +1955,7 @@ section[id] {
 
 /* Editorial Lead Paragraph */
 .sr-lead {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 17px;
   color: #c8c4be;
   line-height: 1.7;
@@ -1918,7 +1987,7 @@ section[id] {
 }
 
 .sr-pull-quote p {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 16px;
   color: #e8e7e4;
   line-height: 1.6;
@@ -1928,7 +1997,7 @@ section[id] {
 
 /* Figure Label */
 .sr-figure-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
   text-align: center;
@@ -1938,7 +2007,7 @@ section[id] {
 
 /* Subsection Title */
 .sr-subsection-title {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 18px;
   font-weight: 700;
   color: #e8e7e4;
@@ -1967,7 +2036,7 @@ section[id] {
 }
 
 .sr-numbered-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: bold;
   color: #e8e7e4;
@@ -1975,7 +2044,7 @@ section[id] {
 }
 
 .sr-numbered-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #9e9c97;
   font-style: italic;
@@ -1983,7 +2052,7 @@ section[id] {
 
 /* Editorial Note */
 .sr-editorial-note {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
   margin-top: 24px;
@@ -2014,7 +2083,7 @@ section[id] {
   transition: all 0.3s ease-out;
   text-align: center;
   min-width: 240px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   border-radius: 0;
 }
 
@@ -2069,7 +2138,7 @@ section[id] {
   background: rgba(255,255,255,0.04);
   border: 1px solid #3a3a3a;
   border-radius: 0;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #c8c4be;
   line-height: 1.6;
@@ -2096,7 +2165,7 @@ section[id] {
 }
 
 .sr-file-tree-root {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: bold;
   color: #e8e7e4;
@@ -2137,7 +2206,7 @@ section[id] {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   cursor: pointer;
   background: none;
@@ -2166,7 +2235,7 @@ section[id] {
 
 .sr-file-desc {
   padding: 8px 16px 8px 32px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #9e9c97;
   line-height: 1.5;
@@ -2218,7 +2287,7 @@ section[id] {
 }
 
 .sr-tech-num {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 22px;
   font-weight: 900;
   color: #e8e7e4;
@@ -2226,7 +2295,7 @@ section[id] {
 }
 
 .sr-tech-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: bold;
   color: #e8e7e4;
@@ -2255,7 +2324,7 @@ section[id] {
 
 .sr-tech-label {
   display: block;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -2264,7 +2333,7 @@ section[id] {
 }
 
 .sr-tech-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: #c8c4be;
   line-height: 1.5;
@@ -2327,7 +2396,7 @@ section[id] {
 }
 
 .sr-timeline-time {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: #706e69;
   text-transform: uppercase;
@@ -2335,7 +2404,7 @@ section[id] {
 }
 
 .sr-timeline-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 18px;
   font-weight: 700;
   color: #e8e7e4;
@@ -2343,7 +2412,7 @@ section[id] {
 }
 
 .sr-timeline-tech {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #9e9c97;
 }
@@ -2353,7 +2422,7 @@ section[id] {
   background: rgba(255,255,255,0.04);
   border: 1px solid #3a3a3a;
   border-radius: 0;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #c8c4be;
   line-height: 1.6;
@@ -2383,20 +2452,20 @@ section[id] {
 }
 
 .sr-unfold-stage-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: bold;
   color: #e8e7e4;
 }
 
 .sr-unfold-stage-duration {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
 }
 
 .sr-unfold-stage-easing {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: #9e9c97;
   margin-bottom: 8px;
@@ -2409,7 +2478,7 @@ section[id] {
 }
 
 .sr-unfold-props li {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #c8c4be;
   padding: 2px 0;
@@ -2432,7 +2501,7 @@ section[id] {
 }
 
 .sr-score-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #c8c4be;
   min-width: 130px;
@@ -2452,7 +2521,7 @@ section[id] {
 }
 
 .sr-score-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 18px;
   font-weight: bold;
   min-width: 36px;
@@ -2492,7 +2561,7 @@ section[id] {
   gap: 12px;
   width: 100%;
   padding: 16px 0;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 16px;
   color: #c8c4be;
   cursor: pointer;
@@ -2507,7 +2576,7 @@ section[id] {
 }
 
 .sr-decision-num {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #706e69;
   min-width: 24px;
@@ -2535,7 +2604,7 @@ section[id] {
 }
 
 .sr-decision-answer p {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 15px;
   color: #9e9c97;
   line-height: 1.7;
@@ -2573,7 +2642,7 @@ section[id] {
 }
 
 .sr-continuous-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 13px;
   color: #e8e7e4;
@@ -2582,13 +2651,13 @@ section[id] {
 }
 
 .sr-continuous-section {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
 }
 
 .sr-continuous-desc {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #9e9c97;
   line-height: 1.6;
@@ -2596,7 +2665,7 @@ section[id] {
 }
 
 .sr-continuous-tech {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
   padding: 4px 8px;
@@ -2646,14 +2715,14 @@ section[id] {
 }
 
 .sr-game-arch-num {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
   min-width: 20px;
 }
 
 .sr-game-arch-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 13px;
   color: #e8e7e4;
@@ -2675,7 +2744,7 @@ section[id] {
 }
 
 .sr-game-arch-body p {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 15px;
   color: #9e9c97;
   line-height: 1.7;
@@ -2717,20 +2786,20 @@ section[id] {
 }
 
 .sr-game-stat-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 13px;
   color: #e8e7e4;
 }
 
 .sr-game-stat-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #9e9c97;
 }
 
 .sr-game-stat-detail {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #9e9c97;
   padding-top: 8px;
@@ -2751,7 +2820,7 @@ section[id] {
 }
 
 .sr-control-key {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #e8e7e4;
   background: rgba(255, 255, 255, 0.06);
@@ -2762,7 +2831,7 @@ section[id] {
 }
 
 .sr-control-action {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #9e9c97;
 }
@@ -2801,7 +2870,7 @@ section[id] {
 }
 
 .sr-game-state-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 12px;
   color: #e8e7e4;
@@ -2810,7 +2879,7 @@ section[id] {
 }
 
 .sr-game-state-visual {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 10px;
   color: #706e69;
 }
@@ -2821,7 +2890,7 @@ section[id] {
 }
 
 .sr-game-state-body p {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: #9e9c97;
   line-height: 1.6;
@@ -2843,7 +2912,7 @@ section[id] {
 }
 
 .sr-sound-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 13px;
   color: #e8e7e4;
@@ -2855,7 +2924,7 @@ section[id] {
 .sr-sound-method,
 .sr-sound-freq,
 .sr-sound-duration {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #9e9c97;
   display: block;
@@ -2906,14 +2975,14 @@ section[id] {
 }
 
 .sr-math-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 14px;
   color: #e8e7e4;
 }
 
 .sr-math-seed {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
   background: rgba(255, 255, 255, 0.04);
@@ -2922,7 +2991,7 @@ section[id] {
 }
 
 .sr-math-desc {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #9e9c97;
   line-height: 1.6;
@@ -2935,7 +3004,7 @@ section[id] {
 }
 
 .sr-math-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
   text-transform: uppercase;
@@ -2949,7 +3018,7 @@ section[id] {
 }
 
 .sr-math-method {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #e8e7e4;
   background: rgba(255, 255, 255, 0.04);
@@ -2980,13 +3049,13 @@ section[id] {
 }
 
 .sr-math-stage-range {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
 }
 
 .sr-math-stage-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 12px;
   color: #e8e7e4;
@@ -2994,7 +3063,7 @@ section[id] {
 }
 
 .sr-math-stage-desc {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: #9e9c97;
   line-height: 1.5;
@@ -3008,7 +3077,7 @@ section[id] {
 }
 
 .sr-layer-chip {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #9e9c97;
   background: rgba(255, 255, 255, 0.03);
@@ -3046,13 +3115,13 @@ section[id] {
 }
 
 .sr-vertex-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #706e69;
 }
 
 .sr-vertex-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #e8e7e4;
 }
@@ -3092,7 +3161,7 @@ section[id] {
 }
 
 .sr-texture-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 13px;
   color: #e8e7e4;
@@ -3101,7 +3170,7 @@ section[id] {
 }
 
 .sr-texture-size {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
 }
@@ -3112,7 +3181,7 @@ section[id] {
 }
 
 .sr-texture-body p {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #9e9c97;
   line-height: 1.6;
@@ -3151,7 +3220,7 @@ section[id] {
 }
 
 .sr-theme-name {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 13px;
   color: #e8e7e4;
@@ -3160,19 +3229,19 @@ section[id] {
 }
 
 .sr-theme-hex {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
 }
 
 .sr-theme-fibers {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 12px;
   color: #9e9c97;
 }
 
 .sr-theme-grid {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #706e69;
 }
@@ -3231,7 +3300,7 @@ section[id] {
 }
 
 .mood-health-label {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #9e9c97;
   letter-spacing: 0.12em;
@@ -3252,7 +3321,7 @@ section[id] {
 }
 
 .mood-health-value {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: bold;
   color: #e8e7e4;
@@ -3265,7 +3334,7 @@ section[id] {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid #3a3a3a;
   color: #9e9c97;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -3291,7 +3360,7 @@ section[id] {
   padding: 8px 20px;
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid #3a3a3a;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #9e9c97;
   letter-spacing: 0.1em;
@@ -3315,7 +3384,7 @@ section[id] {
 }
 
 .mood-game-over-title {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 48px;
   font-weight: 900;
   color: #e8e7e4;
@@ -3324,7 +3393,7 @@ section[id] {
 }
 
 .mood-game-over-sub {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 14px;
   color: #9e9c97;
   margin-bottom: 32px;
@@ -3336,7 +3405,7 @@ section[id] {
   background: #e8e7e4;
   color: #0a0a0a;
   border: none;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: bold;
   letter-spacing: 0.12em;
@@ -3412,7 +3481,7 @@ section[id] {
 .mood-terminal-dot:nth-child(3) { background: #28c840; }
 
 .mood-terminal-title {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 11px;
   color: #666;
   margin-left: 8px;
@@ -3421,7 +3490,7 @@ section[id] {
 
 .mood-terminal-body {
   padding: 24px;
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   line-height: 2;
   color: #e53e3e;
