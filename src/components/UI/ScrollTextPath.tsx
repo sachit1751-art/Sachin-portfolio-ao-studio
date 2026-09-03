@@ -1,13 +1,13 @@
+import React, { memo, useRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { usePerformance } from '../../hooks/usePerformance';
-import { useRef, useEffect, useState } from 'react';
 
 interface ScrollTextPathProps {
   text: string;
   className?: string;
 }
 
-export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) => {
+export const ScrollTextPath = memo(({ text, className = '' }: ScrollTextPathProps) => {
   const { simplify } = usePerformance();
   const textPathRef = useRef<SVGTextPathElement>(null);
   const [offset, setOffset] = useState<number>(0);
@@ -51,4 +51,6 @@ export const ScrollTextPath = ({ text, className = '' }: ScrollTextPathProps) =>
       </svg>
     </div>
   );
-};
+});
+
+ScrollTextPath.displayName = 'ScrollTextPath';

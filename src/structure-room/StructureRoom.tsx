@@ -9,8 +9,12 @@ import { Performance } from './Performance';
 import { DesignDecisions } from './DesignDecisions';
 import { MoodGame } from './MoodGame';
 import { ProceduralEngine } from './ProceduralEngine';
+import { Settings } from './Settings';
+import { PaperTheme } from '../types';
 
 interface StructureRoomProps {
+  theme: PaperTheme;
+  setTheme: (theme: PaperTheme) => void;
   onExit: () => void;
 }
 
@@ -23,9 +27,10 @@ const TABS = [
   { id: 'decisions', label: 'Design Decisions', numeral: 'VI' },
   { id: 'mood-game', label: 'MOOD Game', numeral: 'VII' },
   { id: 'procedural', label: 'Procedural Engine', numeral: 'VIII' },
+  { id: 'settings', label: 'Settings & Sync', numeral: 'IX' },
 ];
 
-export const StructureRoom: React.FC<StructureRoomProps> = ({ onExit }) => {
+export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, onExit }) => {
   const [activeTab, setActiveTab] = useState('architecture');
 
   const renderContent = () => {
@@ -38,6 +43,7 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ onExit }) => {
       case 'decisions': return <DesignDecisions />;
       case 'mood-game': return <MoodGame />;
       case 'procedural': return <ProceduralEngine />;
+      case 'settings': return <Settings theme={theme} setTheme={setTheme} />;
       default: return <Architecture />;
     }
   };

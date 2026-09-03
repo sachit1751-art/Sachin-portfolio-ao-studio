@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, memo } from 'react';
 import { Mail, Check, Copy, Send } from 'lucide-react';
 import { animate } from 'animejs';
 import { CharReveal, WordReveal, LineReveal } from '../UI/TextReveal';
@@ -10,7 +10,7 @@ const GITHUB = 'https://github.com/sachit1751-art';
 const LINKEDIN = 'https://www.linkedin.com/in/sachit';
 const INSTAGRAM = 'https://www.instagram.com/sachit';
 
-export const Contact = () => {
+export const Contact = memo(() => {
   const [copied, setCopied] = useState(false);
   const githubRef = useRef<HTMLAnchorElement>(null);
   const linkedinRef = useRef<HTMLAnchorElement>(null);
@@ -304,4 +304,6 @@ export const Contact = () => {
     </section>
     </ScrollReveal>
   );
-};
+});
+
+Contact.displayName = 'Contact';

@@ -1,7 +1,8 @@
+import React, { memo } from 'react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 
-export const CurrentlyBuilding = () => {
+export const CurrentlyBuilding = memo(() => {
   return (
     <ScrollReveal>
       <section id="currently-building" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -33,4 +34,6 @@ export const CurrentlyBuilding = () => {
       </section>
     </ScrollReveal>
   );
-};
+});
+
+CurrentlyBuilding.displayName = 'CurrentlyBuilding';

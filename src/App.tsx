@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { PaperState } from './types';
 import { Header } from './components/Portfolio/Header';
+import { NotFound } from './components/Portfolio/NotFound';
+import { CursorDitherTrail } from './components/UI/CursorDitherTrail';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
 import { initSecurity } from './utils/security';
@@ -11,6 +13,7 @@ const LazyPaperIntro = lazy(() => import('./components/PaperIntro/PaperIntro').t
 const LazyStructureRoom = lazy(() => import('./structure-room/StructureRoom').then(m => ({ default: m.StructureRoom })));
 const LazyDoomTransition = lazy(() => import('./structure-room/DoomTransition').then(m => ({ default: m.DoomTransition })));
 const LazyMoodTransition = lazy(() => import('./components/MoodGame/MoodTransition').then(m => ({ default: m.MoodTransition })));
+const LazyResumeViewer = lazy(() => import('./components/Portfolio/ResumeViewer').then(m => ({ default: m.ResumeViewer })));
 
 function HeavyFallback() {
   return (
@@ -20,17 +23,43 @@ function HeavyFallback() {
   );
 }
 
-import { NotFound } from './components/Portfolio/NotFound';
-
 export default function App() {
   const [is404, setIs404] = useState(false);
+  const [isViewingResume, setIsViewingResume] = useState(false);
 
   useEffect(() => {
-    // Basic 404 check for SPA without a router
+    // Route handling for SPA
     const path = window.location.pathname;
-    if (path !== '/' && path !== '/index.html' && !path.startsWith('/api/')) {
+    if (path === '/resume' || path === '/resume/' || path === '/resume.html') {
+      setIsViewingResume(true);
+      setShowContent(true);
+      setIntroCompleted(true);
+      setPaperState('opened');
+      setIs404(false);
+    } else if (path !== '/' && path !== '/index.html' && !path.startsWith('/api/')) {
       setIs404(true);
     }
+
+    const handlePopState = () => {
+      const currentPath = window.location.pathname;
+      if (currentPath === '/resume' || currentPath === '/resume/' || currentPath === '/resume.html') {
+        setIsViewingResume(true);
+        setShowContent(true);
+        setIntroCompleted(true);
+        setPaperState('opened');
+        setIs404(false);
+      } else {
+        setIsViewingResume(false);
+        if (currentPath !== '/' && currentPath !== '/index.html' && !currentPath.startsWith('/api/')) {
+          setIs404(true);
+        } else {
+          setIs404(false);
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   useEffect(() => {
@@ -50,6 +79,47 @@ export default function App() {
   const { isUnlocked: doomUnlocked, exitStructureRoom } = useDoomSequence(paperState);
   const { simplify } = usePerformance();
   const moodTransitionFiredRef = useRef(false);
+
+  const handleOpenResume = useCallback(() => {
+    setIsViewingResume(true);
+    setShowContent(true);
+    setIntroCompleted(true);
+    setPaperState('opened');
+    try {
+      if (window.location.pathname !== '/resume') {
+        window.history.pushState({}, '', '/resume');
+      }
+    } catch {}
+  }, []);
+
+  const handleCloseResume = useCallback(() => {
+    setIsViewingResume(false);
+    try {
+      if (window.location.pathname === '/resume') {
+        window.history.pushState({}, '', '/');
+      }
+    } catch {}
+  }, []);
+
+  const handleNavigateSection = useCallback((id: string) => {
+    setIsViewingResume(false);
+    try {
+      if (window.location.pathname === '/resume') {
+        window.history.pushState({}, '', '/');
+      }
+    } catch {}
+
+    setTimeout(() => {
+      const container = document.getElementById('content-scroll-container');
+      const target = document.getElementById(id);
+      if (container && target) {
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const offset = targetRect.top - containerRect.top + container.scrollTop - 72;
+        container.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    }, 100);
+  }, []);
 
   // Apply performance class to body for CSS optimizations
   useEffect(() => {
@@ -100,6 +170,7 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-transparent font-sans antialiased overflow-x-hidden">
+      <CursorDitherTrail theme={theme} />
       {is404 && <NotFound />}
       {showContent && (
         <a
@@ -143,13 +214,26 @@ export default function App() {
             theme={theme}
             setTheme={setTheme}
             onRecrumple={handleRecrumple}
+            onViewResume={handleOpenResume}
+            isViewingResume={isViewingResume}
+            onNavigateSection={handleNavigateSection}
           />
           <div id="content-scroll-container" className="w-full h-full overflow-y-auto overflow-x-hidden pt-[72px]">
-            <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center bg-transparent font-mono text-xs opacity-50">Loading Portfolio...</div>}>
-              <PortfolioContainer
-                theme={theme}
-              />
-            </Suspense>
+            {isViewingResume ? (
+              <Suspense fallback={<div className="flex items-center justify-center py-20 font-mono text-xs opacity-50">Loading Resume...</div>}>
+                <LazyResumeViewer
+                  theme={theme}
+                  onBack={handleCloseResume}
+                />
+              </Suspense>
+            ) : (
+              <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center bg-transparent font-mono text-xs opacity-50">Loading Portfolio...</div>}>
+                <PortfolioContainer
+                  theme={theme}
+                  onViewResume={handleOpenResume}
+                />
+              </Suspense>
+            )}
           </div>
         </div>
       )}
@@ -174,6 +258,8 @@ export default function App() {
         >
           <Suspense fallback={<HeavyFallback />}>
             <LazyStructureRoom
+              theme={theme}
+              setTheme={setTheme}
               onExit={() => {
                 exitStructureRoom();
                 setShowStructureRoom(false);

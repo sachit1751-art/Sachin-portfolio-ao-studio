@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 
@@ -16,7 +17,7 @@ const strengths = [
   },
 ];
 
-export const Strengths = () => {
+export const Strengths = memo(() => {
   return (
     <ScrollReveal>
       <section id="strengths" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -58,4 +59,8 @@ export const Strengths = () => {
       </section>
     </ScrollReveal>
   );
-};
+});
+
+Strengths.displayName = 'Strengths';
+
+export default Strengths;

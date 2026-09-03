@@ -438,17 +438,23 @@
   display: inline-block;
   opacity: 0;
   animation: charReveal 0.15s ease-out forwards;
+  will-change: clip-path, opacity;
+  transform: translateZ(0);
 }
 
 .word-reveal {
   display: inline-block;
   opacity: 0;
   animation: wordReveal 0.18s ease-out forwards;
+  will-change: clip-path, opacity, transform;
+  transform: translateZ(0);
 }
 
 .animate-line-reveal {
   opacity: 0;
   animation: lineReveal 0.25s ease-out forwards;
+  will-change: opacity, transform;
+  transform: translateZ(0);
 }
 
 .lr-delay-1 { animation-delay: 0.03s; }
@@ -3478,4 +3484,170 @@ section[id] {
 }
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+/* Print Styles for Resume & Document Output */
+@page {
+  size: portrait;
+  margin: 0;
+}
+
+@media print {
+  /* Suppress all interactive UI, backgrounds, navigations, audio, video, and decorative widgets */
+  header,
+  nav,
+  footer,
+  aside,
+  video,
+  audio,
+  .no-print,
+  .resume-controls,
+  .resume-metadata-bar,
+  .resume-fallback-bar,
+  .jellyfish-btn,
+  .theme-toggle-btn,
+  #content-scroll-container > header {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Reset document flow and colors for pure printable output */
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #root,
+  .fixed.inset-0 {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow: visible !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  #content-scroll-container {
+    position: static !important;
+    padding-top: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .resume-viewer-main {
+    position: static !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    background: #ffffff !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .resume-viewer-main > div {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  .resume-viewer-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .resume-pdf-frame {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    background: transparent !important;
+  }
+
+  .resume-page-card {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    padding: 20mm 15mm !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .resume-page-card h1,
+  .resume-page-card h2,
+  .resume-page-card h3,
+  .resume-page-card p,
+  .resume-page-card span,
+  .resume-page-card li,
+  .resume-page-card strong {
+    color: #000000 !important;
+  }
+
+  .resume-page-card section,
+  .resume-page-card header,
+  .resume-page-card section > div,
+  .resume-page-card .grid > div,
+  .resume-page-card li {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .resume-page-card a {
+    color: #000000 !important;
+    text-decoration: none !important;
+  }
+
+  .resume-pdf-frame iframe {
+    width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
 }

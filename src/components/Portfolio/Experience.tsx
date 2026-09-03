@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 
@@ -11,7 +12,7 @@ const focusAreas = [
   'Experimental products',
 ];
 
-export const Experience = () => {
+export const Experience = memo(() => {
   return (
     <ScrollReveal>
       <section id="experience" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -52,4 +53,6 @@ export const Experience = () => {
       </section>
     </ScrollReveal>
   );
-};
+});
+
+Experience.displayName = 'Experience';

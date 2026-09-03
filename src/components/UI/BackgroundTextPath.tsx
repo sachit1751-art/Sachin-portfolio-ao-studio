@@ -1,7 +1,8 @@
+import React, { memo } from 'react';
 import { motion } from 'motion/react';
 import { usePerformance } from '../../hooks/usePerformance';
 
-export const BackgroundTextPath = () => {
+export const BackgroundTextPath = memo(() => {
   const { simplify } = usePerformance();
   const text = "SACHIT • DEVELOPER • AI • DESIGN • CREATE • ";
   // Reduced repeat for efficiency, especially if simplified
@@ -67,4 +68,6 @@ export const BackgroundTextPath = () => {
       </svg>
     </div>
   );
-};
+});
+
+BackgroundTextPath.displayName = 'BackgroundTextPath';

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
 import { motion } from 'motion/react';
 import { Project } from '../../types';
 import { X, ArrowUpRight, ExternalLink } from 'lucide-react';
@@ -115,7 +115,7 @@ const projects: Project[] = [
 ];
 
 
-export const Projects = () => {
+export const Projects = memo(() => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -320,4 +320,6 @@ export const Projects = () => {
     </section>
     </ScrollReveal>
   );
-};
+});
+
+Projects.displayName = 'Projects';

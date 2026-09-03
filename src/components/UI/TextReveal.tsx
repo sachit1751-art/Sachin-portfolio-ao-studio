@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, memo, useMemo } from 'react';
 import { usePerformance } from '../../hooks/usePerformance';
+import { observeElement } from '../../utils/observer';
 
 function useScrollReveal() {
   const ref = useRef<HTMLSpanElement>(null);
@@ -16,48 +17,44 @@ function useScrollReveal() {
     if (!el) return;
 
     const scroller = document.getElementById('content-scroll-container');
-    const root = scroller || null;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
+    
+    return observeElement(
+      el, 
+      (isIntersecting) => {
+        if (isIntersecting) setVisible(true);
       },
-      { root, threshold: 0, rootMargin: '0px 0px -25% 0px' }
+      { root: scroller, threshold: 0, rootMargin: '0px 0px -15% 0px' }
     );
-
-    observer.observe(el);
-    return () => observer.disconnect();
   }, [simplify]);
 
   return { ref, visible, simplify };
 }
 
-export function CharReveal({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) {
+export const CharReveal = memo(({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) => {
   const { ref, visible, simplify } = useScrollReveal();
   
+  const words = useMemo(() => text.split(' '), [text]);
+
   if (simplify) {
     return <span className={className}>{text}</span>;
   }
 
-  let charIdx = 0;
-  const words = text.split(' ');
+  let charCount = 0;
   
   return (
     <span ref={ref} className={`inline ${className}`} aria-label={text}>
       {words.map((word, wordIdx) => {
+        const chars = word.split('');
         return (
           <React.Fragment key={wordIdx}>
             <span className="inline-block whitespace-nowrap">
-              {word.split('').map((char, charInWordIdx) => {
-                const idx = charIdx++;
+              {chars.map((char, charInWordIdx) => {
+                const delay = baseDelay + charCount++ * 0.03;
                 return (
                   <span
                     key={charInWordIdx}
                     className={visible ? 'char-reveal' : ''}
-                    style={visible ? { animationDelay: `${baseDelay + idx * 0.035}s` } : { opacity: 0 }}
+                    style={visible ? { animationDelay: `${delay}s` } : { opacity: 0 }}
                   >
                     {char}
                   </span>
@@ -72,34 +69,40 @@ export function CharReveal({ text, baseDelay = 0, className = '' }: { text: stri
       })}
     </span>
   );
-}
+});
+CharReveal.displayName = 'CharReveal';
 
-export function WordReveal({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) {
+export const WordReveal = memo(({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) => {
   const { ref, visible, simplify } = useScrollReveal();
   
+  const words = useMemo(() => text.split(' '), [text]);
+
   if (simplify) {
     return <span className={className}>{text}</span>;
   }
 
-  const words = text.split(' ');
   return (
     <span ref={ref} className={className}>
-      {words.map((word, i) => (
-        <span key={i}>
-          <span
-            className={visible ? 'word-reveal' : ''}
-            style={visible ? { animationDelay: `${baseDelay + i * 0.04}s` } : { opacity: 0 }}
-          >
-            {word}
+      {words.map((word, i) => {
+        const delay = baseDelay + i * 0.035;
+        return (
+          <span key={i} className="inline-block">
+            <span
+              className={visible ? 'word-reveal' : ''}
+              style={visible ? { animationDelay: `${delay}s` } : { opacity: 0 }}
+            >
+              {word}
+            </span>
+            {i < words.length - 1 && '\u00A0'}
           </span>
-          {i < words.length - 1 && ' '}
-        </span>
-      ))}
+        );
+      })}
     </span>
   );
-}
+});
+WordReveal.displayName = 'WordReveal';
 
-export function LineReveal({ children, delay = 0, className = '', style }: { children: React.ReactNode; delay?: number; className?: string; style?: React.CSSProperties }) {
+export const LineReveal = memo(({ children, delay = 0, className = '', style }: { children: React.ReactNode; delay?: number; className?: string; style?: React.CSSProperties }) => {
   return (
     <div
       className={`animate-line-reveal ${className}`}
@@ -108,4 +111,5 @@ export function LineReveal({ children, delay = 0, className = '', style }: { chi
       {children}
     </div>
   );
-}
+});
+LineReveal.displayName = 'LineReveal';

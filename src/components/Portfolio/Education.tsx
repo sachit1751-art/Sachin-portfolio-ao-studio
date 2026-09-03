@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { GraduationCap, Award } from 'lucide-react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
@@ -19,7 +20,7 @@ const educationItems = [
   },
 ];
 
-export const Education = () => {
+export const Education = memo(() => {
   return (
     <ScrollReveal>
       <section id="education" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -70,4 +71,9 @@ export const Education = () => {
       </section>
     </ScrollReveal>
   );
-};
+});
+
+Education.displayName = 'Education';
+
+export default Education;
+

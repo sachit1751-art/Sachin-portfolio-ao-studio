@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { PaperTheme } from '../../types';
 import { RotateCcw, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -7,6 +7,9 @@ interface HeaderProps {
   theme: PaperTheme;
   setTheme: (theme: PaperTheme) => void;
   onRecrumple: () => void;
+  onViewResume?: () => void;
+  isViewingResume?: boolean;
+  onNavigateSection?: (id: string) => void;
 }
 
 const THEMES: { id: PaperTheme; label: string; color: string }[] = [
@@ -22,6 +25,7 @@ const NAV_ITEMS = [
   { id: 'skills', label: 'Skills' },
   { id: 'building-in-public', label: 'Journal' },
   { id: 'contact', label: 'Contact' },
+  { id: 'resume', label: 'Resume', isResume: true },
 ];
 
 // All section IDs in DOM order — used for scroll-based active detection
@@ -40,7 +44,14 @@ const ALL_SECTIONS = [
   'contact',
 ];
 
-export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) => {
+export const Header = memo<HeaderProps>(({
+  theme,
+  setTheme,
+  onRecrumple,
+  onViewResume,
+  isViewingResume = false,
+  onNavigateSection,
+}) => {
   const [activeSection, setActiveSection] = useState('about');
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -52,9 +63,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
   const navContainerRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
+  const currentActive = isViewingResume ? 'resume' : activeSection;
+
   // ── Measure active indicator position ────────────────────────────────
   useEffect(() => {
-    const btn = navBtns.current[activeSection];
+    const btn = navBtns.current[currentActive];
     const nav = navContainerRef.current;
     if (!btn || !nav) return;
 
@@ -64,16 +77,32 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
       left: btnRect.left - navRect.left,
       width: btnRect.width,
     });
-  }, [activeSection]);
+  }, [currentActive]);
 
   // ── Scroll to section ──────────────────────────────────────────────
-  const scrollTo = useCallback((id: string) => {
+  const handleNavClick = useCallback((id: string, isResume?: boolean) => {
+    if (isResume) {
+      if (onViewResume) onViewResume();
+      setMobileOpen(false);
+      return;
+    }
+
     // Set active immediately so the underline moves on click
     setActiveSection(id);
 
+    if (isViewingResume && onNavigateSection) {
+      onNavigateSection(id);
+      setMobileOpen(false);
+      return;
+    }
+
     const container = document.getElementById('content-scroll-container');
     const target = document.getElementById(id);
-    if (!container || !target) return;
+    if (!container || !target) {
+      if (onNavigateSection) onNavigateSection(id);
+      setMobileOpen(false);
+      return;
+    }
 
     // Mark as programmatic scroll — suppress scroll listener updates
     isScrollingRef.current = true;
@@ -87,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
     setMobileOpen(false);
 
     setTimeout(() => { isScrollingRef.current = false; }, 800);
-  }, []);
+  }, [onViewResume, isViewingResume, onNavigateSection]);
 
   // ── Scroll listener — detect active section ────────────────────────
   useEffect(() => {
@@ -121,7 +150,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
 
       requestAnimationFrame(() => {
         const scrollTop = container.scrollTop;
-        setScrolled(scrollTop > 20);
+        const newScrolled = scrollTop > 20;
+        setScrolled(prev => prev !== newScrolled ? newScrolled : prev);
 
         cachePositions();
         const midpoint = scrollTop + 100;
@@ -133,7 +163,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
           }
         }
 
-        setActiveSection(found);
+        setActiveSection(prev => prev !== found ? found : prev);
         ticking = false;
       });
     };
@@ -227,7 +257,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
         <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-4 sm:px-10 md:px-14 flex items-center justify-between h-[68px]">
           {/* Logo */}
           <button
-            onClick={() => scrollTo('hero')}
+            onClick={() => handleNavClick('hero')}
             className="flex items-center gap-3 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded"
             aria-label="Go to top"
           >
@@ -242,13 +272,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
             className="hidden md:flex items-center gap-1 relative"
             aria-label="Main navigation"
           >
-            {NAV_ITEMS.map(({ id, label }) => {
-              const isActive = activeSection === id;
+            {NAV_ITEMS.map(({ id, label, isResume }) => {
+              const isActive = currentActive === id;
               return (
                 <button
                   key={id}
                   ref={(el) => { navBtns.current[id] = el; }}
-                  onClick={() => scrollTo(id)}
+                  onClick={() => handleNavClick(id, isResume)}
                   className="relative px-3 py-1.5 text-sm font-body transition-colors cursor-pointer rounded-md"
                   style={{
                     color: isActive ? 'var(--c-heading)' : 'var(--c-subtle)',
@@ -384,8 +414,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
             <nav className="flex-1 py-10 px-6 overflow-y-auto" aria-label="Main navigation">
               <ul className="space-y-4">
                 <AnimatePresence>
-                  {drawerVisible && NAV_ITEMS.map(({ id, label }, index) => {
-                    const isActive = activeSection === id;
+                  {drawerVisible && NAV_ITEMS.map(({ id, label, isResume }, index) => {
+                    const isActive = currentActive === id;
                     return (
                       <motion.li 
                         key={id}
@@ -395,7 +425,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
                         transition={{ duration: 0.3, delay: index * 0.05 }}
                       >
                         <button
-                          onClick={() => scrollTo(id)}
+                          onClick={() => handleNavClick(id, isResume)}
                           className="w-full text-left px-6 py-4 text-xl font-body rounded-[var(--radius-lg)] transition-all cursor-pointer"
                           style={{
                             color: isActive ? 'var(--c-heading)' : 'var(--c-body)',
@@ -459,4 +489,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme, onRecrumple }) 
       )}
     </>
   );
-};
+});
+
+Header.displayName = 'Header';

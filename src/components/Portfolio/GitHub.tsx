@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 import { GitHubIcon } from '../UI/Icons';
@@ -7,7 +7,7 @@ import { GitHubContributions } from '../GitHubContributions';
 const GITHUB_USERNAME = 'sachit1751-art';
 const GITHUB_URL = `https://github.com/${GITHUB_USERNAME}`;
 
-export const GitHubSection = () => {
+export const GitHubSection = memo(() => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -101,4 +101,6 @@ export const GitHubSection = () => {
       </section>
     </ScrollReveal>
   );
-};
+});
+
+GitHubSection.displayName = 'GitHubSection';

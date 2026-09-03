@@ -1,5 +1,6 @@
-import React, { useRef, useEffect, ReactNode, useState } from 'react';
+import React, { useRef, useEffect, ReactNode, useState, memo } from 'react';
 import { usePerformance } from '../../hooks/usePerformance';
+import { observeElement } from '../../utils/observer';
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -10,7 +11,7 @@ interface ScrollRevealProps {
   distance?: number;
 }
 
-export const ScrollReveal: React.FC<ScrollRevealProps> = ({
+export const ScrollReveal = memo<ScrollRevealProps>(({
   children,
   className = '',
   delay = 0,
@@ -32,20 +33,14 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
     if (!el) return;
 
     const scroller = document.getElementById('content-scroll-container');
-    const root = scroller || null;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
+    return observeElement(
+      el,
+      (isIntersecting) => {
+        if (isIntersecting) setVisible(true);
       },
-      { root, threshold: 0, rootMargin: '0px 0px -25% 0px' }
+      { root: scroller, threshold: 0, rootMargin: '0px 0px -20% 0px' }
     );
-
-    observer.observe(el);
-    return () => observer.disconnect();
   }, [simplify]);
 
   const getTransform = () => {
@@ -76,4 +71,6 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
       {children}
     </div>
   );
-};
+});
+
+ScrollReveal.displayName = 'ScrollReveal';

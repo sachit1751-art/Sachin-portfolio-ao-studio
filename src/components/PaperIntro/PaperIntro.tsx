@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, lazy, Suspense } from 'react';
+import React, { useEffect, useState, useCallback, useRef, lazy, Suspense, memo } from 'react';
 import { usePaperSound } from '../../hooks/usePaperSound';
 import { PaperState, PaperTheme } from '../../types';
 import { PaperScene, PaperSceneAPI } from './PaperScene';
@@ -26,7 +26,7 @@ interface PaperIntroProps {
   onMoodUnlocked: () => void;
 }
 
-export const PaperIntro: React.FC<PaperIntroProps> = ({
+export const PaperIntro = memo<PaperIntroProps>(({
   paperState,
   setPaperState,
   theme,
@@ -255,4 +255,6 @@ export const PaperIntro: React.FC<PaperIntroProps> = ({
       )}
     </div>
   );
-};
+});
+
+PaperIntro.displayName = 'PaperIntro';

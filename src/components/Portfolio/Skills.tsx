@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { SkillCategory } from '../../types';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
@@ -68,7 +69,7 @@ const categories: SkillCategory[] = [
   },
 ];
 
-export const Skills = () => {
+export const Skills = memo(() => {
   return (
     <ScrollReveal>
     <section id="skills" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -125,4 +126,6 @@ export const Skills = () => {
     </section>
     </ScrollReveal>
   );
-};
+});
+
+Skills.displayName = 'Skills';

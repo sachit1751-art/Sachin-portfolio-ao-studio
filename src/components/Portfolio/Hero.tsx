@@ -1,4 +1,5 @@
-import { ArrowDownRight, Mail } from 'lucide-react';
+import React, { memo } from 'react';
+import { ArrowDownRight, Mail, FileText } from 'lucide-react';
 import { WordReveal } from '../UI/TextReveal';
 import { TypewriterEffect } from '../UI/TypewriterEffect';
 import { QuoteRoll } from '../UI/QuoteRoll';
@@ -16,11 +17,13 @@ const DEV_QUOTES = [
 interface HeroProps {
   onExploreProjects: () => void;
   onContactClick: () => void;
+  onViewResume?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({
+export const Hero = memo<HeroProps>(({
   onExploreProjects,
   onContactClick,
+  onViewResume,
 }) => {
   return (
     <section id="hero" className="relative mb-8 pt-2 pb-6">
@@ -59,19 +62,35 @@ export const Hero: React.FC<HeroProps> = ({
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mb-8">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-8">
         <button
           onClick={onExploreProjects}
-          className="view-projects-btn px-6 py-3 font-body text-base transition-all hover:-translate-y-0.5 active:translate-y-0 hover:bg-[var(--c-btn-bg-hover)] flex items-center gap-2 cursor-pointer animate-line-reveal lr-delay-12 rounded-[var(--radius-md)]"
+          className="view-projects-btn px-5 sm:px-6 py-3 font-body text-sm sm:text-base transition-all hover:-translate-y-0.5 active:translate-y-0 hover:bg-[var(--c-btn-bg-hover)] flex items-center gap-2 cursor-pointer animate-line-reveal lr-delay-12 rounded-[var(--radius-md)]"
           style={{ backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}
         >
           <span>View Projects</span>
           <ArrowDownRight className="arrow-icon w-4 h-4" />
         </button>
 
+        {onViewResume && (
+          <button
+            onClick={onViewResume}
+            className="px-5 sm:px-6 py-3 font-body text-sm sm:text-base font-medium transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2 cursor-pointer animate-line-reveal lr-delay-13 rounded-[var(--radius-md)]"
+            style={{
+              border: '1px solid var(--c-border)',
+              backgroundColor: 'var(--c-input-bg)',
+              color: 'var(--c-heading)',
+            }}
+            aria-label="View Resume"
+          >
+            <FileText className="w-4 h-4" />
+            <span>View Resume</span>
+          </button>
+        )}
+
         <button
           onClick={onContactClick}
-          className="jellyfish-btn px-6 py-3 bg-transparent font-handwriting text-base cursor-pointer animate-line-reveal lr-delay-14"
+          className="jellyfish-btn px-5 sm:px-6 py-3 bg-transparent font-handwriting text-base cursor-pointer animate-line-reveal lr-delay-14"
         >
           <span>Contact Me</span>
         </button>
@@ -177,4 +196,6 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
     </section>
   );
-};
+});
+
+Hero.displayName = 'Hero';

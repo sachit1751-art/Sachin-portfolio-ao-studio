@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { Feather } from 'lucide-react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
@@ -20,7 +21,7 @@ const updates = [
   },
 ];
 
-export const BuildingInPublic = () => {
+export const BuildingInPublic = memo(() => {
   return (
     <ScrollReveal>
       <section id="building-in-public" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -66,4 +67,6 @@ export const BuildingInPublic = () => {
       </section>
     </ScrollReveal>
   );
-};
+});
+
+BuildingInPublic.displayName = 'BuildingInPublic';

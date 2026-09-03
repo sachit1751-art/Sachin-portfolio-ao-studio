@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { Hammer, Feather, FlaskConical, Palette, BookOpen } from 'lucide-react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
@@ -30,7 +31,7 @@ const principles = [
   },
 ];
 
-export const Philosophy = () => {
+export const Philosophy = memo(() => {
   return (
     <ScrollReveal>
 <section id="philosophy" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -77,4 +78,6 @@ export const Philosophy = () => {
     </section>
     </ScrollReveal>
   );
-};
+});
+
+Philosophy.displayName = 'Philosophy';
