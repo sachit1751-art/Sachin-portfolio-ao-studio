@@ -80,44 +80,54 @@ export const Header = memo<HeaderProps>(({
     });
   }, [currentActive]);
 
+  const openMobile = useCallback(() => {
+    lastFocusedRef.current = document.activeElement as HTMLElement;
+    setMobileOpen(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setDrawerVisible(true);
+      });
+    });
+  }, []);
+
+  const closeMobile = useCallback(() => {
+    setDrawerVisible(false);
+    setTimeout(() => {
+      setMobileOpen(false);
+      lastFocusedRef.current?.focus();
+    }, 300); // Match transition duration
+  }, []);
+
   // ── Scroll to section ──────────────────────────────────────────────
   const handleNavClick = useCallback((id: string, isResume?: boolean) => {
     if (isResume) {
       if (onViewResume) onViewResume();
-      setMobileOpen(false);
+      closeMobile();
       return;
     }
 
     // Set active immediately so the underline moves on click
     setActiveSection(id);
 
-    if (isViewingResume && onNavigateSection) {
-      onNavigateSection(id);
-      setMobileOpen(false);
-      return;
-    }
-
-    const container = document.getElementById('content-scroll-container');
-    const target = document.getElementById(id);
-    if (!container || !target) {
-      if (onNavigateSection) onNavigateSection(id);
-      setMobileOpen(false);
-      return;
-    }
-
-    // Mark as programmatic scroll — suppress scroll listener updates
+    // Mark as programmatic scroll — suppress scroll listener updates during smooth animation
     isScrollingRef.current = true;
 
-    // Calculate target position relative to the scroll container
-    const containerRect = container.getBoundingClientRect();
-    const targetRect = target.getBoundingClientRect();
-    const offset = targetRect.top - containerRect.top + container.scrollTop - 72; // 72px header height
+    if (onNavigateSection) {
+      onNavigateSection(id);
+    } else {
+      const container = document.getElementById('content-scroll-container');
+      const target = document.getElementById(id);
+      if (container && target) {
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const offset = targetRect.top - containerRect.top + container.scrollTop - 72; // 72px header height
+        container.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    }
 
-    container.scrollTo({ top: offset, behavior: 'smooth' });
-    setMobileOpen(false);
-
+    closeMobile();
     setTimeout(() => { isScrollingRef.current = false; }, 800);
-  }, [onViewResume, isViewingResume, onNavigateSection]);
+  }, [onViewResume, onNavigateSection, closeMobile]);
 
   // ── Scroll listener — detect active section ────────────────────────
   useEffect(() => {
@@ -227,35 +237,35 @@ export const Header = memo<HeaderProps>(({
     }
   }, [mobileOpen]);
 
-  const openMobile = useCallback(() => {
-    lastFocusedRef.current = document.activeElement as HTMLElement;
-    setMobileOpen(true);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setDrawerVisible(true);
-      });
-    });
-  }, []);
-
-  const closeMobile = useCallback(() => {
-    setDrawerVisible(false);
-    setTimeout(() => {
-      setMobileOpen(false);
-      lastFocusedRef.current?.focus();
-    }, 300); // Match transition duration
-  }, []);
+  // Auto-close mobile menu when viewport expands to desktop width (>= 768px)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && mobileOpen) {
+        setMobileOpen(false);
+        setDrawerVisible(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [mobileOpen]);
 
   // ── Render ─────────────────────────────────────────────────────────
   return (
     <>
-      <header
+      <motion.header
+        initial={{ y: -28, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{
+          y: { type: 'spring', damping: 22, stiffness: 180, mass: 0.8 },
+          opacity: { duration: 0.5, ease: 'easeOut' },
+        }}
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          backgroundColor: 'var(--c-header-bg)',
-          borderBottom: '1px solid var(--c-header-border)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : undefined,
+          backgroundColor: scrolled ? 'var(--c-header-bg)' : 'transparent',
+          borderBottom: scrolled ? '1px solid var(--c-header-border)' : '1px solid transparent',
+          backdropFilter: scrolled ? 'blur(16px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
+          boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
         }}
       >
         <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-3 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
@@ -427,7 +437,7 @@ export const Header = memo<HeaderProps>(({
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Dedicated Full-Screen Mobile Navigation Overlay */}
       {mobileOpen && (

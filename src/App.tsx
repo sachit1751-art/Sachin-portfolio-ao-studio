@@ -3,6 +3,9 @@ import { PaperState } from './types';
 import { Header } from './components/Portfolio/Header';
 import { NotFound } from './components/Portfolio/NotFound';
 import { HoneycombLoader } from './components/UI/HoneycombLoader';
+import { SEOHead } from './components/SEO/SEOHead';
+import { CookieBanner } from './components/UI/CookieBanner';
+import { StickyMobileCTA } from './components/UI/StickyMobileCTA';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
 import { initSecurity } from './utils/security';
@@ -15,6 +18,8 @@ const LazyStructureRoom = lazy(() => import('./structure-room/StructureRoom').th
 const LazyDoomTransition = lazy(() => import('./structure-room/DoomTransition').then(m => ({ default: m.DoomTransition })));
 const LazyMoodTransition = lazy(() => import('./components/MoodGame/MoodTransition').then(m => ({ default: m.MoodTransition })));
 const LazyResumeViewer = lazy(() => import('./components/Portfolio/ResumeViewer').then(m => ({ default: m.ResumeViewer })));
+const LazyPrivacyPolicy = lazy(() => import('./components/Portfolio/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
+const LazyTermsOfService = lazy(() => import('./components/Portfolio/TermsOfService').then(m => ({ default: m.TermsOfService })));
 
 function HeavyFallback() {
   return (
@@ -27,41 +32,103 @@ function HeavyFallback() {
 export default function App() {
   const [is404, setIs404] = useState(false);
   const [isViewingResume, setIsViewingResume] = useState(false);
+  const [isViewingPrivacy, setIsViewingPrivacy] = useState(false);
+  const [isViewingTerms, setIsViewingTerms] = useState(false);
 
   useEffect(() => {
     initFontLoader();
     // Route handling for SPA
-    const path = window.location.pathname;
-    if (path === '/resume' || path === '/resume/' || path === '/resume.html') {
-      setIsViewingResume(true);
-      setShowContent(true);
-      setIntroCompleted(true);
-      setPaperState('opened');
-      setIs404(false);
-    } else if (path !== '/' && path !== '/index.html' && !path.startsWith('/api/')) {
-      setIs404(true);
-    }
-
-    const handlePopState = () => {
-      const currentPath = window.location.pathname;
-      if (currentPath === '/resume' || currentPath === '/resume/' || currentPath === '/resume.html') {
+    const checkRoute = () => {
+      const path = window.location.pathname;
+      console.log('[App checkRoute] Path:', path);
+      if (path === '/resume' || path === '/resume/' || path === '/resume.html') {
         setIsViewingResume(true);
+        setIsViewingPrivacy(false);
+        setIsViewingTerms(false);
         setShowContent(true);
         setIntroCompleted(true);
         setPaperState('opened');
         setIs404(false);
+      } else if (path === '/privacy' || path === '/privacy/') {
+        setIsViewingPrivacy(true);
+        setIsViewingResume(false);
+        setIsViewingTerms(false);
+        setShowContent(true);
+        setIntroCompleted(true);
+        setPaperState('opened');
+        setIs404(false);
+      } else if (path === '/terms' || path === '/terms/') {
+        setIsViewingTerms(true);
+        setIsViewingResume(false);
+        setIsViewingPrivacy(false);
+        setShowContent(true);
+        setIntroCompleted(true);
+        setPaperState('opened');
+        setIs404(false);
+      } else if (path !== '/' && path !== '/index.html' && !path.startsWith('/api/')) {
+        setIs404(true);
       } else {
         setIsViewingResume(false);
-        if (currentPath !== '/' && currentPath !== '/index.html' && !currentPath.startsWith('/api/')) {
-          setIs404(true);
-        } else {
-          setIs404(false);
+        setIsViewingPrivacy(false);
+        setIsViewingTerms(false);
+        setIs404(false);
+        try {
+          const isCompleted = sessionStorage.getItem('portfolio-intro-completed') === 'true';
+          console.log('[App checkRoute] Root path check. portfolio-intro-completed in sessionStorage:', isCompleted);
+          if (isCompleted) {
+            setPaperState('opened');
+            setIntroCompleted(true);
+            setShowContent(true);
+          }
+        } catch (e) {
+          console.warn('[App checkRoute] Error checking sessionStorage:', e);
         }
       }
     };
 
+    checkRoute();
+
+    const handlePopState = () => {
+      checkRoute();
+    };
+
+    const handleOpenPrivacy = () => {
+      setIsViewingPrivacy(true);
+      setIsViewingResume(false);
+      setIsViewingTerms(false);
+      setShowContent(true);
+      setIntroCompleted(true);
+      setPaperState('opened');
+      try {
+        if (window.location.pathname !== '/privacy') {
+          window.history.pushState({}, '', '/privacy');
+        }
+      } catch {}
+    };
+
+    const handleOpenTerms = () => {
+      setIsViewingTerms(true);
+      setIsViewingResume(false);
+      setIsViewingPrivacy(false);
+      setShowContent(true);
+      setIntroCompleted(true);
+      setPaperState('opened');
+      try {
+        if (window.location.pathname !== '/terms') {
+          window.history.pushState({}, '', '/terms');
+        }
+      } catch {}
+    };
+
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('open-privacy', handleOpenPrivacy);
+    window.addEventListener('open-terms', handleOpenTerms);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('open-privacy', handleOpenPrivacy);
+      window.removeEventListener('open-terms', handleOpenTerms);
+    };
   }, []);
 
   useEffect(() => {
@@ -71,24 +138,60 @@ export default function App() {
   }, []);
   const [paperState, setPaperState] = useState<PaperState>(() => {
     if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
+        console.log('[App Initializer] Explicit route (' + path + ') -> paperState = "opened"');
+        return 'opened';
+      }
       const saved = sessionStorage.getItem('portfolio-intro-completed');
-      if (saved === 'true') return 'opened';
+      if (saved === 'true') {
+        console.log('[App Initializer] Prior intro completion in sessionStorage -> paperState = "opened"');
+        return 'opened';
+      }
     }
+    console.log('[App Initializer] No prior intro completion -> paperState = "crumpled"');
     return 'crumpled';
   });
+
   const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('kraft');
-  const [introCompleted, setIntroCompleted] = useState(() => {
+
+  const [introCompleted, setIntroCompleted] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
+        return true;
+      }
+      const saved = sessionStorage.getItem('portfolio-intro-completed') === 'true';
+      if (saved) console.log('[App Initializer] Prior intro completion restored -> introCompleted = true');
+      return saved;
+    }
+    return false;
+  });
+
+  const [showContent, setShowContent] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
+        return true;
+      }
+      const saved = sessionStorage.getItem('portfolio-intro-completed') === 'true';
+      if (saved) console.log('[App Initializer] Prior intro completion restored -> showContent = true');
+      return saved;
+    }
+    return false;
+  });
+
+  const [headerReady, setHeaderReady] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
+        return true;
+      }
       return sessionStorage.getItem('portfolio-intro-completed') === 'true';
     }
     return false;
   });
-  const [showContent, setShowContent] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('portfolio-intro-completed') === 'true';
-    }
-    return false;
-  });
+
   const [showTransition, setShowTransition] = useState(false);
   const [showStructureRoom, setShowStructureRoom] = useState(false);
   const [showMoodTransition, setShowMoodTransition] = useState(false);
@@ -96,15 +199,15 @@ export default function App() {
 
   // Monitoring state transitions
   useEffect(() => {
-    if (import.meta.env.DEV) {
-      console.log('[App State Monitor]', { 
-        paperState, 
-        introCompleted, 
-        showContent,
-        timestamp: new Date().toISOString()
-      });
-    }
-  }, [paperState, introCompleted, showContent]);
+    console.log('[App State Monitor Effect]', { 
+      paperState, 
+      introCompleted, 
+      showContent,
+      headerReady,
+      sessionStorageVal: typeof window !== 'undefined' ? sessionStorage.getItem('portfolio-intro-completed') : null,
+      timestamp: new Date().toISOString()
+    });
+  }, [paperState, introCompleted, showContent, headerReady]);
 
   const { isUnlocked: doomUnlocked, exitStructureRoom } = useDoomSequence(paperState);
   const { simplify } = usePerformance();
@@ -184,10 +287,25 @@ export default function App() {
     }
   }, [paperState, showMoodGame, introCompleted]);
 
+  // Header synchronization delay check - ensures header renders after intro confirms fully opened
+  useEffect(() => {
+    if (paperState === 'opened' && introCompleted) {
+      console.log('[App Header Sync Effect] Intro confirmed opened. Scheduling delay check before rendering Header.');
+      const timer = setTimeout(() => {
+        console.log('[App Header Sync Effect] Delay check passed. Setting headerReady = true.');
+        setHeaderReady(true);
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      setHeaderReady(false);
+    }
+  }, [paperState, introCompleted]);
+
   const handleRecrumple = useCallback(() => {
     console.log('[App] handleRecrumple: Resetting session and states');
     setShowContent(false);
     setIntroCompleted(false);
+    setHeaderReady(false);
     setPaperState('crumpled');
     sessionStorage.removeItem('portfolio-intro-completed');
     setShowStructureRoom(false);
@@ -236,6 +354,41 @@ export default function App() {
 
   return (
     <div data-theme={theme} className="relative min-h-screen bg-[var(--c-bg)] font-sans antialiased overflow-x-hidden transition-colors duration-500">
+      {/* Route-Aware SEO Management */}
+      <SEOHead
+        title={
+          is404
+            ? '404 Page Not Found — Sachit'
+            : isViewingPrivacy
+            ? 'Privacy Policy — Sachit'
+            : isViewingTerms
+            ? 'Terms of Service — Sachit'
+            : isViewingResume
+            ? 'Curriculum Vitae / Resume — Sachit'
+            : 'Sachit — Software Developer & Prompt Engineer'
+        }
+        description={
+          is404
+            ? 'The requested page could not be found.'
+            : isViewingPrivacy
+            ? 'Privacy policy and data transparency statement for Sachit portfolio.'
+            : isViewingTerms
+            ? 'Terms of service and usage conditions for Sachit portfolio.'
+            : isViewingResume
+            ? 'Interactive digital CV and resume of Sachit, highlighting technical skills, software engineering experience, and AI integration projects.'
+            : 'Portfolio of Sachit, a Software Developer and Prompt Engineer focusing on full-stack web applications, AI tools, custom Android platforms, and automation.'
+        }
+        canonicalUrl={
+          isViewingPrivacy
+            ? 'https://sachit-portfolio.vercel.app/privacy'
+            : isViewingTerms
+            ? 'https://sachit-portfolio.vercel.app/terms'
+            : isViewingResume
+            ? 'https://sachit-portfolio.vercel.app/resume'
+            : 'https://sachit-portfolio.vercel.app/'
+        }
+      />
+
       {is404 && <NotFound />}
       {showContent && (
         <a
@@ -282,16 +435,32 @@ export default function App() {
             animation: 'contentFadeIn 1.0s ease-out forwards',
           }}
         >
-          <Header
-            theme={theme}
-            setTheme={handleThemeChange}
-            onRecrumple={handleRecrumple}
-            onViewResume={handleOpenResume}
-            isViewingResume={isViewingResume}
-            onNavigateSection={handleNavigateSection}
-          />
+          {headerReady && (
+            <Header
+              theme={theme}
+              setTheme={handleThemeChange}
+              onRecrumple={handleRecrumple}
+              onViewResume={handleOpenResume}
+              isViewingResume={isViewingResume}
+              onNavigateSection={handleNavigateSection}
+            />
+          )}
           <div id="content-scroll-container" className="w-full h-full overflow-y-auto overflow-x-hidden pt-[72px]">
-            {isViewingResume ? (
+            {isViewingPrivacy ? (
+              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING PRIVACY POLICY..." color="var(--c-heading)" /></div>}>
+                <LazyPrivacyPolicy onBack={() => {
+                  setIsViewingPrivacy(false);
+                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+                }} />
+              </Suspense>
+            ) : isViewingTerms ? (
+              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING TERMS..." color="var(--c-heading)" /></div>}>
+                <LazyTermsOfService onBack={() => {
+                  setIsViewingTerms(false);
+                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+                }} />
+              </Suspense>
+            ) : isViewingResume ? (
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="PREPARING CV CANVAS..." color="var(--c-heading)" /></div>}>
                 <LazyResumeViewer
                   theme={theme}
@@ -307,8 +476,17 @@ export default function App() {
               </Suspense>
             )}
           </div>
+
+          {/* Sticky Mobile CTA */}
+          <StickyMobileCTA
+            onNavigate={handleNavigateSection}
+            onViewResume={handleOpenResume}
+          />
         </div>
       )}
+
+      {/* Global Privacy Consent Banner */}
+      <CookieBanner onOpenPrivacy={() => window.dispatchEvent(new CustomEvent('open-privacy'))} />
 
       {/* Doom Transition */}
       {showTransition && (

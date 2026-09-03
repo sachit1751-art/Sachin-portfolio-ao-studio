@@ -556,12 +556,35 @@ export const Contact = memo(() => {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="pt-6 text-center" style={{ borderTop: '1px solid var(--c-border)' }}>
-          <p className="text-sm font-handwriting tracking-wide" style={{ color: 'var(--c-muted)' }}>
-            <WordReveal text="© 2026 Sachit • Built with React, TypeScript & Interactive Typewriter Engine" baseDelay={0.2} />
-          </p>
-        </div>
+            {/* Footer */}
+            <div className="pt-6 text-center space-y-3" style={{ borderTop: '1px solid var(--c-border)' }}>
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono" style={{ color: 'var(--c-subtle)' }}>
+                <span>📍 San Francisco, CA / Remote (Worldwide)</span>
+                <span>•</span>
+                <span>⚡ Avg Response: &lt; 24h</span>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-privacy'))}
+                  className="underline hover:opacity-100 cursor-pointer"
+                  style={{ color: 'var(--c-heading)' }}
+                >
+                  Privacy Policy
+                </button>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-terms'))}
+                  className="underline hover:opacity-100 cursor-pointer"
+                  style={{ color: 'var(--c-heading)' }}
+                >
+                  Terms of Service
+                </button>
+              </div>
+              <p className="text-sm font-handwriting tracking-wide" style={{ color: 'var(--c-muted)' }}>
+                <WordReveal text="© 2026 Sachit • Built with React, TypeScript & Interactive Typewriter Engine" baseDelay={0.2} />
+              </p>
+            </div>
       </section>
     </ScrollReveal>
   );

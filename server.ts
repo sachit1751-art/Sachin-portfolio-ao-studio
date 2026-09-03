@@ -180,7 +180,7 @@ async function startServer() {
       const validContents = contents.length > 0 && contents[0].role !== 'user' ? contents.slice(1) : contents;
 
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-3.6-flash",
         contents: validContents,
         config: {
           systemInstruction: contextualInstruction,

@@ -51,10 +51,24 @@ export const PaperIntro = memo<PaperIntroProps>(({
   const paperRef = useRef<PaperSceneAPI | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
 
+  // Detailed logging for PaperIntro state monitoring
+  useEffect(() => {
+    console.log('[PaperIntro State Monitor Effect]', {
+      paperState,
+      prefersReducedMotion,
+      showMoodGame,
+      timestamp: new Date().toISOString()
+    });
+  }, [paperState, prefersReducedMotion, showMoodGame]);
+
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    console.log('[PaperIntro Motion Effect] Initial prefers-reduced-motion:', mediaQuery.matches);
     setPrefersReducedMotion(mediaQuery.matches);
-    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    const handleChange = (e: MediaQueryListEvent) => {
+      console.log('[PaperIntro Motion Effect] Motion preference changed:', e.matches);
+      setPrefersReducedMotion(e.matches);
+    };
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
@@ -63,20 +77,31 @@ export const PaperIntro = memo<PaperIntroProps>(({
     const v = videoRef.current;
     if (!v) return;
     if (paperState === 'crumpled') {
+      console.log('[PaperIntro Video Effect] paperState = crumpled -> Playing ambient video loop');
       v.currentTime = 0;
-      v.play().catch(() => {});
+      v.play().catch((err) => console.warn('[PaperIntro Video Effect] Play catch:', err));
     } else {
+      console.log('[PaperIntro Video Effect] paperState = ' + paperState + ' -> Pausing ambient video');
       v.pause();
     }
   }, [paperState]);
 
   const handleUnfold = useCallback(() => {
-    if (paperState !== 'crumpled') return;
-    if (showMoodGame) return;
+    console.log('[PaperIntro handleUnfold] Triggered. Current paperState:', paperState, { prefersReducedMotion, showMoodGame });
+    if (paperState !== 'crumpled') {
+      console.warn('[PaperIntro handleUnfold] Ignored: paperState is not "crumpled"');
+      return;
+    }
+    if (showMoodGame) {
+      console.warn('[PaperIntro handleUnfold] Ignored: showMoodGame is active');
+      return;
+    }
     if (prefersReducedMotion) {
+      console.log('[PaperIntro handleUnfold] prefersReducedMotion = true -> Immediately setting paperState = "opened"');
       setPaperState('opened');
       return;
     }
+    console.log('[PaperIntro handleUnfold] Setting paperState = "opening"');
     setPaperState('opening');
   }, [paperState, prefersReducedMotion, setPaperState, showMoodGame]);
 
@@ -129,7 +154,9 @@ export const PaperIntro = memo<PaperIntroProps>(({
   }, [handleUnfold]);
 
   useEffect(() => {
+    console.log('[PaperIntro openComplete Effect] paperState:', paperState);
     if (paperState === 'opened') {
+      console.log('[PaperIntro openComplete Effect] paperState is "opened" -> Triggering onOpenComplete callback to App');
       onOpenComplete?.();
     }
   }, [paperState, onOpenComplete]);
