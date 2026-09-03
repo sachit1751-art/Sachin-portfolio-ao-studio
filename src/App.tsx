@@ -74,17 +74,7 @@ export default function App() {
         setIsViewingPrivacy(false);
         setIsViewingTerms(false);
         setIs404(false);
-        try {
-          const isCompleted = sessionStorage.getItem('portfolio-intro-completed') === 'true';
-          console.log('[App checkRoute] Root path check. portfolio-intro-completed in sessionStorage:', isCompleted);
-          if (isCompleted) {
-            setPaperState('opened');
-            setIntroCompleted(true);
-            setShowContent(true);
-          }
-        } catch (e) {
-          console.warn('[App checkRoute] Error checking sessionStorage:', e);
-        }
+        // Root path always presents the intro animation on fresh load/reload
       }
     };
 
@@ -142,16 +132,9 @@ export default function App() {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
-        console.log('[App Initializer] Explicit route (' + path + ') -> paperState = "opened"');
-        return 'opened';
-      }
-      const saved = sessionStorage.getItem('portfolio-intro-completed');
-      if (saved === 'true') {
-        console.log('[App Initializer] Prior intro completion in sessionStorage -> paperState = "opened"');
         return 'opened';
       }
     }
-    console.log('[App Initializer] No prior intro completion -> paperState = "crumpled"');
     return 'crumpled';
   });
 
@@ -163,9 +146,6 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
-      const saved = sessionStorage.getItem('portfolio-intro-completed') === 'true';
-      if (saved) console.log('[App Initializer] Prior intro completion restored -> introCompleted = true');
-      return saved;
     }
     return false;
   });
@@ -176,9 +156,6 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
-      const saved = sessionStorage.getItem('portfolio-intro-completed') === 'true';
-      if (saved) console.log('[App Initializer] Prior intro completion restored -> showContent = true');
-      return saved;
     }
     return false;
   });
@@ -189,7 +166,6 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
-      return sessionStorage.getItem('portfolio-intro-completed') === 'true';
     }
     return false;
   });
@@ -206,7 +182,6 @@ export default function App() {
       introCompleted, 
       showContent,
       headerReady,
-      sessionStorageVal: typeof window !== 'undefined' ? sessionStorage.getItem('portfolio-intro-completed') : null,
       timestamp: new Date().toISOString()
     });
   }, [paperState, introCompleted, showContent, headerReady]);
@@ -221,7 +196,6 @@ export default function App() {
     setShowContent(true);
     setIntroCompleted(true);
     setPaperState('opened');
-    sessionStorage.setItem('portfolio-intro-completed', 'true');
     try {
       if (window.location.pathname !== '/resume') {
         window.history.pushState({}, '', '/resume');
@@ -329,7 +303,6 @@ export default function App() {
     setIntroCompleted(false);
     setHeaderReady(false);
     setPaperState('crumpled');
-    sessionStorage.removeItem('portfolio-intro-completed');
     setShowStructureRoom(false);
     setShowTransition(false);
     setShowMoodTransition(false);
@@ -434,7 +407,6 @@ export default function App() {
               console.log('[App] onOpenComplete triggered');
               setIntroCompleted(true);
               setShowContent(true);
-              sessionStorage.setItem('portfolio-intro-completed', 'true');
               // Ensure we start at the top
               setTimeout(() => {
                 const container = document.getElementById('content-scroll-container');
