@@ -1,12 +1,65 @@
-import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Project } from '../../types';
-import { X, ArrowUpRight, ExternalLink } from 'lucide-react';
+import {
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Cpu,
+  Smartphone,
+  Code2,
+  Code,
+  FileCode,
+  Terminal,
+  Atom,
+  Layers,
+  Zap,
+  Database,
+  Sparkles,
+  Palette,
+  Server,
+  Globe,
+  Bot,
+  Brain,
+  Gamepad2,
+  Binary,
+  HardDrive,
+  Shield,
+  Tag,
+} from 'lucide-react';
 import { CharReveal } from '../UI/TextReveal';
 import { usePerformance } from '../../hooks/usePerformance';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Helper to get small tech icons for stack tags like AOSP, Kotlin, React, etc.
+const getTagIcon = (tag: string) => {
+  const normalized = tag.toLowerCase().trim();
+  if (normalized.includes('aosp') || normalized.includes('hal')) return Cpu;
+  if (normalized.includes('kotlin')) return Code2;
+  if (normalized.includes('android')) return Smartphone;
+  if (normalized.includes('react native')) return Smartphone;
+  if (normalized.includes('react')) return Atom;
+  if (normalized.includes('typescript')) return FileCode;
+  if (normalized.includes('javascript')) return Code;
+  if (normalized.includes('html')) return Code;
+  if (normalized.includes('css') || normalized.includes('tailwind')) return Palette;
+  if (normalized.includes('python')) return Terminal;
+  if (normalized.includes('claude') || normalized.includes('ai')) return Sparkles;
+  if (normalized.includes('prompt caching') || normalized.includes('vite')) return Zap;
+  if (normalized.includes('mcp') || normalized.includes('next')) return Layers;
+  if (normalized.includes('tensorflow') || normalized.includes('minimax')) return Brain;
+  if (normalized.includes('supabase') || normalized.includes('postgres')) return Database;
+  if (normalized.includes('redis') || normalized.includes('cache')) return HardDrive;
+  if (normalized.includes('node')) return Server;
+  if (normalized.includes('rest') || normalized.includes('api') || normalized.includes('web')) return Globe;
+  if (normalized.includes('automation')) return Bot;
+  if (normalized.includes('game')) return Gamepad2;
+  if (normalized.includes('go') || normalized.includes('binary') || normalized.includes('wasm')) return Binary;
+  if (normalized.includes('security') || normalized.includes('rust')) return Shield;
+  return Tag;
+};
 
 const projects: Project[] = [
   {
@@ -118,12 +171,14 @@ const projects: Project[] = [
 
 
 export const Projects = memo(() => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const cardsGridRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
   const { simplify } = usePerformance();
+
+  const toggleExpandCard = (id: string, e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.stopPropagation();
+    setExpandedCardId((prev) => (prev === id ? null : id));
+  };
 
   useEffect(() => {
     if (!cardsGridRef.current) return;
@@ -176,45 +231,6 @@ export const Projects = memo(() => {
     };
   }, [simplify]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape' && selectedProject) {
-      handleCloseModal();
-    }
-  }, [selectedProject]);
-
-  useEffect(() => {
-    if (selectedProject) {
-      previousFocusRef.current = document.activeElement as HTMLElement;
-      setModalVisible(true);
-      document.body.style.overflow = 'hidden';
-      document.addEventListener('keydown', handleKeyDown);
-      
-      setTimeout(() => {
-        if (modalRef.current) {
-          modalRef.current.focus();
-        }
-      }, 50);
-    } else {
-      setModalVisible(false);
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', handleKeyDown);
-      
-      if (previousFocusRef.current) {
-        previousFocusRef.current.focus();
-      }
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [selectedProject, handleKeyDown]);
-
-  const handleCloseModal = () => {
-    setModalVisible(false);
-    setTimeout(() => setSelectedProject(null), 300);
-  };
-
   return (
     <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
@@ -224,141 +240,152 @@ export const Projects = memo(() => {
       </div>
 
       <div ref={cardsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project, idx) => (
-          <div
-            key={project.id}
-            className="gsap-project-card group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
-            style={{
-              backgroundColor: 'var(--c-card)',
-              border: '1px solid var(--c-border)',
-            }}
-          >
+        {projects.map((project, idx) => {
+          const isExpanded = expandedCardId === project.id;
+          return (
             <div
-              role="button"
-              tabIndex={0}
-              onClick={() => setSelectedProject(project)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProject(project); } }}
-              className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)]"
+              key={project.id}
+              className="gsap-project-card group relative p-5 sm:p-6 flex flex-col justify-between overflow-hidden h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md touch-manipulation"
+              style={{
+                backgroundColor: 'var(--c-card)',
+                border: '1px solid var(--c-border)',
+              }}
             >
-              <div className="flex items-center justify-between text-sm font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
-                <span>{project.category}</span>
-                <span className="text-[9px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                  {String(idx + 1).padStart(2, '0')}
-                </span>
-              </div>
-
-              <h3 className="font-sans text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
-                <span className="line-clamp-1">{project.title}</span>
-                <ArrowUpRight className="w-5 h-5 flex-shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" style={{ color: 'var(--c-subtle)' }} />
-              </h3>
-
-              <p className="text-base sm:text-lg leading-relaxed mb-4 font-body opacity-80" style={{ color: 'var(--c-body)' }}>
-                {project.description}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-1.5 pt-3 mt-auto" style={{ borderTop: '1px solid var(--c-border)' }}>
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider rounded-[var(--radius-sm)]"
-                  style={{ border: '1px solid var(--c-border)', color: 'var(--c-body)' }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {selectedProject && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{
-            backgroundColor: 'var(--c-modal-backdrop)',
-            opacity: modalVisible ? 1 : 0,
-            transition: 'opacity 200ms ease-out',
-          }}
-          onClick={handleCloseModal}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-        >
-          <div
-            ref={modalRef}
-            tabIndex={-1}
-            className="relative w-full max-w-2xl backdrop-blur-md p-6 sm:p-8 shadow-[0_30px_70px_rgba(0,0,0,0.15)] overflow-hidden outline-none rounded-[var(--radius-xl)]"
-            style={{
-              backgroundColor: 'var(--c-modal-bg)',
-              border: '1px solid var(--c-border)',
-              opacity: modalVisible ? 1 : 0,
-              transform: modalVisible ? 'scale(1)' : 'scale(0.95)',
-              transition: 'opacity 300ms ease-out, transform 300ms ease-out',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 p-2 transition-colors hover:bg-[var(--c-input-bg)] cursor-pointer"
-              style={{ color: 'var(--c-heading)' }}
-              aria-label="Close project modal"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: 'var(--c-muted)' }}>
-              {selectedProject.category} • {selectedProject.year}
-            </div>
-
-            <h3 id="modal-title" className="font-sans text-3xl font-extrabold mb-3 tracking-tight" style={{ color: 'var(--c-heading)' }}>
-              {selectedProject.title}
-            </h3>
-
-            <p className="text-base sm:text-lg leading-relaxed mb-6 font-body whitespace-pre-line opacity-90" style={{ color: 'var(--c-body)' }}>
-              {selectedProject.longDescription || selectedProject.description}
-            </p>
-
-            <div className="mb-6">
-              <h4 className="font-mono text-[10px] uppercase tracking-[0.2em] font-semibold mb-2" style={{ color: 'var(--c-muted)' }}>
-                Technologies & Architecture
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {selectedProject.tags.map((tag) => (
+              <div>
+                {/* Header Meta: Category + Index */}
+                <div className="flex items-center justify-between text-xs font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
                   <span
-                    key={tag}
-                    className="px-2.5 py-1 text-xs font-mono rounded-[var(--radius-sm)]"
-                    style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
+                    className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-[var(--radius-sm)]"
+                    style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
                   >
-                    {tag}
+                    {project.category}
                   </span>
-                ))}
+                  <span className="text-[10px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                </div>
+
+                {/* Project Title & Short Description */}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => toggleExpandCard(project.id, e)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleExpandCard(project.id);
+                    }
+                  }}
+                  className="cursor-pointer outline-none group/title focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded-md py-1 select-none"
+                  aria-label={`Toggle quick details for ${project.title}`}
+                >
+                  <h3 className="font-sans text-xl sm:text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                    <span className="line-clamp-1">{project.title}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-wider opacity-60 ml-2" style={{ color: 'var(--c-muted)' }}>
+                      {project.year}
+                    </span>
+                  </h3>
+
+                  <p className="text-sm sm:text-base leading-relaxed mb-4 font-body opacity-85" style={{ color: 'var(--c-body)' }}>
+                    {project.description}
+                  </p>
+                </div>
+
+                {/* Inline Quick Details Dropdown */}
+                {isExpanded && (
+                  <div
+                    className="my-3 p-4 rounded-[var(--radius-md)] text-xs font-body leading-relaxed space-y-3 transition-all duration-200"
+                    style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
+                  >
+                    <div>
+                      <p className="whitespace-pre-line leading-relaxed" style={{ color: 'var(--c-body)' }}>
+                        {project.longDescription || project.description}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2.5" style={{ borderTop: '1px solid var(--c-border)' }}>
+                      <span className="font-mono text-[10px] uppercase tracking-wider opacity-70" style={{ color: 'var(--c-muted)' }}>
+                        YEAR: {project.year}
+                      </span>
+                      {project.demoUrl && (
+                        <a
+                          href={project.demoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline text-emerald-600 dark:text-emerald-400"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span>Open Live Demo</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom Tech Tags & Quick Action Strip */}
+              <div className="space-y-3 pt-3 mt-auto" style={{ borderTop: '1px solid var(--c-border)' }}>
+                {/* Tech Badges with Small Icons (AOSP, Kotlin, React, Python, etc.) */}
+                <div className="flex flex-wrap gap-1.5">
+                  {project.tags.map((tag) => {
+                    const TagIcon = getTagIcon(tag);
+                    return (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono tracking-wider rounded-[var(--radius-sm)] transition-colors"
+                        style={{
+                          border: '1px solid var(--c-border)',
+                          color: 'var(--c-body)',
+                          backgroundColor: 'var(--c-input-bg)',
+                        }}
+                      >
+                        <TagIcon className="w-3 h-3 opacity-70 flex-shrink-0" style={{ color: 'var(--c-heading)' }} />
+                        <span>{tag}</span>
+                      </span>
+                    );
+                  })}
+                </div>
+
+                {/* Quick Details Action Strip (No Full View) */}
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={(e) => toggleExpandCard(project.id, e)}
+                    className="flex-1 min-h-[38px] px-3 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 hover:border-[var(--c-border-focus)]"
+                    style={{
+                      border: '1px solid var(--c-border)',
+                      backgroundColor: 'var(--c-input-bg)',
+                      color: 'var(--c-heading)',
+                    }}
+                    aria-expanded={isExpanded}
+                  >
+                    <span>{isExpanded ? 'Hide Details' : 'Quick Details'}</span>
+                    {isExpanded ? <ChevronUp className="w-3.5 h-3.5 opacity-75" /> : <ChevronDown className="w-3.5 h-3.5 opacity-75" />}
+                  </button>
+
+                  {project.demoUrl && (
+                    <a
+                      href={project.demoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="min-h-[38px] px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:brightness-105 active:scale-95"
+                      style={{
+                        backgroundColor: 'var(--c-btn-bg)',
+                        color: 'var(--c-btn-text)',
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span>Live Demo</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
-
-            <div className="flex items-center gap-4 pt-4" style={{ borderTop: '1px solid var(--c-border)' }}>
-              <button
-                onClick={handleCloseModal}
-                className="px-6 py-3 font-handwriting text-lg transition-colors hover:bg-[var(--c-btn-bg-hover)] cursor-pointer rounded-[var(--radius-md)]"
-                style={{ backgroundColor: 'var(--c-btn-bg)', color: 'var(--c-btn-text)' }}
-              >
-                Close View
-              </button>
-              {selectedProject.demoUrl && (
-                <a
-                  href={selectedProject.demoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="jellyfish-btn px-5 py-3 bg-transparent font-handwriting text-lg flex items-center gap-1.5"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Live Demo</span>
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+          );
+        })}
+      </div>
     </section>
   );
 });

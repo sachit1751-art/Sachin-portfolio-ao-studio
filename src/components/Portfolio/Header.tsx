@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { PaperTheme } from '../../types';
-import { RotateCcw, Menu, X } from 'lucide-react';
+import { RotateCcw, Menu, X, ArrowUpRight, FileText, Sparkles, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface HeaderProps {
@@ -20,12 +20,12 @@ const THEMES: { id: PaperTheme; label: string; color: string }[] = [
 ];
 
 const NAV_ITEMS = [
-  { id: 'about', label: 'About' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'building-in-public', label: 'Journal' },
-  { id: 'contact', label: 'Contact' },
-  { id: 'resume', label: 'Resume', isResume: true },
+  { id: 'about', label: 'About', subtitle: 'Background & Principles' },
+  { id: 'projects', label: 'Projects', subtitle: 'Engineering Works & Systems' },
+  { id: 'skills', label: 'Skills', subtitle: 'Core Stack & Architecture' },
+  { id: 'building-in-public', label: 'Journal', subtitle: 'Engineering Logs & Updates' },
+  { id: 'contact', label: 'Contact', subtitle: 'Direct Transmission & Inquiry' },
+  { id: 'resume', label: 'Resume', subtitle: 'Curriculum Vitae & Experience', isResume: true },
 ];
 
 // All section IDs in DOM order — used for scroll-based active detection
@@ -247,21 +247,21 @@ export const Header = memo<HeaderProps>(({
       <header
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          backgroundColor: scrolled ? 'var(--c-header-bg)' : 'transparent',
-          borderBottom: `1px solid ${scrolled ? 'var(--c-header-border)' : 'transparent'}`,
-          backdropFilter: scrolled ? 'blur(16px)' : undefined,
-          WebkitBackdropFilter: scrolled ? 'blur(16px)' : undefined,
-          boxShadow: scrolled ? '0 1px 3px rgba(0,0,0,0.03)' : undefined,
+          backgroundColor: 'var(--c-header-bg)',
+          borderBottom: '1px solid var(--c-header-border)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : undefined,
         }}
       >
-        <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-4 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
+        <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-3 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
           {/* Logo */}
           <button
             onClick={() => handleNavClick('hero')}
-            className="flex items-center gap-3 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded"
+            className="flex items-center gap-3 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded py-1"
             aria-label="Go to top"
           >
-            <span className="text-2xl font-handwriting font-bold leading-tight" style={{ color: 'var(--c-name)' }}>
+            <span className="text-2xl sm:text-3xl font-handwriting font-bold leading-tight" style={{ color: 'var(--c-name)' }}>
               Sachit
             </span>
           </button>
@@ -279,7 +279,7 @@ export const Header = memo<HeaderProps>(({
                   key={id}
                   ref={(el) => { navBtns.current[id] = el; }}
                   onClick={() => handleNavClick(id, isResume)}
-                  className="relative px-3 py-1.5 text-sm font-body transition-colors cursor-pointer rounded-md"
+                  className="relative px-3.5 py-1.5 text-sm font-body transition-colors cursor-pointer rounded-md"
                   style={{
                     color: isActive ? 'var(--c-heading)' : 'var(--c-subtle)',
                     fontWeight: isActive ? 600 : 400,
@@ -302,7 +302,7 @@ export const Header = memo<HeaderProps>(({
           </nav>
 
           {/* Desktop Right Controls */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2.5">
             {/* Theme Dots */}
             <div className="relative group">
               <div
@@ -314,12 +314,12 @@ export const Header = memo<HeaderProps>(({
                     key={t.id}
                     onClick={() => setTheme(t.id)}
                     title={t.label}
-                    className="w-4 h-4 rounded-full border transition-all duration-200"
+                    className="w-4 h-4 rounded-full border transition-all duration-200 mx-0.5"
                     style={{
                       backgroundColor: t.color,
                       borderColor: theme === t.id ? 'var(--c-heading)' : 'transparent',
                       opacity: theme === t.id ? 1 : 0.4,
-                      transform: theme === t.id ? 'scale(1.1)' : undefined,
+                      transform: theme === t.id ? 'scale(1.15)' : undefined,
                       boxShadow: theme === t.id ? '0 1px 3px rgba(0,0,0,0.15)' : undefined,
                     }}
                     aria-label={`Switch to ${t.label}`}
@@ -348,11 +348,37 @@ export const Header = memo<HeaderProps>(({
             </button>
           </div>
 
-          {/* Mobile Right Controls: Fold + Hamburger */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* Mobile Right Controls: Theme Dots + Fold + Hamburger (Clean single bar, matching PC) */}
+          <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
+            {/* Theme Dots */}
+            <div
+              className="flex items-center p-1 rounded-full"
+              style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
+              aria-label="Theme selector"
+            >
+              {THEMES.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTheme(t.id)}
+                  title={t.label}
+                  className="w-3.5 h-3.5 rounded-full border transition-all duration-200 mx-0.5"
+                  style={{
+                    backgroundColor: t.color,
+                    borderColor: theme === t.id ? 'var(--c-heading)' : 'transparent',
+                    opacity: theme === t.id ? 1 : 0.45,
+                    transform: theme === t.id ? 'scale(1.15)' : undefined,
+                    boxShadow: theme === t.id ? '0 1px 3px rgba(0,0,0,0.2)' : undefined,
+                  }}
+                  aria-label={`Switch to ${t.label}`}
+                  aria-pressed={theme === t.id}
+                />
+              ))}
+            </div>
+
+            {/* Fold Button */}
             <button
               onClick={onRecrumple}
-              className="p-2 rounded-[var(--radius-md)] cursor-pointer transition-colors active:scale-95"
+              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
               style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
               title="Fold paper"
               aria-label="Fold paper"
@@ -360,194 +386,208 @@ export const Header = memo<HeaderProps>(({
               <RotateCcw className="w-4 h-4" />
             </button>
 
+            {/* Hamburger Button */}
             <button
-              className="p-2 rounded-[var(--radius-md)] cursor-pointer transition-colors active:scale-95"
-              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
+              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
+              style={{
+                color: 'var(--c-heading)',
+                border: mobileOpen ? '1px solid var(--c-border-focus)' : '1px solid var(--c-border)',
+                backgroundColor: 'var(--c-input-bg)',
+              }}
               onClick={mobileOpen ? closeMobile : openMobile}
-              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileOpen}
-              aria-controls="mobile-menu-drawer"
+              aria-controls="mobile-fullscreen-menu"
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
-
-        {/* Mobile Horizontal Quick Nav Bar */}
-        <div
-          className="flex md:hidden items-center gap-1.5 px-4 py-2 overflow-x-auto no-scrollbar"
-          style={{
-            borderTop: '1px solid var(--c-header-border)',
-            backgroundColor: scrolled ? 'var(--c-header-bg)' : 'var(--c-bg)',
-          }}
-        >
-          {NAV_ITEMS.map(({ id, label, isResume }) => {
-            const isActive = currentActive === id;
-            return (
-              <button
-                key={id}
-                onClick={() => {
-                  handleNavClick(id, isResume);
-                  if (mobileOpen) closeMobile();
-                }}
-                className="px-3 py-1 text-xs font-mono tracking-wide whitespace-nowrap rounded-full transition-all cursor-pointer flex-shrink-0"
-                style={{
-                  backgroundColor: isActive ? 'var(--c-heading)' : 'var(--c-input-bg)',
-                  color: isActive ? 'var(--c-header-bg)' : 'var(--c-body)',
-                  border: `1px solid ${isActive ? 'var(--c-heading)' : 'var(--c-border)'}`,
-                  fontWeight: isActive ? 600 : 400,
-                }}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
       </header>
 
-      {/* Mobile Drawer */}
+      {/* Dedicated Full-Screen Mobile Navigation Overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden flex justify-end" onClick={closeMobile}>
-          {/* Backdrop */}
+        <div
+          ref={drawerRef}
+          id="mobile-fullscreen-menu"
+          className="fixed inset-0 z-[100] md:hidden w-screen h-[100dvh] flex flex-col overflow-hidden"
+          style={{
+            backgroundColor: 'var(--c-bg)',
+            opacity: drawerVisible ? 1 : 0,
+            transform: drawerVisible ? 'translateY(0)' : 'translateY(12px)',
+            transition: 'opacity 220ms cubic-bezier(0.16, 1, 0.3, 1), transform 220ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Full-screen navigation menu"
+        >
+          {/* Top Bar inside Fullscreen Menu */}
           <div
-            className="absolute inset-0 backdrop-blur-md"
+            className="flex items-center justify-between h-[64px] px-6 border-b flex-shrink-0"
             style={{
-              backgroundColor: 'rgba(0,0,0,0.4)',
-              opacity: drawerVisible ? 1 : 0,
-              transition: 'opacity 250ms ease-out',
-            }}
-          />
-
-          {/* Drawer Panel */}
-          <div
-            ref={drawerRef}
-            id="mobile-menu-drawer"
-            className="relative z-10 h-full w-[85vw] max-w-sm flex flex-col shadow-2xl rounded-l-2xl"
-            style={{
+              borderColor: 'var(--c-header-border)',
               backgroundColor: 'var(--c-header-bg)',
-              borderLeft: '1px solid var(--c-header-border)',
-              transform: drawerVisible ? 'translateX(0)' : 'translateX(100%)',
-              transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)',
             }}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
           >
-            {/* Drawer Header */}
-            <div
-              className="flex items-center justify-between h-[64px] px-6"
-              style={{ borderBottom: '1px solid var(--c-header-border)' }}
-            >
-              <div className="flex items-center gap-2">
-                <span className="font-handwriting text-2xl font-bold" style={{ color: 'var(--c-name)' }}>
-                  Sachit
-                </span>
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)', color: 'var(--c-subtle)' }}>
-                  PORTFOLIO
-                </span>
-              </div>
-              <button
-                className="p-2 rounded-lg cursor-pointer transition-colors hover:opacity-80"
-                style={{ color: 'var(--c-heading)', backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
-                onClick={closeMobile}
-                aria-label="Close menu"
+            <div className="flex items-center gap-3">
+              <span className="font-sans text-xl font-black tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                Sachit
+              </span>
+              <span
+                className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                style={{
+                  backgroundColor: 'var(--c-input-bg)',
+                  border: '1px solid var(--c-border)',
+                  color: 'var(--c-muted)',
+                }}
               >
-                <X className="w-5 h-5" />
-              </button>
+                NAVIGATION
+              </span>
             </div>
 
-            {/* Nav Links */}
-            <nav className="flex-1 py-6 px-4 overflow-y-auto" aria-label="Main navigation">
-              <p className="text-[10px] font-mono uppercase tracking-widest px-3 mb-3" style={{ color: 'var(--c-subtle)' }}>
-                SECTIONS
-              </p>
-              <ul className="space-y-2">
-                <AnimatePresence>
-                  {drawerVisible && NAV_ITEMS.map(({ id, label, isResume }, index) => {
-                    const isActive = currentActive === id;
-                    return (
-                      <motion.li 
-                        key={id}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.2, delay: index * 0.04 }}
-                      >
-                        <button
-                          onClick={() => {
-                            handleNavClick(id, isResume);
-                            closeMobile();
-                          }}
-                          className="w-full text-left px-4 py-3.5 text-base font-body rounded-xl transition-all cursor-pointer flex items-center justify-between"
-                          style={{
-                            color: isActive ? 'var(--c-heading)' : 'var(--c-body)',
-                            backgroundColor: isActive ? 'var(--c-input-bg)' : 'transparent',
-                            border: isActive ? '1px solid var(--c-border-focus)' : '1px solid transparent',
-                            fontWeight: isActive ? 600 : 400,
-                          }}
-                          aria-current={isActive ? 'location' : undefined}
-                        >
-                          <span>{label}</span>
-                          {isActive && (
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--c-dot)' }} />
-                          )}
-                        </button>
-                      </motion.li>
-                    );
-                  })}
-                </AnimatePresence>
-              </ul>
-            </nav>
+            <button
+              type="button"
+              onClick={closeMobile}
+              className="p-2.5 rounded-full cursor-pointer transition-all active:scale-90 flex items-center justify-center"
+              style={{
+                color: 'var(--c-heading)',
+                backgroundColor: 'var(--c-input-bg)',
+                border: '1px solid var(--c-border)',
+              }}
+              aria-label="Close navigation menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
-            {/* Theme Selector */}
-            <div className="px-6 py-5" style={{ borderTop: '1px solid var(--c-header-border)' }}>
-              <p className="text-[10px] font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--c-subtle)' }}>
+          {/* Scrollable Navigation Body */}
+          <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            {/* Section Links */}
+            <div>
+              <div className="flex items-center justify-between mb-3 px-1">
+                <span className="text-[11px] font-mono uppercase tracking-widest font-bold" style={{ color: 'var(--c-subtle)' }}>
+                  PORTFOLIO SECTIONS
+                </span>
+                <span className="text-[10px] font-mono" style={{ color: 'var(--c-faint)' }}>
+                  TAP TO SCROLL
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
+                {NAV_ITEMS.map(({ id, label, subtitle, isResume }, index) => {
+                  const isActive = currentActive === id;
+                  return (
+                    <motion.button
+                      key={id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.22, delay: index * 0.035 }}
+                      onClick={() => {
+                        handleNavClick(id, isResume);
+                        closeMobile();
+                      }}
+                      className="w-full text-left p-4 rounded-xl transition-all cursor-pointer flex items-center justify-between group active:scale-[0.98]"
+                      style={{
+                        backgroundColor: isActive ? 'var(--c-card)' : 'var(--c-input-bg)',
+                        border: `1px solid ${isActive ? 'var(--c-border-focus)' : 'var(--c-border)'}`,
+                        boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.06)' : undefined,
+                      }}
+                      aria-current={isActive ? 'location' : undefined}
+                    >
+                      <div className="flex items-center gap-4">
+                        <span
+                          className="font-mono text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{
+                            backgroundColor: isActive ? 'var(--c-heading)' : 'var(--c-bg)',
+                            color: isActive ? 'var(--c-bg)' : 'var(--c-subtle)',
+                            border: `1px solid ${isActive ? 'var(--c-heading)' : 'var(--c-border)'}`,
+                          }}
+                        >
+                          0{index + 1}
+                        </span>
+                        <div>
+                          <div
+                            className="font-sans text-lg font-bold tracking-tight"
+                            style={{ color: 'var(--c-heading)' }}
+                          >
+                            {label}
+                          </div>
+                          {subtitle && (
+                            <div className="text-xs font-body opacity-70 mt-0.5" style={{ color: 'var(--c-muted)' }}>
+                              {subtitle}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {isActive && (
+                          <span
+                            className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: 'var(--c-dot)' }}
+                          />
+                        )}
+                        <ArrowUpRight
+                          className="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 opacity-60 group-hover:opacity-100"
+                          style={{ color: 'var(--c-heading)' }}
+                        />
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Atmosphere / Theme Selector */}
+            <div className="pt-2">
+              <p className="text-[11px] font-mono uppercase tracking-widest font-bold mb-3 px-1" style={{ color: 'var(--c-subtle)' }}>
                 PAPER ATMOSPHERE
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 {THEMES.map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setTheme(t.id)}
-                    className="p-2.5 rounded-xl text-left flex items-center gap-2.5 transition-all cursor-pointer"
+                    className="p-3 rounded-xl text-left flex items-center gap-3 transition-all cursor-pointer active:scale-95"
                     style={{
                       backgroundColor: 'var(--c-input-bg)',
-                      border: `1px solid ${theme === t.id ? 'var(--c-border-focus)' : 'var(--c-border)'}`,
-                      opacity: theme === t.id ? 1 : 0.7,
+                      border: `1.5px solid ${theme === t.id ? 'var(--c-border-focus)' : 'var(--c-border)'}`,
+                      boxShadow: theme === t.id ? '0 2px 8px rgba(0,0,0,0.08)' : undefined,
                     }}
-                    aria-label={`Switch to ${t.label}`}
+                    aria-label={`Switch atmosphere to ${t.label}`}
                     aria-pressed={theme === t.id}
                   >
-                    <span 
-                      className="w-4 h-4 rounded-full flex-shrink-0 border"
-                      style={{ backgroundColor: t.color, borderColor: 'rgba(0,0,0,0.15)' }}
+                    <span
+                      className="w-4 h-4 rounded-full flex-shrink-0 border shadow-sm"
+                      style={{ backgroundColor: t.color, borderColor: 'rgba(0,0,0,0.2)' }}
                     />
-                    <span className="text-xs font-mono truncate" style={{ color: 'var(--c-heading)' }}>
-                      {t.label}
-                    </span>
+                    <div className="truncate">
+                      <div className="text-xs font-mono font-bold truncate" style={{ color: 'var(--c-heading)' }}>
+                        {t.label}
+                      </div>
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Fold Button Footer */}
-            <div className="p-6 pt-3 pb-8">
+            {/* Paper Fold Action */}
+            <div className="pt-2 pb-6">
               <button
+                type="button"
                 onClick={() => {
                   onRecrumple();
                   closeMobile();
                 }}
-                className="w-full px-4 py-3 font-handwriting text-lg flex items-center justify-center gap-2.5 transition-all active:scale-[0.97] cursor-pointer rounded-xl"
+                className="w-full py-3.5 px-4 rounded-xl flex items-center justify-center gap-2.5 font-handwriting text-lg cursor-pointer transition-all active:scale-[0.97]"
                 style={{
+                  backgroundColor: 'var(--c-card)',
                   color: 'var(--c-heading)',
                   border: '1px solid var(--c-border)',
-                  backgroundColor: 'var(--c-input-bg)',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                 }}
               >
                 <RotateCcw className="w-4 h-4" />
-                <span>Fold Paper Back</span>
+                <span>Fold Paper Back to Origami Ball</span>
               </button>
             </div>
           </div>
