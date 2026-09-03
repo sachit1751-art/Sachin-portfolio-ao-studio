@@ -6,6 +6,11 @@ import { ScrollReveal } from '../UI/ScrollReveal';
 const updates = [
   {
     date: 'Sep 2026',
+    title: 'AI Chatbot & Open-Source Assistant',
+    description: 'Released the full-stack AI Chatbot application with Next.js App Router, Vercel AI SDK, and multi-model gateway support.',
+  },
+  {
+    date: 'Sep 2026',
     title: 'Portfolio Launch',
     description: 'Launched my interactive 3D paper-themed portfolio built with React, Three.js, and custom WebGL shaders.',
   },

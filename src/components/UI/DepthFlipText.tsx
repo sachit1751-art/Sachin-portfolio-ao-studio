@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { usePerformance } from '../../hooks/usePerformance';
+import { measureTextWidth } from '../../utils/pretext';
 
 interface DepthFlipTextProps {
   phrases?: string[];
@@ -30,6 +31,11 @@ export const DepthFlipText = memo<DepthFlipTextProps>(({
 
   const activePhrases = singleText ? [singleText] : phrases;
   const currentPhrase = activePhrases[index % activePhrases.length];
+
+  // Pre-calculate phrase text widths using Pretext for smooth bounding stability
+  const phraseWidth = useMemo(() => {
+    return measureTextWidth(currentPhrase, '800 64px sans-serif');
+  }, [currentPhrase]);
 
   // Next phrase trigger
   const triggerNext = useCallback(() => {

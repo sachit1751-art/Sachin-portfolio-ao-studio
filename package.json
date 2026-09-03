@@ -12,6 +12,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@chenglou/pretext": "^0.0.8",
     "@google/genai": "^2.21.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.4.0",

@@ -133,27 +133,7 @@
     0% { startOffset: 0%; }
     100% { startOffset: -50%; }
   }
-  @keyframes scrollTextPathMove {
-    0% { startOffset: 0px; }
-    100% { startOffset: var(--scroll-text-offset, -300px); }
-  }
-
-  .bg-text-path-1 {
-    animation: bgTextPathMove1 220s linear infinite;
-    will-change: startOffset;
-  }
-  .bg-text-path-2 {
-    animation: bgTextPathMove2 260s linear infinite;
-    will-change: startOffset;
-  }
-  .bg-text-path-3 {
-    animation: bgTextPathMove3 240s linear infinite;
-    will-change: startOffset;
-  }
-  .scroll-text-path-anim {
-    animation: scrollTextPathMove 22s linear infinite;
-    will-change: startOffset;
-  }
+  /* Scroll text path is now driven by a high-performance RAF loop + IntersectionObserver */
 
   /* Optimize off-screen section rendering */
   section {
@@ -228,7 +208,7 @@
     --c-card-gradient-from: rgba(255,255,255,0.4);
     --c-card-gradient-to: rgba(255,255,255,0.1);
     --c-card: rgba(255,255,255,0.25);
-    --c-header-bg: rgba(248,246,240,0.85);
+    --c-header-bg: #F8F6F0;
     --c-header-border: rgba(26,25,23,0.08);
     --c-input-bg: rgba(255,255,255,0.4);
     --c-input-bg-focus: rgba(255,255,255,0.6);
@@ -265,7 +245,7 @@
     --c-card-gradient-from: rgba(255,255,255,0.3);
     --c-card-gradient-to: rgba(255,255,255,0.05);
     --c-card: rgba(255,255,255,0.18);
-    --c-header-bg: rgba(239,230,213,0.85);
+    --c-header-bg: #EFE6D5;
     --c-header-border: rgba(36,31,26,0.08);
     --c-input-bg: rgba(255,255,255,0.3);
     --c-input-bg-focus: rgba(255,255,255,0.5);
@@ -302,7 +282,7 @@
     --c-card-gradient-from: rgba(255,255,255,0.08);
     --c-card-gradient-to: rgba(255,255,255,0.02);
     --c-card: rgba(255,255,255,0.06);
-    --c-header-bg: rgba(20,40,62,0.88);
+    --c-header-bg: #14283E;
     --c-header-border: rgba(234,239,244,0.1);
     --c-input-bg: rgba(255,255,255,0.08);
     --c-input-bg-focus: rgba(255,255,255,0.14);
@@ -339,7 +319,7 @@
     --c-card-gradient-from: rgba(255,255,255,0.06);
     --c-card-gradient-to: rgba(255,255,255,0.01);
     --c-card: rgba(255,255,255,0.04);
-    --c-header-bg: rgba(30,31,35,0.88);
+    --c-header-bg: #1E1F23;
     --c-header-border: rgba(232,231,228,0.1);
     --c-input-bg: rgba(255,255,255,0.06);
     --c-input-bg-focus: rgba(255,255,255,0.12);
@@ -420,16 +400,25 @@
 }
 
 /* Content scroll container — scrolls within fixed overlay */
-#content-scroll-container {
+#content-scroll-container,
+#resume-scroll-container,
+#privacy-scroll-container,
+#terms-scroll-container {
   scrollbar-width: thin;
   scrollbar-color: var(--c-muted) transparent;
 }
 
-#content-scroll-container::-webkit-scrollbar {
+#content-scroll-container::-webkit-scrollbar,
+#resume-scroll-container::-webkit-scrollbar,
+#privacy-scroll-container::-webkit-scrollbar,
+#terms-scroll-container::-webkit-scrollbar {
   width: 5px;
 }
 
-#content-scroll-container::-webkit-scrollbar-thumb {
+#content-scroll-container::-webkit-scrollbar-thumb,
+#resume-scroll-container::-webkit-scrollbar-thumb,
+#privacy-scroll-container::-webkit-scrollbar-thumb,
+#terms-scroll-container::-webkit-scrollbar-thumb {
   background: var(--c-muted);
   border-radius: 3px;
 }

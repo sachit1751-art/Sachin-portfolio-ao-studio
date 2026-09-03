@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { Hammer, Feather, FlaskConical, Palette, BookOpen } from 'lucide-react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
+import { PretextText } from '../UI/PretextText';
 
 const principles = [
   {
@@ -67,9 +68,14 @@ export const Philosophy = memo(() => {
                 <h3 className="font-sans text-xl font-bold mb-2 tracking-tight" style={{ color: 'var(--c-heading)' }}>
                   <WordReveal text={principle.title} baseDelay={0.2 + idx * 0.1} />
                 </h3>
-                <p className="text-base sm:text-lg leading-relaxed font-body" style={{ color: 'var(--c-body)' }}>
-                  <WordReveal text={principle.description} baseDelay={0.35 + idx * 0.1} />
-                </p>
+                <PretextText
+                  text={principle.description}
+                  font="16px sans-serif"
+                  lineHeight={26}
+                  mode="balanced"
+                  className="text-base sm:text-lg leading-relaxed font-body"
+                  style={{ color: 'var(--c-body)' }}
+                />
               </div>
             </div>
           </LineReveal>

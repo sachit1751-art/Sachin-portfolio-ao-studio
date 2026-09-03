@@ -4,7 +4,7 @@ import { usePerformance } from '../../hooks/usePerformance';
 export const BackgroundTextPath = memo(() => {
   const { simplify } = usePerformance();
   const text = "SACHIT • DEVELOPER • AI • DESIGN • CREATE • ";
-  const repeatedText = text.repeat(simplify ? 16 : 40);
+  const repeatedText = text.repeat(simplify ? 8 : 16);
 
   return (
     <div 

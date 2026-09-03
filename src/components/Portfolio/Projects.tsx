@@ -29,10 +29,12 @@ import {
   Shield,
   Tag,
 } from 'lucide-react';
+import { GitHubIcon } from '../UI/Icons';
 import { AnimatedMenuIcon } from '../UI/AnimatedMenuIcon';
 import { CharReveal } from '../UI/TextReveal';
 import { usePerformance } from '../../hooks/usePerformance';
 import { ScrollReveal } from '../UI/ScrollReveal';
+import { PretextText } from '../UI/PretextText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -77,6 +79,21 @@ const projects: Project[] = [
       'SKY ROMs is an Android Custom ROM Discovery & Management Platform. It helps users discover, compare, and manage custom ROMs for their Android devices.\n\nKey Features: ROM discovery, device compatibility checks, ROM comparisons, download management, user reviews, community features.\n\nTech Stack: React, TypeScript, Vite, Supabase, Tailwind CSS.',
     tags: ['React', 'TypeScript', 'Vite', 'Supabase', 'Tailwind CSS'],
     demoUrl: 'https://sky-roms.vercel.app',
+    featured: true,
+  },
+  {
+    id: 'ai-chatbot',
+    title: 'AI Chatbot & Assistant',
+    category: 'AI Platform',
+    filterCategories: ['AI', 'WEB'],
+    year: '2026',
+    description:
+      'Multi-model full-stack conversational AI platform built with Next.js App Router, Vercel AI SDK, and serverless Postgres.',
+    longDescription:
+      'An open-source, full-stack AI chatbot and generative assistant platform. Integrates multi-model routing (Anthropic Claude, OpenAI, xAI, DeepSeek) through Vercel AI Gateway with persistent chat histories and clean UI components.\n\nKey Features: Multi-model switching, generative UI hooks, streaming responses, chat history persistence with Neon PostgreSQL, and responsive interface.\n\nTech Stack: Next.js, React, TypeScript, Vercel AI SDK, Neon PostgreSQL, Tailwind CSS, Radix UI.',
+    tags: ['Next.js', 'TypeScript', 'AI SDK', 'PostgreSQL', 'Tailwind CSS'],
+    demoUrl: 'https://chatbot-seven-dun-evb9u88zkv.vercel.app',
+    githubUrl: 'https://github.com/sachit1751-art/chatbot',
     featured: true,
   },
   {
@@ -265,9 +282,14 @@ export const Projects = memo(() => {
                     </span>
                   </h3>
 
-                  <p className="text-sm sm:text-base leading-relaxed mb-4 font-body opacity-85" style={{ color: 'var(--c-body)' }}>
-                    {project.description}
-                  </p>
+                  <PretextText
+                    text={project.description}
+                    font="15px sans-serif"
+                    lineHeight={22}
+                    mode="balanced"
+                    className="text-sm sm:text-base leading-relaxed mb-4 font-body opacity-85"
+                    style={{ color: 'var(--c-body)' }}
+                  />
                 </div>
 
                 {/* Print-only Full Details (Always visible on paper) */}
@@ -289,22 +311,37 @@ export const Projects = memo(() => {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2.5" style={{ borderTop: '1px solid var(--c-border)' }}>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5" style={{ borderTop: '1px solid var(--c-border)' }}>
                       <span className="font-mono text-[10px] uppercase tracking-wider opacity-70" style={{ color: 'var(--c-muted)' }}>
                         YEAR: {project.year}
                       </span>
-                      {project.demoUrl && (
-                        <a
-                          href={project.demoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline text-emerald-600 dark:text-emerald-400"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <span>Open Live Demo</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
+                      <div className="flex items-center gap-3">
+                        {project.githubUrl && (
+                          <a
+                            href={project.githubUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline"
+                            style={{ color: 'var(--c-heading)' }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <GitHubIcon className="w-3 h-3" />
+                            <span>Source Code</span>
+                          </a>
+                        )}
+                        {project.demoUrl && (
+                          <a
+                            href={project.demoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline text-emerald-600 dark:text-emerald-400"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>Open Live Demo</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -333,7 +370,7 @@ export const Projects = memo(() => {
                   })}
                 </div>
 
-                {/* Quick Details Action Strip (No Full View) */}
+                {/* Quick Details Action Strip */}
                 <div className="flex items-center justify-between gap-2 pt-1">
                   <button
                     type="button"
@@ -349,6 +386,26 @@ export const Projects = memo(() => {
                     <span>{isExpanded ? 'Hide Details' : 'Quick Details'}</span>
                     <AnimatedMenuIcon isOpen={isExpanded} variant="chevron" size={14} />
                   </button>
+
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="min-h-[38px] px-3 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:border-[var(--c-border-focus)] active:scale-95"
+                      style={{
+                        border: '1px solid var(--c-border)',
+                        backgroundColor: 'var(--c-input-bg)',
+                        color: 'var(--c-heading)',
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      title="View GitHub Repository"
+                      aria-label="View GitHub Repository"
+                    >
+                      <GitHubIcon className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Code</span>
+                    </a>
+                  )}
 
                   {project.demoUrl && (
                     <a

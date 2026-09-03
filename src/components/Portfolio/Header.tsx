@@ -323,10 +323,8 @@ export const Header = memo<HeaderProps>(({
         }}
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          backgroundColor: scrolled ? 'var(--c-header-bg)' : 'transparent',
+          backgroundColor: 'var(--c-header-bg)',
           borderBottom: scrolled ? '1px solid var(--c-header-border)' : '1px solid transparent',
-          backdropFilter: scrolled ? 'blur(16px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
           boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
         }}
       >
@@ -375,6 +373,7 @@ export const Header = memo<HeaderProps>(({
                   key={id}
                   ref={(el) => { navBtns.current[id] = el; }}
                   onClick={() => handleNavClick(id, isResume)}
+                  onMouseEnter={isResume ? () => { import('./ResumeViewer'); } : undefined}
                   className="relative px-3.5 py-1.5 text-sm font-body transition-colors cursor-pointer rounded-md"
                   style={{
                     color: isActive ? 'var(--c-heading)' : 'var(--c-subtle)',

@@ -246,23 +246,43 @@ export default function App() {
     }
 
     setIsViewingResume(false);
+    setIsViewingPrivacy(false);
+    setIsViewingTerms(false);
     try {
-      if (window.location.pathname === '/resume') {
+      if (window.location.pathname === '/resume' || window.location.pathname === '/privacy' || window.location.pathname === '/terms') {
         window.history.pushState({}, '', '/');
       }
     } catch {}
 
-    setTimeout(() => {
+    // Immediate zero-delay scroll without waiting for artificial timeouts
+    requestAnimationFrame(() => {
       const container = document.getElementById('content-scroll-container');
+      if (!container) return;
+
+      if (id === 'hero' || id === 'top') {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       const target = document.getElementById(id);
-      if (container && target) {
+      if (target) {
         const containerRect = container.getBoundingClientRect();
         const targetRect = target.getBoundingClientRect();
         const offset = targetRect.top - containerRect.top + container.scrollTop - 72;
         container.scrollTo({ top: offset, behavior: 'smooth' });
       }
-    }, 100);
+    });
   }, [introCompleted, paperState]);
+
+  // Preload ResumeViewer module once portfolio is revealed to ensure instantaneous transitions
+  useEffect(() => {
+    if (showContent && introCompleted) {
+      const timer = window.setTimeout(() => {
+        import('./components/Portfolio/ResumeViewer');
+      }, 1200);
+      return () => window.clearTimeout(timer);
+    }
+  }, [showContent, introCompleted]);
 
   // Apply performance class to body for CSS optimizations
   useEffect(() => {
@@ -444,44 +464,80 @@ export default function App() {
               onNavigateSection={handleNavigateSection}
             />
           )}
-          <div id="content-scroll-container" className="w-full h-full overflow-y-auto overflow-x-hidden pt-[72px]">
-            {isViewingPrivacy ? (
-              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING PRIVACY POLICY..." color="var(--c-heading)" /></div>}>
-                <LazyPrivacyPolicy onBack={() => {
-                  setIsViewingPrivacy(false);
-                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-                }} />
-              </Suspense>
-            ) : isViewingTerms ? (
-              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING TERMS..." color="var(--c-heading)" /></div>}>
-                <LazyTermsOfService onBack={() => {
-                  setIsViewingTerms(false);
-                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-                }} />
-              </Suspense>
-            ) : isViewingResume ? (
+          {/* Main Portfolio Scroll Container - kept mounted to preserve scroll position and eliminate remount lag */}
+          <div
+            id="content-scroll-container"
+            className={`w-full h-full overflow-y-auto overflow-x-hidden pt-[72px] ${
+              isViewingResume || isViewingPrivacy || isViewingTerms
+                ? 'invisible pointer-events-none'
+                : 'visible pointer-events-auto'
+            }`}
+            aria-hidden={isViewingResume || isViewingPrivacy || isViewingTerms}
+            tabIndex={isViewingResume || isViewingPrivacy || isViewingTerms ? -1 : undefined}
+          >
+            <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="UNFOLDING PORTFOLIO..." color="var(--c-heading)" /></div>}>
+              <PortfolioContainer
+                theme={theme}
+                paperState={paperState}
+                onViewResume={handleOpenResume}
+              />
+            </Suspense>
+          </div>
+
+          {/* Dedicated Resume Overlay Container */}
+          {isViewingResume && (
+            <div
+              id="resume-scroll-container"
+              className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden bg-transparent"
+            >
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="PREPARING CV CANVAS..." color="var(--c-heading)" /></div>}>
                 <LazyResumeViewer
                   theme={theme}
                   onBack={handleCloseResume}
                 />
               </Suspense>
-            ) : (
-              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="UNFOLDING PORTFOLIO..." color="var(--c-heading)" /></div>}>
-                <PortfolioContainer
-                  theme={theme}
-                  paperState={paperState}
-                  onViewResume={handleOpenResume}
-                />
+            </div>
+          )}
+
+          {/* Dedicated Privacy Policy Overlay */}
+          {isViewingPrivacy && (
+            <div
+              id="privacy-scroll-container"
+              className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden"
+              style={{ backgroundColor: 'var(--c-bg)' }}
+            >
+              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING PRIVACY POLICY..." color="var(--c-heading)" /></div>}>
+                <LazyPrivacyPolicy onBack={() => {
+                  setIsViewingPrivacy(false);
+                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+                }} />
               </Suspense>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Dedicated Terms of Service Overlay */}
+          {isViewingTerms && (
+            <div
+              id="terms-scroll-container"
+              className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden"
+              style={{ backgroundColor: 'var(--c-bg)' }}
+            >
+              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING TERMS..." color="var(--c-heading)" /></div>}>
+                <LazyTermsOfService onBack={() => {
+                  setIsViewingTerms(false);
+                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+                }} />
+              </Suspense>
+            </div>
+          )}
 
           {/* Sticky Mobile CTA */}
-          <StickyMobileCTA
-            onNavigate={handleNavigateSection}
-            onViewResume={handleOpenResume}
-          />
+          {!isViewingResume && !isViewingPrivacy && !isViewingTerms && (
+            <StickyMobileCTA
+              onNavigate={handleNavigateSection}
+              onViewResume={handleOpenResume}
+            />
+          )}
         </div>
       )}
 

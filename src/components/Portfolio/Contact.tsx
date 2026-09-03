@@ -592,7 +592,7 @@ export const Contact = memo(() => {
             {/* Footer */}
             <div className="pt-6 text-center space-y-3" style={{ borderTop: '1px solid var(--c-border)' }}>
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono" style={{ color: 'var(--c-subtle)' }}>
-                <span>📍 San Francisco, CA / Remote (Worldwide)</span>
+                <span>📍 New Delhi, India / Remote (Worldwide)</span>
                 <span>•</span>
                 <span>⚡ Avg Response: &lt; 24h</span>
                 <span>•</span>

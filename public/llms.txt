@@ -30,7 +30,14 @@
 - **Tech Stack**: React, TypeScript, Vite, Supabase (PostgreSQL), Tailwind CSS.
 - **Live Demo**: https://sky-roms.vercel.app
 
-### 2. Claude Document Summarizer (2025)
+### 2. AI Chatbot & Assistant (2026)
+- **Description**: Multi-model conversational AI platform with streaming generative UI and chat history persistence.
+- **Key Features**: Multi-model routing (Claude, OpenAI, xAI, DeepSeek) via Vercel AI Gateway, Serverless Neon Postgres storage, and dynamic AI SDK hooks.
+- **Tech Stack**: Next.js, React, TypeScript, Vercel AI SDK, Neon PostgreSQL, Tailwind CSS, Radix UI.
+- **Live Demo**: https://chatbot-seven-dun-evb9u88zkv.vercel.app
+- **GitHub**: https://github.com/sachit1751-art/chatbot
+
+### 3. Claude Document Summarizer (2025)
 - **Description**: High-speed AI document summarization engine.
 - **Key Features**: Fast document breakdown, Anthropic prompt caching for cost/speed optimization, clean Markdown formatting.
 - **Tech Stack**: Python, Anthropic Claude API, Prompt Engineering.

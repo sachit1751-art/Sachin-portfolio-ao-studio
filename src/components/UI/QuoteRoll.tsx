@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { usePerformance } from '../../hooks/usePerformance';
+import { measureTextWidth } from '../../utils/pretext';
 
 interface QuoteRollProps {
   quotes: string[];
@@ -13,6 +14,14 @@ export function QuoteRoll({ quotes, interval = 5000, className = '' }: QuoteRoll
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLSpanElement>(null);
   const { simplify } = usePerformance();
+
+  // Measure max width among quotes using Pretext to prevent layout shifts
+  const maxWidth = useMemo(() => {
+    return quotes.reduce((max, q) => {
+      const w = measureTextWidth(q, '14px "Caveat", cursive, sans-serif');
+      return Math.max(max, w);
+    }, 0);
+  }, [quotes]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -36,7 +45,11 @@ export function QuoteRoll({ quotes, interval = 5000, className = '' }: QuoteRoll
   }, [quotes.length, interval, isVisible, simplify]);
 
   return (
-    <span ref={containerRef} className={`relative inline-grid overflow-hidden ${className}`}>
+    <span
+      ref={containerRef}
+      className={`relative inline-grid overflow-hidden ${className}`}
+      style={{ minWidth: maxWidth > 0 ? `${Math.ceil(maxWidth)}px` : undefined }}
+    >
       <AnimatePresence mode="wait">
         <motion.span
           key={index}
@@ -44,7 +57,7 @@ export function QuoteRoll({ quotes, interval = 5000, className = '' }: QuoteRoll
           animate={simplify ? { opacity: 1 } : { y: 0, opacity: 1, filter: 'blur(0px)' }}
           exit={simplify ? { opacity: 0 } : { y: -15, opacity: 0, filter: 'blur(4px)' }}
           transition={simplify ? { duration: 0.2 } : { type: 'spring', stiffness: 300, damping: 30 }}
-          className="[grid-area:1/1]"
+          className="[grid-area:1/1] whitespace-nowrap"
         >
           {quotes[index]}
         </motion.span>
@@ -52,3 +65,4 @@ export function QuoteRoll({ quotes, interval = 5000, className = '' }: QuoteRoll
     </span>
   );
 }
+

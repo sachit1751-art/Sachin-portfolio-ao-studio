@@ -60,7 +60,7 @@ export const PortfolioContainer = memo<PortfolioContainerProps>(({
             onViewResume={onViewResume}
           />
 
-          <ScrollTextPath text="Building • Creating • Designing • Coding" className="-my-8" />
+          <ScrollTextPath text="Coding • Building • Creating • Designing" className="-my-8" />
 
           <About />
           <Philosophy />

@@ -22,14 +22,14 @@ interface ChatAboutMeProps {
 
 const INITIAL_MESSAGE: Message = { 
   role: 'model', 
-  content: "Hi! I'm Sachit's AI assistant powered by machine-readable `/llms.txt` context. Ask me anything about his projects (like SKY ROMs, Claude Document Summarizer, Nexus Core, or Sentience OS), tech stack, philosophy, or background!" 
+  content: "Hi! I'm Sachit's AI assistant powered by machine-readable `/llms.txt` context. Ask me anything about his projects (like SKY ROMs, AI Chatbot & Assistant, Claude Document Summarizer, Nexus Core, or Sentience OS), tech stack, philosophy, or background!" 
 };
 
 const SUGGESTIONS: Record<string, string[]> = {
   hero: ["Tell me about Sachit", "What is his core philosophy?"],
   about: ["What is Class 12 PCMB?", "Where is he based?"],
   philosophy: ["Explain 'Learn by Building'", "How does he view AI?"],
-  projects: ["Tell me about SKY ROMs", "What is Nexus Core?", "What is Claude Document Summarizer?"],
+  projects: ["Tell me about SKY ROMs", "What is the AI Chatbot project?", "What is Claude Document Summarizer?"],
   skills: ["What programming languages does he know?", "What AI tools does he use?"],
   experience: ["What projects has he built?", "What are his core focus areas?"],
   education: ["What is he currently studying?", "What subjects are in PCMB?"],
@@ -153,9 +153,13 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
             try {
               const parsed = JSON.parse(dataStr);
               if (parsed.error) {
-                throw new Error(parsed.error);
-              }
-              if (parsed.text) {
+                accumulatedText = parsed.error;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { role: 'model', content: accumulatedText };
+                  return updated;
+                });
+              } else if (parsed.text) {
                 accumulatedText += parsed.text;
                 setMessages((prev) => {
                   const updated = [...prev];
@@ -167,6 +171,18 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
               // Ignore single token parsing errors
             }
           }
+        }
+
+        // If no text was accumulated, provide a helpful default
+        if (!accumulatedText.trim()) {
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = { 
+              role: 'model', 
+              content: "I'm ready to answer any questions about Sachit's projects (like SKY ROMs and the AI Chatbot), technical skills, or background. What would you like to know?" 
+            };
+            return updated;
+          });
         }
       } else {
         const data = await response.json();

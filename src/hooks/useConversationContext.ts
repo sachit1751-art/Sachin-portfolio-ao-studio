@@ -33,6 +33,13 @@ export const DEFAULT_PROJECT_SUMMARIES: ProjectSummary[] = [
     url: 'https://sky-roms.vercel.app'
   },
   {
+    name: 'AI Chatbot & Assistant',
+    category: 'AI / Full Stack',
+    description: 'Multi-model conversational AI platform with streaming generative UI and chat history persistence.',
+    techStack: ['Next.js', 'TypeScript', 'Vercel AI SDK', 'Neon PostgreSQL', 'Tailwind CSS'],
+    url: 'https://chatbot-seven-dun-evb9u88zkv.vercel.app'
+  },
+  {
     name: 'Claude Document Summarizer',
     category: 'AI / Automation',
     description: 'High-speed AI document summarization engine with Anthropic prompt caching for speed and cost optimization.',
