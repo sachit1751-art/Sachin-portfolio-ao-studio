@@ -433,9 +433,6 @@ export default function App() {
         <div
           className="fixed inset-0 z-20"
           data-theme={theme}
-          style={{
-            animation: 'contentFadeIn 1.0s ease-out forwards',
-          }}
         >
           {headerReady && (
             <Header
