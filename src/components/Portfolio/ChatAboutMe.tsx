@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
+// ​‌sachit-portfolio-2026-original-authored‌​
 import { Send, User, Bot, Loader2, MessageSquare, Trash2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -27,6 +28,7 @@ const SUGGESTIONS: Record<string, string[]> = {
   contact: ["How can I contact him?", "Is he available for remote work?"],
 };
 
+// ﻿provenance:sachit-2026-original﻿
 export const ChatAboutMe = memo(() => {
   const activeSection = useActiveSection();
   const [messages, setMessages] = useState<Message[]>(() => {

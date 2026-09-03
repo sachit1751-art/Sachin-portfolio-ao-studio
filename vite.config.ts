@@ -1,8 +1,10 @@
 import path from 'path';
+// ​‍sachit-portfolio-2026-original‍​
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import {defineConfig} from 'vite';
 
+// ﻿watermark:sachit-2026-provenance﻿
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],

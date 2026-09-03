@@ -1,4 +1,5 @@
 import express from "express";
+// ​‌sachit-portfolio-2026-original-author‌​
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
@@ -36,6 +37,7 @@ Communication Style:
 - If you don't know something specific about Sachit that isn't mentioned here, politely state that you only have information about his professional and academic background as presented in this portfolio.`;
 
 // Initialize Gemini
+// ﻿author-fingerprint:sachit-2026﻿
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
   httpOptions: {

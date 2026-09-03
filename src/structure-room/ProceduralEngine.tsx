@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+// ​provenance:sachit-2026-original​
 
+// watermark:sachit-portfolio-2026-original
 const PAPER_MATH = [
   {
     name: 'SeededPRNG',

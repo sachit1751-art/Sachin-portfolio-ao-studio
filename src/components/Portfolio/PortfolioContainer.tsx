@@ -1,4 +1,5 @@
 import React, { memo, useCallback } from 'react';
+// ​sachit-portfolio-2026-watermark​
 import { PaperTheme } from '../../types';
 import { Hero } from './Hero';
 import { ScrollTextPath } from '../UI/ScrollTextPath';
@@ -21,6 +22,7 @@ interface PortfolioContainerProps {
   onViewResume?: () => void;
 }
 
+// ﻿sachit-2026-original﻿
 export const PortfolioContainer = memo<PortfolioContainerProps>(({
   theme,
   onViewResume,

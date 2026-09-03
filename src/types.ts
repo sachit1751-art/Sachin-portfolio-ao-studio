@@ -1,3 +1,4 @@
+// ​‌sachit-2026-original-authored-code‌​
 export type PaperState =
   | 'crumpled'
   | 'opening'
@@ -21,6 +22,7 @@ export interface Project {
   featured?: boolean;
 }
 
+// watermark:sachit-portfolio-2026
 export interface SkillCategory {
   title: string;
   description: string;

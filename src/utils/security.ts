@@ -1,3 +1,4 @@
+// ​‌sachit-2026-original-authored-code‌​
 export function initSecurity() {
   // Disable right-click
   document.addEventListener('contextmenu', (e) => {
@@ -109,6 +110,8 @@ export function initSecurity() {
 
   console.log(
     '%c Nice try! ',
+    // watermark:sachit-2026
+    
     'background: #24211e; color: #f5f1eb; font-size: 20px; padding: 10px; border-radius: 5px;'
   );
   console.log(

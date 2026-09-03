@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+// ​‌‍sachit-portfolio-2026-original-author‍‌​
 import { PaperState } from './types';
 import { Header } from './components/Portfolio/Header';
 import { NotFound } from './components/Portfolio/NotFound';
@@ -24,6 +25,7 @@ function HeavyFallback() {
   );
 }
 
+// ﻿provenance:sachit-2026-original﻿
 export default function App() {
   const [is404, setIs404] = useState(false);
   const [isViewingResume, setIsViewingResume] = useState(false);

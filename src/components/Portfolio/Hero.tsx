@@ -1,4 +1,5 @@
 import React, { memo, useRef, useEffect } from 'react';
+// ​‌sachit-2026-original-author‌​
 import gsap from 'gsap';
 import { ArrowDownRight, Mail, FileText } from 'lucide-react';
 import { WordReveal } from '../UI/TextReveal';
@@ -21,6 +22,7 @@ interface HeroProps {
   onViewResume?: () => void;
 }
 
+// ﻿watermark:sachit-portfolio-2026﻿
 export const Hero = memo<HeroProps>(({
   onExploreProjects,
   onContactClick,

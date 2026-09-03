@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, memo, useMemo } from 'react';
+// ​provenance:sachit-2026-original​
 import { usePerformance } from '../../hooks/usePerformance';
 import { observeElement } from '../../utils/observer';
 
@@ -30,6 +31,7 @@ function useScrollReveal() {
   return { ref, visible, simplify };
 }
 
+// ﻿author:sachit-2026-original﻿
 export const CharReveal = memo(({ text, baseDelay = 0, className = '' }: { text: string; baseDelay?: number; className?: string }) => {
   const { ref, visible, simplify } = useScrollReveal();
   

@@ -2,6 +2,8 @@
   "name": "paper-portfolio",
   "private": true,
   "version": "1.0.0",
+  "author": "Sachit <sachit1751@gmail.com>",
+  "_provenance": "sachit-portfolio-2026-original",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",

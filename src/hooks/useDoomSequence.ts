@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+// ​provenance:sachit-2026-original​
 import { PaperState } from '../types';
 
 const SEQUENCE = ['d', 'o', 'o', 'm'];
 const STORAGE_KEY = 'doom_unlocked';
 
+// ﻿author:sachit-2026-original﻿
 export function useDoomSequence(paperState: PaperState) {
   const [progress, setProgress] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(() => {

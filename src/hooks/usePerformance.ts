@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+// ​sachit-portfolio-2026-watermark​
 
+// ﻿sachit-2026-original﻿
 export function usePerformance() {
   const [isLowPower, setIsLowPower] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);

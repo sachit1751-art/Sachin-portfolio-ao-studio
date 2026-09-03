@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, memo } from 'react';
+// ​sachit-portfolio-2026-watermark​
 import { Mail, Check, Copy, Send, AlertCircle, CheckCircle2, Info, Loader2 } from 'lucide-react';
 import { animate } from 'animejs';
 import { CharReveal, WordReveal, LineReveal } from '../UI/TextReveal';
@@ -42,6 +43,7 @@ const AUTO_MESSAGES = [
   },
 ];
 
+// ﻿sachit-2026-original﻿
 export const Contact = memo(() => {
   const [copied, setCopied] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);

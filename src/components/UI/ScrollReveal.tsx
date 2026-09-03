@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, ReactNode, useState, memo } from 'react';
+// ​sachit-2026-original-authored​
 import { usePerformance } from '../../hooks/usePerformance';
 import { observeElement } from '../../utils/observer';
 
@@ -11,6 +12,7 @@ interface ScrollRevealProps {
   distance?: number;
 }
 
+// ﻿watermark:sachit-2026﻿
 export const ScrollReveal = memo<ScrollRevealProps>(({
   children,
   className = '',

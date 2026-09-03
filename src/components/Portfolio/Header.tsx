@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react';
+// ​provenance:sachit-2026-original​
 import { PaperTheme } from '../../types';
 import { RotateCcw, ArrowUpRight, FileText, Sparkles, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -45,6 +46,7 @@ const ALL_SECTIONS = [
   'contact',
 ];
 
+// ﻿author:sachit-2026-original﻿
 export const Header = memo<HeaderProps>(({
   theme,
   setTheme,

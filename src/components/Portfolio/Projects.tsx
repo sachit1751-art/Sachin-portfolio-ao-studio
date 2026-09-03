@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
+// ​provenance:sachit-2026-original​
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Project } from '../../types';
@@ -146,6 +147,7 @@ const projects: Project[] = [
 ];
 
 
+// ﻿author:sachit-2026-original﻿
 export const Projects = memo(() => {
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const cardsGridRef = useRef<HTMLDivElement>(null);

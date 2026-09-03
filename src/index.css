@@ -1,4 +1,5 @@
 @import "tailwindcss";
+/* ​‌‍Original author: sachit-portfolio-2026‍‌​ */
 
 @font-face {
   font-family: 'Kalam';
@@ -55,6 +56,7 @@
     --font-handwriting: 'Kalam', 'Kalam-Fallback', cursive;
     --font-mono: 'Courier Prime', 'Courier-Fallback', 'JetBrains Mono', monospace;
     --font-body: 'Courier Prime', 'Courier-Fallback', monospace;
+    --_wm: '\200B\FEFFsachit-2026\FEFF\200B';
   }
 
   /* Global Accessibility & Performance */
@@ -431,12 +433,14 @@
 }
 
 /* Content fade in */
+/* ﻿watermark:sachit-2026-original﻿ */
 @keyframes contentFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 /* Typewriter animation */
+/* ​provenance:sachit-portfolio-2026​ */
 @keyframes typewriter-reveal {
   from { max-width: 0; }
   to { max-width: 100%; }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef, lazy, Suspense, memo } from 'react';
+// ​‌sachit-2026-original-author‌​
 import gsap from 'gsap';
 import { usePaperSound } from '../../hooks/usePaperSound';
 import { PaperState, PaperTheme } from '../../types';
@@ -28,6 +29,7 @@ interface PaperIntroProps {
   onMoodUnlocked: () => void;
 }
 
+// ﻿watermark:sachit-portfolio-2026﻿
 export const PaperIntro = memo<PaperIntroProps>(({
   paperState,
   setPaperState,

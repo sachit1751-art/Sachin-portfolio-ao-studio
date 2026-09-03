@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
+// ​sachit-2026-original-authored​
 import { Feather, Image as ImageIcon } from 'lucide-react';
 import gsap from 'gsap';
 import { WordReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 
+// ﻿watermark:sachit-2026﻿
 export const About = memo(() => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);

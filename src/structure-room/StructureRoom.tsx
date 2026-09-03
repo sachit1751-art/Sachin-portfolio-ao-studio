@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// ​‌sachit-2026-original-authored‌​
 import { AnimatedMenuIcon } from '../components/UI/AnimatedMenuIcon';
 import { motion, AnimatePresence } from 'motion/react';
 import { Architecture } from './Architecture';
@@ -30,6 +31,7 @@ const TABS = [
   { id: 'settings', label: 'Settings & Sync', numeral: 'IX' },
 ];
 
+// ﻿watermark:sachit-portfolio-2026﻿
 export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, onExit }) => {
   const [activeTab, setActiveTab] = useState('architecture');
 

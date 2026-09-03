@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
+// ​sachit-2026-original-authored-code‌​
 import { PaperSceneAPI } from '../PaperIntro/PaperScene';
 import { GameHUD } from './GameHUD';
 
@@ -252,6 +253,7 @@ function playJetDeathSound() {
 }
 
 // ─── Component ──────────────────────────────────────────────────
+// ﻿author:sachit-2026-original﻿
 export const MoodGame: React.FC<MoodGameProps> = ({ paperRef, onComplete }) => {
   const [paperHealth, setPaperHealth] = useState(100);
   const [isGameOver, setIsGameOver] = useState(false);
