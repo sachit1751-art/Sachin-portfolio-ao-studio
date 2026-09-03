@@ -3,6 +3,7 @@ import { PaperState } from './types';
 import { Header } from './components/Portfolio/Header';
 import { NotFound } from './components/Portfolio/NotFound';
 import { CursorDitherTrail } from './components/UI/CursorDitherTrail';
+import { HoneycombLoader } from './components/UI/HoneycombLoader';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
 import { initSecurity } from './utils/security';
@@ -17,8 +18,8 @@ const LazyResumeViewer = lazy(() => import('./components/Portfolio/ResumeViewer'
 
 function HeavyFallback() {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: '#0a0a0a' }}>
-      <div className="text-green-400 font-mono text-sm animate-pulse">Loading...</div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'var(--c-modal-backdrop, rgba(0,0,0,0.85))' }}>
+      <HoneycombLoader size="lg" label="LOADING ENGINE..." color="var(--c-heading)" />
     </div>
   );
 }
@@ -169,7 +170,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-transparent font-sans antialiased overflow-x-hidden">
+    <div data-theme={theme} className="relative min-h-screen bg-[var(--c-bg)] font-sans antialiased overflow-x-hidden transition-colors duration-500">
       <CursorDitherTrail theme={theme} />
       {is404 && <NotFound />}
       {showContent && (
@@ -220,14 +221,14 @@ export default function App() {
           />
           <div id="content-scroll-container" className="w-full h-full overflow-y-auto overflow-x-hidden pt-[72px]">
             {isViewingResume ? (
-              <Suspense fallback={<div className="flex items-center justify-center py-20 font-mono text-xs opacity-50">Loading Resume...</div>}>
+              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="PREPARING CV CANVAS..." color="var(--c-heading)" /></div>}>
                 <LazyResumeViewer
                   theme={theme}
                   onBack={handleCloseResume}
                 />
               </Suspense>
             ) : (
-              <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center bg-transparent font-mono text-xs opacity-50">Loading Portfolio...</div>}>
+              <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="UNFOLDING PORTFOLIO..." color="var(--c-heading)" /></div>}>
                 <PortfolioContainer
                   theme={theme}
                   onViewResume={handleOpenResume}

@@ -184,9 +184,9 @@ export const Projects = memo(() => {
           >
             <LineReveal
               delay={simplify ? 0 : 0.2 + idx * 0.1}
-              className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)]"
+              className="group relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden cursor-pointer h-full rounded-[var(--radius-lg)] transition-all duration-300"
               style={{
-                backgroundColor: 'var(--c-bg)',
+                backgroundColor: 'var(--c-card)',
                 border: '1px solid var(--c-border)',
               }}
             >

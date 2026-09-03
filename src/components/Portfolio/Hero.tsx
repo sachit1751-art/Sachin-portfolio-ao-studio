@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { ArrowDownRight, Mail, FileText } from 'lucide-react';
 import { WordReveal } from '../UI/TextReveal';
 import { TypewriterEffect } from '../UI/TypewriterEffect';
+import { DepthFlipText } from '../UI/DepthFlipText';
 import { QuoteRoll } from '../UI/QuoteRoll';
 import { GitHubIcon } from '../UI/Icons';
 
@@ -51,7 +52,15 @@ export const Hero = memo<HeroProps>(({
         </p>
         <h1 className="text-[2.2rem] xs:text-[2.8rem] sm:text-6xl md:text-[72px] lg:text-[88px] leading-[1.1] font-sans font-extrabold tracking-tight mb-6 py-4" style={{ color: 'var(--c-heading)' }}>
           <span className="block min-h-[1.1em]">
-            <TypewriterEffect text="AI & Web Developer" delay={0.2} />
+            <DepthFlipText
+              phrases={[
+                "AI & Web Developer",
+                "Full-Stack Architect",
+                "Prompt Engineer",
+                "MCP Tools Creator"
+              ]}
+              interval={3800}
+            />
           </span>
         </h1>
         <p className="max-w-[540px] leading-relaxed text-lg sm:text-xl font-body opacity-90" style={{ color: 'var(--c-heading)' }}>

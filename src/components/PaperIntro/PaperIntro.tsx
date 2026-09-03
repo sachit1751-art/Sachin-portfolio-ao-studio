@@ -5,12 +5,13 @@ import { PaperScene, PaperSceneAPI } from './PaperScene';
 import { CursorHint } from '../UI/CursorHint';
 import { FloatingPieces } from '../DoomEasterEgg/FloatingPieces';
 import { usePerformance } from '../../hooks/usePerformance';
+import { HoneycombLoader } from '../UI/HoneycombLoader';
 const MoodGame = lazy(() => import('../MoodGame/MoodGame').then(m => ({ default: m.MoodGame })));
 
 function MoodGameFallback() {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: '#0a0a0a' }}>
-      <div className="text-green-400 font-mono text-sm animate-pulse">Loading game...</div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'var(--c-modal-backdrop, rgba(0,0,0,0.85))' }}>
+      <HoneycombLoader size="lg" label="INITIALIZING MOOD GAME..." color="var(--c-heading)" />
     </div>
   );
 }
@@ -116,19 +117,36 @@ export const PaperIntro = memo<PaperIntroProps>(({
   }, [setShowMoodGame, exitGame]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
-      {paperState === 'crumpled' && !simplify && (
-        <video
-          ref={videoRef}
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700"
-          style={{ opacity: paperState === 'crumpled' ? 1 : 0 }}
-          src="/scrapbook-bg.mp4"
+    <div data-theme={theme} className="relative w-full h-screen overflow-hidden bg-[var(--c-bg)] transition-colors duration-500">
+      {/* Background layer: Paper texture background + radial vignette + video */}
+      <div className="absolute inset-0 z-0 overflow-hidden paper-grain pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-40 mix-blend-multiply"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 80%),
+              radial-gradient(circle at 20% 20%, rgba(0,0,0,0.03) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(0,0,0,0.04) 0%, transparent 60%)
+            `,
+          }}
         />
-      )}
+
+        {paperState === 'crumpled' && !simplify && (
+          <video
+            ref={videoRef}
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700 mix-blend-multiply opacity-80"
+            style={{ opacity: paperState === 'crumpled' ? 0.8 : 0 }}
+            src="/scrapbook-bg.mp4"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        )}
+      </div>
 
       <div className="absolute inset-0 z-10">
         <PaperScene
@@ -245,11 +263,11 @@ export const PaperIntro = memo<PaperIntroProps>(({
       {isAnimating && !showMoodGame && (
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
           <div
-            className="px-4 py-1.5 text-[10px] font-mono uppercase tracking-[0.2em] shadow-lg flex items-center gap-2 backdrop-blur-sm"
-            style={{ backgroundColor: 'var(--c-heading)', color: 'var(--c-btn-text)', border: '1px solid var(--c-border)' }}
+            className="px-5 py-2 text-[10px] font-mono uppercase tracking-[0.2em] shadow-lg flex items-center gap-3 backdrop-blur-md rounded-full border"
+            style={{ backgroundColor: 'var(--c-modal-bg, var(--c-bg))', color: 'var(--c-heading)', borderColor: 'var(--c-border)' }}
           >
-            <span className="w-1.5 h-1.5 animate-pulse" style={{ backgroundColor: 'var(--c-btn-text)' }} />
-            <span>Unfolding paper sheet...</span>
+            <HoneycombLoader size="sm" color="var(--c-heading)" />
+            <span>UNFOLDING CANVAS...</span>
           </div>
         </div>
       )}

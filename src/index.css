@@ -50,7 +50,7 @@
 
   body {
     font-family: 'Courier Prime', monospace;
-    background-color: transparent;
+    background-color: var(--c-bg, #F8F6F0);
     color: var(--c-heading);
     /* Hardware acceleration for body */
     transform: translateZ(0);
@@ -131,6 +131,7 @@
 
   /* Theme color tokens */
   [data-theme="cotton"] {
+    --c-bg: #F8F6F0;
     --c-heading: #1A1917;
     --c-body: #63615D;
     --c-muted: #A3A19C;
@@ -146,11 +147,11 @@
     --c-card-gradient-from: rgba(255,255,255,0.4);
     --c-card-gradient-to: rgba(255,255,255,0.1);
     --c-card: rgba(255,255,255,0.25);
-    --c-header-bg: rgba(249,248,246,0.7);
+    --c-header-bg: rgba(248,246,240,0.85);
     --c-header-border: rgba(26,25,23,0.08);
     --c-input-bg: rgba(255,255,255,0.4);
     --c-input-bg-focus: rgba(255,255,255,0.6);
-    --c-modal-bg: rgba(249,248,246,0.9);
+    --c-modal-bg: rgba(248,246,240,0.95);
     --c-modal-backdrop: rgba(26,25,23,0.7);
     --c-progress-track: rgba(26,25,23,0.1);
     --c-progress-fill-from: rgba(26,25,23,0.7);
@@ -166,6 +167,7 @@
   }
 
   [data-theme="kraft"] {
+    --c-bg: #EFE6D5;
     --c-heading: #241F1A;
     --c-body: #5A5248;
     --c-muted: #9A9284;
@@ -181,11 +183,11 @@
     --c-card-gradient-from: rgba(255,255,255,0.3);
     --c-card-gradient-to: rgba(255,255,255,0.05);
     --c-card: rgba(255,255,255,0.18);
-    --c-header-bg: rgba(214,191,162,0.7);
+    --c-header-bg: rgba(239,230,213,0.85);
     --c-header-border: rgba(36,31,26,0.08);
     --c-input-bg: rgba(255,255,255,0.3);
     --c-input-bg-focus: rgba(255,255,255,0.5);
-    --c-modal-bg: rgba(244,237,224,0.9);
+    --c-modal-bg: rgba(239,230,213,0.95);
     --c-modal-backdrop: rgba(36,31,26,0.7);
     --c-progress-track: rgba(36,31,26,0.1);
     --c-progress-fill-from: rgba(36,31,26,0.7);
@@ -201,6 +203,7 @@
   }
 
   [data-theme="blueprint"] {
+    --c-bg: #14283E;
     --c-heading: #EAEFF4;
     --c-body: #C8D0DC;
     --c-muted: #8EA5BF;
@@ -216,11 +219,11 @@
     --c-card-gradient-from: rgba(255,255,255,0.08);
     --c-card-gradient-to: rgba(255,255,255,0.02);
     --c-card: rgba(255,255,255,0.06);
-    --c-header-bg: rgba(26,51,77,0.75);
+    --c-header-bg: rgba(20,40,62,0.88);
     --c-header-border: rgba(234,239,244,0.1);
     --c-input-bg: rgba(255,255,255,0.08);
     --c-input-bg-focus: rgba(255,255,255,0.14);
-    --c-modal-bg: rgba(26,51,77,0.95);
+    --c-modal-bg: rgba(20,40,62,0.95);
     --c-modal-backdrop: rgba(0,0,0,0.6);
     --c-progress-track: rgba(234,239,244,0.12);
     --c-progress-fill-from: rgba(234,239,244,0.5);
@@ -236,6 +239,7 @@
   }
 
   [data-theme="slate"] {
+    --c-bg: #1E1F23;
     --c-heading: #E8E7E4;
     --c-body: #C5C3BE;
     --c-muted: #9E9C97;
@@ -251,11 +255,11 @@
     --c-card-gradient-from: rgba(255,255,255,0.06);
     --c-card-gradient-to: rgba(255,255,255,0.01);
     --c-card: rgba(255,255,255,0.04);
-    --c-header-bg: rgba(35,36,40,0.8);
+    --c-header-bg: rgba(30,31,35,0.88);
     --c-header-border: rgba(232,231,228,0.1);
     --c-input-bg: rgba(255,255,255,0.06);
     --c-input-bg-focus: rgba(255,255,255,0.12);
-    --c-modal-bg: rgba(35,36,40,0.95);
+    --c-modal-bg: rgba(30,31,35,0.95);
     --c-modal-backdrop: rgba(0,0,0,0.6);
     --c-progress-track: rgba(232,231,228,0.12);
     --c-progress-fill-from: rgba(232,231,228,0.5);
@@ -411,16 +415,15 @@
   animation: fade-up 0.6s ease-out forwards;
 }
 
-/* Handwriting reveal — clip-path left-to-right "pen stroke" effect */
+/* Handwriting reveal — smooth GPU-safe fade & translate without clip-path box artifacts */
 @keyframes charReveal {
-  from { clip-path: inset(0 100% 0 0); opacity: 0; }
-  to   { clip-path: inset(-50% 0% -50% 0); opacity: 1; }
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes wordReveal {
-  from { clip-path: inset(0 100% 0 0); opacity: 0; transform: translateY(2px); }
-  60%  { opacity: 1; }
-  to   { clip-path: inset(-50% 0% -50% 0); opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes lineReveal {
@@ -437,24 +440,18 @@
 .char-reveal {
   display: inline-block;
   opacity: 0;
-  animation: charReveal 0.15s ease-out forwards;
-  will-change: clip-path, opacity;
-  transform: translateZ(0);
+  animation: charReveal 0.18s ease-out forwards;
 }
 
 .word-reveal {
   display: inline-block;
   opacity: 0;
-  animation: wordReveal 0.18s ease-out forwards;
-  will-change: clip-path, opacity, transform;
-  transform: translateZ(0);
+  animation: wordReveal 0.22s ease-out forwards;
 }
 
 .animate-line-reveal {
   opacity: 0;
   animation: lineReveal 0.25s ease-out forwards;
-  will-change: opacity, transform;
-  transform: translateZ(0);
 }
 
 .lr-delay-1 { animation-delay: 0.03s; }

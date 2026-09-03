@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { usePerformance } from '../hooks/usePerformance';
+import { HoneycombLoader } from './UI/HoneycombLoader';
 
 interface ContributionDay {
   date: string;
@@ -179,8 +180,8 @@ export const GitHubContributions: React.FC<GitHubContributionsProps> = ({ userna
         }}
       >
         {loading ? (
-          <div className="h-40 flex items-center justify-center font-mono text-xs" style={{ color: 'var(--c-muted)' }}>
-            <span className="animate-pulse">Retrieving contribution graph...</span>
+          <div className="h-44 flex items-center justify-center font-mono text-xs py-6">
+            <HoneycombLoader size="md" label="SYNCING GITHUB GRAPH..." color="var(--c-heading)" />
           </div>
         ) : (
           <div className="w-full">

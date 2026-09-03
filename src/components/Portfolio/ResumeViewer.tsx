@@ -24,7 +24,6 @@ import {
   Terminal
 } from 'lucide-react';
 import { PaperTheme } from '../../types';
-import { MetaTags } from '../SEO/MetaTags';
 
 /**
  * Editorial framer-motion variants applying a soft fade-in and subtle slide-up effect
@@ -206,57 +205,6 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
       className="resume-viewer-main relative w-full min-h-screen py-6 sm:py-10 px-3 sm:px-6 md:px-10 transition-colors duration-300"
       style={{ backgroundColor: 'var(--c-bg)', color: 'var(--c-body)' }}
     >
-      {/* Declarative SEO Meta Tags & Document Title for Discoverability */}
-      <MetaTags
-        title="Sachit — Resume & Curriculum Vitae | Software Developer & Prompt Engineer"
-        description="Official resume of Sachit: Aspiring Software Developer & Prompt Engineer. Class 12 PCMB (2028), completed 100% Anthropic Skill Jar coursework, specializing in Python, React, TypeScript, Claude API, MCP, and full-stack software development."
-        keywords="Sachit resume, Sachit CV, Sachit portfolio, software developer resume, prompt engineer resume, Anthropic Skill Jar, Claude API, Python, React, TypeScript, MCP, Model Context Protocol, SKY ROMs"
-        author="Sachit"
-        canonicalUrl="https://sachin-portfoli.vercel.app/resume"
-        ogTitle="Sachit — Resume & Curriculum Vitae"
-        ogDescription="Explore the verified technical resume of Sachit: Software Developer & Prompt Engineer specializing in Python, Claude API, React, and MCP tools."
-        ogType="profile"
-        ogUrl="https://sachin-portfoli.vercel.app/resume"
-        twitterTitle="Sachit — Resume & Curriculum Vitae"
-        twitterDescription="Official curriculum vitae of Sachit — Aspiring Software Developer & Prompt Engineer."
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'ProfilePage',
-          mainEntity: {
-            '@type': 'Person',
-            name: 'Sachit',
-            jobTitle: 'Aspiring Software Developer & Prompt Engineer',
-            telephone: '+917042846390',
-            email: 'sachit1751@gmail.com',
-            url: 'https://sachin-portfoli.vercel.app/resume',
-            sameAs: [
-              'https://github.com/sachit1751-art',
-              'https://sachin-portfoli.vercel.app'
-            ],
-            knowsAbout: [
-              'Python',
-              'JavaScript',
-              'TypeScript',
-              'React',
-              'Anthropic Claude API',
-              'Prompt Engineering',
-              'Model Context Protocol (MCP)',
-              'Full-Stack Web Development',
-              'Supabase',
-              'PostgreSQL'
-            ],
-            alumniOf: {
-              '@type': 'EducationalOrganization',
-              name: 'Central Board of Secondary Education (CBSE)'
-            },
-            hasCredential: {
-              '@type': 'EducationalOccupationalCredential',
-              name: 'Anthropic Skill Jar — Full Developer Curriculum Completion'
-            }
-          }
-        }}
-      />
-
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
