@@ -432,6 +432,19 @@ export const Header = memo<HeaderProps>(({
               </span>
             </div>
 
+            {/* Resume Button */}
+            <button
+              id="header-resume-btn"
+              onClick={onViewResume}
+              onMouseEnter={() => { import('./ResumeViewer'); }}
+              className="px-3 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
+              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
+              title="View Resume"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Resume</span>
+            </button>
+
             {/* Fold Button */}
             <button
               id="recrumple-btn"
@@ -445,7 +458,7 @@ export const Header = memo<HeaderProps>(({
             </button>
           </div>
 
-          {/* Mobile Right Controls: Theme Dots + Fold + Hamburger (Clean single bar, matching PC) */}
+          {/* Mobile Right Controls: Theme Dots + Resume + Fold + Hamburger */}
           <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
             {/* Theme Dots */}
             <div
@@ -471,6 +484,17 @@ export const Header = memo<HeaderProps>(({
                 />
               ))}
             </div>
+
+            {/* Resume Button */}
+            <button
+              onClick={onViewResume}
+              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
+              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
+              title="View Resume"
+              aria-label="View Resume"
+            >
+              <FileText className="w-4 h-4" />
+            </button>
 
             {/* Fold Button */}
             <button

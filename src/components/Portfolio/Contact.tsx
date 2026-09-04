@@ -613,6 +613,16 @@ export const Contact = memo(() => {
                 >
                   Terms of Service
                 </button>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-404'))}
+                  className="underline hover:opacity-100 cursor-pointer"
+                  style={{ color: 'var(--c-heading)' }}
+                  title="View Domino NY inspired 404 experience"
+                >
+                  404 Page
+                </button>
               </div>
               <p className="text-sm font-handwriting tracking-wide" style={{ color: 'var(--c-muted)' }}>
                 <WordReveal text="© 2026 Sachit • Built with React, TypeScript & Interactive Typewriter Engine" baseDelay={0.2} />

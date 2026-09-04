@@ -5,7 +5,6 @@ import { Header } from './components/Portfolio/Header';
 import { NotFound } from './components/Portfolio/NotFound';
 import { HoneycombLoader } from './components/UI/HoneycombLoader';
 import { SEOHead } from './components/SEO/SEOHead';
-import { CookieBanner } from './components/UI/CookieBanner';
 import { StickyMobileCTA } from './components/UI/StickyMobileCTA';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
@@ -113,14 +112,28 @@ export default function App() {
       } catch {}
     };
 
+    const handleOpen404 = () => {
+      setIs404(true);
+      setIsViewingResume(false);
+      setIsViewingPrivacy(false);
+      setIsViewingTerms(false);
+      try {
+        if (window.location.pathname !== '/404') {
+          window.history.pushState({}, '', '/404');
+        }
+      } catch {}
+    };
+
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('open-privacy', handleOpenPrivacy);
     window.addEventListener('open-terms', handleOpenTerms);
+    window.addEventListener('open-404', handleOpen404);
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('open-privacy', handleOpenPrivacy);
       window.removeEventListener('open-terms', handleOpenTerms);
+      window.removeEventListener('open-404', handleOpen404);
     };
   }, []);
 
@@ -384,7 +397,37 @@ export default function App() {
         }
       />
 
-      {is404 && <NotFound />}
+      {is404 && (
+        <NotFound
+          theme={theme}
+          setTheme={handleThemeChange}
+          onNavigateHome={() => {
+            setIs404(false);
+            try {
+              if (window.location.pathname !== '/') {
+                window.history.pushState({}, '', '/');
+              }
+            } catch {}
+            setShowContent(true);
+            setIntroCompleted(true);
+            setPaperState('opened');
+          }}
+          onNavigateSection={(sectionId) => {
+            setIs404(false);
+            try {
+              if (window.location.pathname !== '/') {
+                window.history.pushState({}, '', '/');
+              }
+            } catch {}
+            setShowContent(true);
+            setIntroCompleted(true);
+            setPaperState('opened');
+            handleNavigateSection(sectionId);
+          }}
+          onRecrumple={handleRecrumple}
+          onViewResume={handleOpenResume}
+        />
+      )}
       {showContent && (
         <a
           href="#content-scroll-container"
@@ -511,9 +554,6 @@ export default function App() {
           )}
         </div>
       )}
-
-      {/* Global Privacy Consent Banner */}
-      <CookieBanner onOpenPrivacy={() => window.dispatchEvent(new CustomEvent('open-privacy'))} />
 
       {/* Doom Transition */}
       {showTransition && (
