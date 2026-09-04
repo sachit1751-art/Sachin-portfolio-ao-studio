@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { Briefcase } from 'lucide-react';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
 
@@ -21,9 +22,12 @@ export const Experience = memo(() => {
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
               [ 08 / WORK ]
             </span>
-            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
-              <WordReveal text="Independent Developer" baseDelay={0.1} />
-            </h2>
+            <div className="flex items-center gap-2.5">
+              <Briefcase className="w-7 h-7" style={{ color: 'var(--c-dot)' }} />
+              <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                <WordReveal text="Independent Developer" baseDelay={0.1} />
+              </h2>
+            </div>
           </div>
         </div>
 

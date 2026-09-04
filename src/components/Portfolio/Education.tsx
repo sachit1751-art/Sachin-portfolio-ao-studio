@@ -29,9 +29,12 @@ export const Education = memo(() => {
             <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: 'var(--c-muted)' }}>
               [ 09 / EDUCATION & CERTIFICATIONS ]
             </span>
-            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
-              <WordReveal text="Education & Certifications" baseDelay={0.1} />
-            </h2>
+            <div className="flex items-center gap-2.5">
+              <GraduationCap className="w-7 h-7" style={{ color: 'var(--c-dot)' }} />
+              <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                <WordReveal text="Education & Certifications" baseDelay={0.1} />
+              </h2>
+            </div>
           </div>
         </div>
 

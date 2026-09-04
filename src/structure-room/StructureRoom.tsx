@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // ​‌sachit-2026-original-authored‌​
 import { AnimatedMenuIcon } from '../components/UI/AnimatedMenuIcon';
 import { motion, AnimatePresence } from 'motion/react';
@@ -11,6 +11,7 @@ import { DesignDecisions } from './DesignDecisions';
 import { MoodGame } from './MoodGame';
 import { ProceduralEngine } from './ProceduralEngine';
 import { Settings } from './Settings';
+import { StructureBreadcrumb } from './StructureBreadcrumb';
 import { ChatAboutMe } from '../components/Portfolio/ChatAboutMe';
 import { PaperTheme } from '../types';
 
@@ -34,7 +35,78 @@ const TABS = [
 
 // ﻿watermark:sachit-portfolio-2026﻿
 export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, onExit }) => {
-  const [activeTab, setActiveTab] = useState('architecture');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash.startsWith('#structure/')) {
+        const tabFromHash = hash.replace('#structure/', '').split('?')[0];
+        const validTab = TABS.find((t) => t.id === tabFromHash);
+        if (validTab) return validTab.id;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) {
+        const validTab = TABS.find((t) => t.id === tabParam);
+        if (validTab) return validTab.id;
+      }
+    }
+    return 'architecture';
+  });
+
+  // URL State Synchronization Hook for Structure Room sub-sections
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#structure/')) {
+        const tabFromHash = hash.replace('#structure/', '').split('?')[0];
+        const validTab = TABS.find((t) => t.id === tabFromHash);
+        if (validTab) {
+          setActiveTab(validTab.id);
+          return;
+        }
+      }
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) {
+        const validTab = TABS.find((t) => t.id === tabParam);
+        if (validTab) {
+          setActiveTab(validTab.id);
+        }
+      }
+    };
+
+    const handlePopState = () => {
+      syncFromUrl();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
+  }, []);
+
+  const handleSelectTab = (tabId: string) => {
+    setActiveTab(tabId);
+    try {
+      const targetHash = `#structure/${tabId}`;
+      if (window.location.hash !== targetHash) {
+        window.history.pushState({ structureTab: tabId }, '', targetHash);
+      }
+    } catch (e) {
+      console.warn('URL pushState unavailable', e);
+    }
+  };
+
+  const handleExit = () => {
+    try {
+      if (window.location.hash.startsWith('#structure')) {
+        window.history.pushState({}, '', window.location.pathname + window.location.search);
+      }
+    } catch {}
+    onExit();
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -57,7 +129,7 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, o
       <header className="sr-masthead">
         <div className="sr-masthead-rule" />
         <div className="sr-masthead-top">
-          <button onClick={onExit} className="sr-back-link group">
+          <button onClick={handleExit} className="sr-back-link group">
             <AnimatedMenuIcon isOpen={true} variant="arrow" size={14} />
             <span>Back to Portfolio</span>
           </button>
@@ -71,6 +143,19 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, o
           <h1 className="sr-masthead-title">STRUCTURE ROOM</h1>
         </div>
         <p className="sr-masthead-subtitle">The Technical Blueprint Behind the Portfolio</p>
+
+        {/* Interactive Deep-Linked Breadcrumb Navigation */}
+        <div className="mt-3 mb-1">
+          <StructureBreadcrumb
+            activeTabId={activeTab}
+            activeTabLabel={TABS.find((t) => t.id === activeTab)?.label}
+            tabs={TABS}
+            onSelectTab={handleSelectTab}
+            onExit={handleExit}
+            onResetToRootTab={() => handleSelectTab('architecture')}
+          />
+        </div>
+
         <div className="sr-masthead-rule" />
       </header>
 
@@ -79,7 +164,7 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, o
         {TABS.map((tab, i) => (
           <React.Fragment key={tab.id}>
             <button
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleSelectTab(tab.id)}
               className={`sr-tab-item ${activeTab === tab.id ? 'active' : ''}`}
             >
               <span className="sr-tab-numeral">{tab.numeral}.</span>
@@ -91,61 +176,7 @@ export const StructureRoom: React.FC<StructureRoomProps> = ({ theme, setTheme, o
       </nav>
 
       {/* Content Area */}
-      <main className="sr-editorial-content">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 mb-8 pb-2 -mb-2 text-[10px] sm:text-xs font-mono uppercase tracking-[0.1em] opacity-70 overflow-x-auto scrollbar-none whitespace-nowrap">
-          <motion.button 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={onExit} 
-            className="hover:opacity-100 transition-opacity flex items-center gap-1 cursor-pointer flex-shrink-0"
-          >
-            <AnimatedMenuIcon isOpen={true} variant="arrow" size={14} /> Portfolio
-          </motion.button>
-          
-          <motion.span 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 0.5, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.05 }}
-            className="opacity-50 flex-shrink-0"
-          >
-            /
-          </motion.span>
-          
-          <motion.button 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="hover:opacity-100 transition-opacity cursor-pointer flex-shrink-0"
-          >
-            Structure Room
-          </motion.button>
-          
-          <motion.span 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 0.5, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.15 }}
-            className="opacity-50 flex-shrink-0"
-          >
-            /
-          </motion.span>
-          
-          <AnimatePresence mode="wait">
-            <motion.span 
-              key={activeTab}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.2 }}
-              className="font-bold opacity-100 flex-shrink-0" 
-              style={{ color: 'var(--c-heading)' }}
-            >
-              {TABS.find(t => t.id === activeTab)?.label}
-            </motion.span>
-          </AnimatePresence>
-        </nav>
-
+      <main className="sr-editorial-content pt-4">
         <div key={activeTab} className="structure-room-content-inner">
           {renderContent()}
         </div>

@@ -235,9 +235,12 @@ export const Contact = memo(() => {
                 [ 05 / DISPATCH ]
               </span>
             </div>
-            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
-              <CharReveal text="Let's Build Something" baseDelay={0.1} />
-            </h2>
+            <div className="flex items-center gap-3">
+              <Send className="w-7 h-7" style={{ color: 'var(--c-dot)' }} />
+              <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
+                <CharReveal text="Let's Build Something" baseDelay={0.1} />
+              </h2>
+            </div>
           </div>
         </div>
 
@@ -612,16 +615,6 @@ export const Contact = memo(() => {
                   style={{ color: 'var(--c-heading)' }}
                 >
                   Terms of Service
-                </button>
-                <span>•</span>
-                <button
-                  type="button"
-                  onClick={() => window.dispatchEvent(new CustomEvent('open-404'))}
-                  className="underline hover:opacity-100 cursor-pointer"
-                  style={{ color: 'var(--c-heading)' }}
-                  title="View Domino NY inspired 404 experience"
-                >
-                  404 Page
                 </button>
               </div>
               <p className="text-sm font-handwriting tracking-wide" style={{ color: 'var(--c-muted)' }}>

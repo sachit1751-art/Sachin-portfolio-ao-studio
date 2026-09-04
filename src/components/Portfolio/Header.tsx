@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react';
 // ​provenance:sachit-2026-original​
 import { PaperTheme } from '../../types';
-import { RotateCcw, ArrowUpRight, FileText, Sparkles, Compass, Volume2, VolumeX, Search } from 'lucide-react';
+import { RotateCcw, ArrowUpRight, Sparkles, Compass, Volume2, VolumeX, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AnimatedMenuIcon } from '../UI/AnimatedMenuIcon';
 import { useSound } from '../../utils/soundManager';
@@ -281,7 +281,8 @@ export const Header = memo<HeaderProps>(({
       }
     };
 
-    document.addEventListener('keydown', handleKey);
+    const scrollContainer = document.getElementById('content-scroll-container');
+    if (scrollContainer) scrollContainer.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
 
     // Focus first element in drawer
@@ -293,6 +294,7 @@ export const Header = memo<HeaderProps>(({
     return () => {
       document.removeEventListener('keydown', handleKey);
       document.body.style.overflow = '';
+      if (scrollContainer) scrollContainer.style.overflow = '';
     };
   }, [mobileOpen]);
 
@@ -336,7 +338,7 @@ export const Header = memo<HeaderProps>(({
           willChange: 'transform',
         }}
       >
-        <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-3 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
+        <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-4 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
           {/* Logo + Section Indicator */}
           <div className="flex items-center gap-3 sm:gap-6">
             <button
@@ -437,148 +439,10 @@ export const Header = memo<HeaderProps>(({
                 {THEMES.find((t) => t.id === theme)?.label || ''}
               </span>
             </div>
-
-            {/* Site Map & Search Button (Cmd+K) */}
-            <button
-              id="header-sitemap-btn"
-              type="button"
-              onClick={onOpenSiteMap}
-              className="px-2.5 py-1.5 text-xs font-mono flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
-              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
-              title="Site Map & Command Palette (Cmd+K)"
-              aria-label="Open Site Map and Command Palette"
-            >
-              <Search className="w-3.5 h-3.5 opacity-75" />
-              <span className="hidden xl:inline">Search</span>
-              <kbd className="hidden sm:inline-block px-1 py-0.2 text-[10px] font-mono rounded bg-[var(--c-input-bg)] border border-[var(--c-border)] opacity-70">
-                ⌘K
-              </kbd>
-            </button>
-
-            {/* Sound Toggle Button */}
-            <button
-              id="header-sound-btn"
-              type="button"
-              onClick={toggleMute}
-              className="px-2.5 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
-              style={{
-                color: isMuted ? 'var(--c-muted)' : 'var(--c-heading)',
-                border: `1px solid ${isMuted ? 'var(--c-border)' : 'var(--c-border-focus)'}`,
-                backgroundColor: isMuted ? 'transparent' : 'var(--c-input-bg)',
-              }}
-              title={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
-              aria-label={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
-              aria-pressed={!isMuted}
-            >
-              {isMuted ? (
-                <VolumeX className="w-3.5 h-3.5 opacity-60" />
-              ) : (
-                <Volume2 className="w-3.5 h-3.5" />
-              )}
-              <span className="hidden lg:inline text-xs font-mono uppercase tracking-wider">
-                {isMuted ? 'Muted' : 'Sound'}
-              </span>
-            </button>
-
-            {/* Resume Button */}
-            <button
-              id="header-resume-btn"
-              onClick={onViewResume}
-              onMouseEnter={() => { import('./ResumeViewer'); }}
-              className="px-3 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
-              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
-              title="View Resume"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Resume</span>
-            </button>
-
-            {/* Fold Button */}
-            <button
-              id="recrumple-btn"
-              onClick={onRecrumple}
-              className="px-3 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
-              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
-              title="Fold the paper back into a crumpled ball"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Fold</span>
-            </button>
           </div>
 
-          {/* Mobile Right Controls: Theme Dots + Search + Sound + Resume + Fold + Hamburger */}
+          {/* Mobile Right Controls */}
           <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
-            {/* Theme Dots */}
-            <div
-              className="flex items-center p-1 rounded-full"
-              style={{ border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
-              aria-label="Theme selector"
-            >
-              {THEMES.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={(e) => setTheme(t.id, e)}
-                  title={t.label}
-                  className="w-3.5 h-3.5 rounded-full border transition-all duration-200 mx-0.5"
-                  style={{
-                    backgroundColor: t.color,
-                    borderColor: theme === t.id ? 'var(--c-heading)' : 'transparent',
-                    opacity: theme === t.id ? 1 : 0.45,
-                    transform: theme === t.id ? 'scale(1.15)' : undefined,
-                    boxShadow: theme === t.id ? '0 1px 3px rgba(0,0,0,0.2)' : undefined,
-                  }}
-                  aria-label={`Switch to ${t.label}`}
-                  aria-pressed={theme === t.id}
-                />
-              ))}
-            </div>
-
-            {/* Mobile Search / Site Map Button */}
-            <button
-              id="mobile-header-sitemap-btn"
-              type="button"
-              onClick={onOpenSiteMap}
-              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
-              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
-              title="Site Map & Search (Cmd+K)"
-              aria-label="Open Site Map and Search"
-            >
-              <Search className="w-4 h-4" />
-            </button>
-
-            {/* Sound Button */}
-            <button
-              id="mobile-header-sound-btn"
-              type="button"
-              onClick={toggleMute}
-              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
-              style={{
-                color: isMuted ? 'var(--c-muted)' : 'var(--c-heading)',
-                border: `1px solid ${isMuted ? 'var(--c-border)' : 'var(--c-border-focus)'}`,
-                backgroundColor: isMuted ? 'transparent' : 'var(--c-input-bg)',
-              }}
-              title={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
-              aria-label={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
-              aria-pressed={!isMuted}
-            >
-              {isMuted ? (
-                <VolumeX className="w-4 h-4 opacity-60" />
-              ) : (
-                <Volume2 className="w-4 h-4" />
-              )}
-            </button>
-
-            {/* Fold Button */}
-            <button
-              onClick={onRecrumple}
-              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
-              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
-              title="Fold paper"
-              aria-label="Fold paper"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-
             {/* Hamburger Button */}
             <button
               className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
@@ -603,11 +467,12 @@ export const Header = memo<HeaderProps>(({
         <div
           ref={drawerRef}
           id="mobile-fullscreen-menu"
-          className="fixed inset-0 z-[100] md:hidden w-screen h-[100dvh] flex flex-col overflow-hidden"
+          data-theme={theme}
+          className="fixed inset-x-0 top-[60px] sm:top-[68px] bottom-0 z-[100] md:hidden w-full h-[calc(100dvh-60px)] sm:h-[calc(100dvh-68px)] flex flex-col overflow-hidden transition-colors duration-300"
           style={{
             backgroundColor: 'var(--c-bg)',
             opacity: drawerVisible ? 1 : 0,
-            transform: drawerVisible ? 'translateY(0)' : 'translateY(12px)',
+            transform: drawerVisible ? 'translateY(0)' : 'translateY(8px)',
             transition: 'opacity 220ms cubic-bezier(0.16, 1, 0.3, 1), transform 220ms cubic-bezier(0.16, 1, 0.3, 1)',
           }}
           role="dialog"
@@ -616,7 +481,7 @@ export const Header = memo<HeaderProps>(({
         >
           {/* Top Bar inside Fullscreen Menu */}
           <div
-            className="flex items-center justify-between h-[64px] px-6 border-b flex-shrink-0"
+            className="flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6 border-b flex-shrink-0"
             style={{
               borderColor: 'var(--c-header-border)',
               backgroundColor: 'var(--c-header-bg)',

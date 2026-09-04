@@ -5,6 +5,8 @@ import { Header } from './components/Portfolio/Header';
 import { NotFound } from './components/Portfolio/NotFound';
 import { HoneycombLoader } from './components/UI/HoneycombLoader';
 import { SEOHead } from './components/SEO/SEOHead';
+import { SEOMetadata } from './components/SEO/SEOMetadata';
+import { TelemetryTracker } from './components/SEO/TelemetryTracker';
 import { StickyMobileCTA } from './components/UI/StickyMobileCTA';
 import { SiteMapModal } from './components/Portfolio/SiteMapModal';
 import { ShortcutHUD } from './components/UI/ShortcutHUD';
@@ -48,8 +50,18 @@ export default function App() {
     // Route handling for SPA
     const checkRoute = () => {
       const path = window.location.pathname;
-      console.log('[App checkRoute] Path:', path);
-      if (path === '/resume' || path === '/resume/' || path === '/resume.html') {
+      const hash = window.location.hash;
+      console.log('[App checkRoute] Path:', path, 'Hash:', hash);
+      if (hash.startsWith('#structure') || hash.startsWith('#/structure') || path.startsWith('/structure')) {
+        setShowStructureRoom(true);
+        setIsViewingResume(false);
+        setIsViewingPrivacy(false);
+        setIsViewingTerms(false);
+        setShowContent(true);
+        setIntroCompleted(true);
+        setPaperState('opened');
+        setIs404(false);
+      } else if (path === '/resume' || path === '/resume/' || path === '/resume.html') {
         setIsViewingResume(true);
         setIsViewingPrivacy(false);
         setIsViewingTerms(false);
@@ -131,12 +143,14 @@ export default function App() {
     };
 
     window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
     window.addEventListener('open-privacy', handleOpenPrivacy);
     window.addEventListener('open-terms', handleOpenTerms);
     window.addEventListener('open-404', handleOpen404);
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
       window.removeEventListener('open-privacy', handleOpenPrivacy);
       window.removeEventListener('open-terms', handleOpenTerms);
       window.removeEventListener('open-404', handleOpen404);
@@ -468,40 +482,32 @@ export default function App() {
 
   return (
     <div data-theme={theme} className="relative min-h-screen bg-[var(--c-bg)] font-sans antialiased overflow-x-hidden transition-colors duration-500">
-      {/* Route-Aware SEO Management */}
-      <SEOHead
-        title={
+      {/* Route-Aware & Crawler-Optimized SEO Metadata */}
+      <SEOMetadata
+        pageType={
           is404
-            ? '404 Page Not Found — Sachit'
+            ? '404'
             : isViewingPrivacy
-            ? 'Privacy Policy — Sachit'
+            ? 'privacy'
             : isViewingTerms
-            ? 'Terms of Service — Sachit'
+            ? 'terms'
             : isViewingResume
-            ? 'Curriculum Vitae / Resume — Sachit'
-            : 'Sachit — Software Developer & Prompt Engineer'
+            ? 'resume'
+            : 'home'
         }
-        description={
+        canonicalPath={
           is404
-            ? 'The requested page could not be found.'
+            ? '/404'
             : isViewingPrivacy
-            ? 'Privacy policy and data transparency statement for Sachit portfolio.'
+            ? '/privacy'
             : isViewingTerms
-            ? 'Terms of service and usage conditions for Sachit portfolio.'
+            ? '/terms'
             : isViewingResume
-            ? 'Interactive digital CV and resume of Sachit, highlighting technical skills, software engineering experience, and AI integration projects.'
-            : 'Portfolio of Sachit, a Software Developer and Prompt Engineer focusing on full-stack web applications, AI tools, custom Android platforms, and automation.'
-        }
-        canonicalUrl={
-          isViewingPrivacy
-            ? 'https://sachit-portfolio.vercel.app/privacy'
-            : isViewingTerms
-            ? 'https://sachit-portfolio.vercel.app/terms'
-            : isViewingResume
-            ? 'https://sachit-portfolio.vercel.app/resume'
-            : 'https://sachit-portfolio.vercel.app/'
+            ? '/resume'
+            : '/'
         }
       />
+      <TelemetryTracker />
 
       {is404 && (
         <NotFound
@@ -636,14 +642,18 @@ export default function App() {
           {isViewingPrivacy && (
             <div
               id="privacy-scroll-container"
+              data-theme={theme}
               className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden"
               style={{ backgroundColor: 'var(--c-bg)' }}
             >
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING PRIVACY POLICY..." color="var(--c-heading)" /></div>}>
-                <LazyPrivacyPolicy onBack={() => {
-                  setIsViewingPrivacy(false);
-                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-                }} />
+                <LazyPrivacyPolicy
+                  theme={theme}
+                  onBack={() => {
+                    setIsViewingPrivacy(false);
+                    try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+                  }}
+                />
               </Suspense>
             </div>
           )}
@@ -652,14 +662,18 @@ export default function App() {
           {isViewingTerms && (
             <div
               id="terms-scroll-container"
+              data-theme={theme}
               className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden"
               style={{ backgroundColor: 'var(--c-bg)' }}
             >
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING TERMS..." color="var(--c-heading)" /></div>}>
-                <LazyTermsOfService onBack={() => {
-                  setIsViewingTerms(false);
-                  try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-                }} />
+                <LazyTermsOfService
+                  theme={theme}
+                  onBack={() => {
+                    setIsViewingTerms(false);
+                    try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+                  }}
+                />
               </Suspense>
             </div>
           )}

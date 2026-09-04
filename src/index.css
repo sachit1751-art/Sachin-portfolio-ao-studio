@@ -77,6 +77,11 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  #content-scroll-container,
+  .custom-scrollbar {
+    overflow-anchor: auto;
+  }
+
   body {
     font-family: var(--font-body);
     background-color: var(--c-bg, #F8F6F0);
@@ -3751,19 +3756,22 @@ section[id] {
     print-color-adjust: exact !important;
   }
 
-  html, body {
+  html, body, #content-scroll-container {
     background: #fff !important;
     color: #000 !important;
     overflow: visible !important;
     height: auto !important;
+    max-height: none !important;
     font-size: 11pt !important;
     line-height: 1.4 !important;
   }
 
-  #root, main {
+  #root, main, #content-scroll-container {
     position: static !important;
     overflow: visible !important;
     display: block !important;
+    height: auto !important;
+    max-height: none !important;
   }
 
   /* 2. NAVIGATION & UI STRIPPING: Hide non-essential/interactive elements */
@@ -3866,14 +3874,39 @@ section[id] {
   }
 
   /* 6. RESUME SPECIFIC: Full document rendering */
-  .resume-page-card {
+  .resume-page-card,
+  #resume-scroll-container,
+  .resume-viewer-container {
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
-    page-break-after: always !important;
-    break-after: page !important;
-    border: none !important;
+    max-width: 100% !important;
+    background: #fff !important;
+    color: #000 !important;
     box-shadow: none !important;
+    border: none !important;
+    display: block !important;
+    position: static !important;
+  }
+
+  /* Hide interactive controls in resume viewer during print */
+  .resume-viewer-controls,
+  .resume-toolbar,
+  .resume-back-btn,
+  .resume-print-btn,
+  .resume-download-btn,
+  .resume-zoom-controls {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Academic single-column layout styling */
+  .resume-viewer-content,
+  .resume-section {
+    display: block !important;
+    width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   /* 7. LINKS: Show URLs after text for utility */
@@ -3890,4 +3923,11 @@ section[id] {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+}
+
+/* Mobile Navigation Drawer Smoothness & High Z-Index */
+#mobile-fullscreen-menu {
+  z-index: 99999 !important;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }

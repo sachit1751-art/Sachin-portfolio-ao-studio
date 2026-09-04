@@ -385,6 +385,59 @@ async function startServer() {
   app.get("/llms.txt", serveLlmsTxt);
   app.get("/.well-known/llms.txt", serveLlmsTxt);
 
+  // Dynamic sitemap route to guarantee host alignment with Google Search Console
+  app.get("/sitemap.xml", (req, res) => {
+    const host = req.get('x-forwarded-host') || req.get('host') || 'sachin-portfolio.vercel.app';
+    const protocol = req.get('x-forwarded-proto') || 'https';
+    const baseUrl = `${protocol}://${host}`;
+    const today = new Date().toISOString().split('T')[0];
+    
+    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/resume</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/privacy</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/terms</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>`;
+
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.send(sitemapXml);
+  });
+
+  app.get("/robots.txt", (req, res) => {
+    const host = req.get('x-forwarded-host') || req.get('host') || 'sachin-portfolio.vercel.app';
+    const protocol = req.get('x-forwarded-proto') || 'https';
+    const baseUrl = `${protocol}://${host}`;
+    
+    const robotsTxt = `User-agent: *
+Allow: /
+
+Sitemap: ${baseUrl}/sitemap.xml`;
+
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.send(robotsTxt);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

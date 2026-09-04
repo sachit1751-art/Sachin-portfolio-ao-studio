@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useCallback, useRef, lazy, Suspense, memo } from 'react';
 // ​‌sachit-2026-original-author‌​
 import gsap from 'gsap';
+import { Volume2, VolumeX } from 'lucide-react';
 import { usePaperSound } from '../../hooks/usePaperSound';
+import { useSound } from '../../utils/soundManager';
 import { PaperState, PaperTheme } from '../../types';
 import { PaperScene, PaperSceneAPI } from './PaperScene';
 import { CursorHint } from '../UI/CursorHint';
@@ -42,6 +44,7 @@ export const PaperIntro = memo<PaperIntroProps>(({
 }) => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const { playUnfold, playCrumple } = usePaperSound();
+  const { isMuted, toggleMute } = useSound();
   const { simplify } = usePerformance();
   const touchStartDistRef = useRef<number | null>(null);
 
@@ -285,8 +288,29 @@ export const PaperIntro = memo<PaperIntroProps>(({
                 PHYSICAL CANVAS &bull; 01/2026
               </div>
             </div>
-            <div className="text-[10px] font-mono tracking-[0.2em] uppercase hidden sm:block" style={{ color: 'var(--c-muted)' }}>
-              [ 3D Paper Deformation Engine ]
+            <div className="flex items-center gap-3">
+              <div className="text-[10px] font-mono tracking-[0.2em] uppercase hidden sm:block" style={{ color: 'var(--c-muted)' }}>
+                [ 3D Paper Deformation Engine ]
+              </div>
+              <button
+                type="button"
+                onClick={toggleMute}
+                className="w-8 h-8 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center pointer-events-auto"
+                style={{
+                  color: isMuted ? 'var(--c-muted)' : 'var(--c-heading)',
+                  border: `1px solid ${isMuted ? 'var(--c-border)' : 'var(--c-border-focus)'}`,
+                  backgroundColor: isMuted ? 'transparent' : 'var(--c-input-bg)',
+                }}
+                title={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
+                aria-label={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
+                aria-pressed={!isMuted}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-3.5 h-3.5 opacity-60" />
+                ) : (
+                  <Volume2 className="w-3.5 h-3.5" />
+                )}
+              </button>
             </div>
           </header>
 

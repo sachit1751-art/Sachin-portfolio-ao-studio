@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { Sparkles } from 'lucide-react';
 import { SkillCategory } from '../../types';
 import { WordReveal, LineReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
@@ -78,6 +79,7 @@ export const Skills = memo(() => {
           [ 03 / CAPABILITIES ]
         </span>
         <div className="flex items-center gap-4">
+          <Sparkles className="w-7 h-7 flex-shrink-0" style={{ color: 'var(--c-dot)' }} />
           <h2 className="font-sans text-4xl sm:text-5xl font-extrabold whitespace-nowrap tracking-tight" style={{ color: 'var(--c-heading)' }}>
             <WordReveal text="Skills & Stack" baseDelay={0.1} />
           </h2>

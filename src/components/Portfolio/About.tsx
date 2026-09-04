@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
 // ​sachit-2026-original-authored​
-import { Feather, Image as ImageIcon } from 'lucide-react';
+import { Feather, Image as ImageIcon, User } from 'lucide-react';
 import gsap from 'gsap';
 import { WordReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
@@ -120,6 +120,7 @@ export const About = memo(() => {
           [ 01 / BACKGROUND ]
         </span>
         <div className="flex items-center justify-center gap-3">
+          <User className="w-7 h-7" style={{ color: 'var(--c-dot)' }} />
           <h2 className="font-sans text-4xl sm:text-5xl font-extrabold text-center tracking-tight" style={{ color: 'var(--c-heading)' }}>
             <WordReveal text="About Me" baseDelay={0.1} />
           </h2>

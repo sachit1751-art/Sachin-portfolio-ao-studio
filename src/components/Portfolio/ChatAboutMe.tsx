@@ -71,17 +71,59 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [isUserScrolledUp, setIsUserScrolledUp] = useState(false);
+  const userScrolledAwayRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const compactScrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Intent-based Scroll Observer (Rule 1 & 2: Move only when asked, follow only while following)
+  const handleScrollContainer = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const isAtBottom = distanceFromBottom <= 45;
+
+    if (!isAtBottom) {
+      userScrolledAwayRef.current = true;
+      setIsUserScrolledUp(true);
+    } else {
+      userScrolledAwayRef.current = false;
+      setIsUserScrolledUp(false);
+    }
+  };
+
+  // Text selection detector (Rule 3: Selecting text or interacting stops auto-scroll)
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = window.getSelection();
+      if (selection && selection.toString().length > 0) {
+        const activeContainer = scrollRef.current || compactScrollRef.current;
+        if (activeContainer && activeContainer.contains(selection.anchorNode)) {
+          userScrolledAwayRef.current = true;
+          setIsUserScrolledUp(true);
+        }
+      }
+    };
+    document.addEventListener('selectionchange', handleSelectionChange);
+    return () => document.removeEventListener('selectionchange', handleSelectionChange);
+  }, []);
+
   const scrollToBottom = (instant = false) => {
-    if (scrollRef.current) {
-      const scrollContainer = scrollRef.current;
-      scrollContainer.scrollTo({
-        top: scrollContainer.scrollHeight,
+    const activeContainer = mode === 'compact-floating' ? compactScrollRef.current : scrollRef.current;
+    if (activeContainer) {
+      activeContainer.scrollTo({
+        top: activeContainer.scrollHeight,
         behavior: instant ? 'auto' : 'smooth'
       });
+      userScrolledAwayRef.current = false;
+      setIsUserScrolledUp(false);
     }
+  };
+
+  const jumpToLiveStream = () => {
+    userScrolledAwayRef.current = false;
+    setIsUserScrolledUp(false);
+    scrollToBottom(false);
   };
 
   const isInitialMount = useRef(true);
@@ -90,14 +132,15 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
     localStorage.setItem('portfolio-chat-history', JSON.stringify(messages));
     if (isInitialMount.current) {
       isInitialMount.current = false;
+      // Rule 11: Reopen where the reader left off
       scrollToBottom(true);
-    } else {
+    } else if (!userScrolledAwayRef.current) {
       scrollToBottom();
     }
   }, [messages]);
 
   useEffect(() => {
-    if (isLoading || isStreaming) {
+    if ((isLoading || isStreaming) && !userScrolledAwayRef.current) {
       scrollToBottom();
     }
   }, [isLoading, isStreaming]);
@@ -109,6 +152,10 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
     const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
     setMessages(newMessages);
     setIsLoading(true);
+
+    // Rule 1 & 4: User explicitly initiated a new turn - reset scroll lock to follow
+    userScrolledAwayRef.current = false;
+    setIsUserScrolledUp(false);
 
     try {
       const response = await fetch('/api/chat', {
@@ -174,7 +221,9 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                   updated[updated.length - 1] = { role: 'model', content: accumulatedText };
                   return updated;
                 });
-                scrollToBottom();
+                if (!userScrolledAwayRef.current) {
+                  scrollToBottom();
+                }
               }
             } catch {
               // Ignore single token parsing errors
@@ -323,12 +372,14 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
 
         {/* Chat Messages */}
         <div 
-          ref={scrollRef}
-          className="flex-1 overflow-y-auto p-3 space-y-3.5 custom-scrollbar"
+          ref={compactScrollRef}
+          onScroll={handleScrollContainer}
+          className="flex-1 overflow-y-auto p-3 space-y-3.5 custom-scrollbar relative"
           style={{ 
             backgroundImage: 'radial-gradient(var(--c-dot) 0.5px, transparent 0.5px)', 
             backgroundSize: '24px 24px',
-            scrollBehavior: 'smooth'
+            scrollBehavior: userScrolledAwayRef.current ? 'auto' : 'smooth',
+            overflowAnchor: 'auto'
           }}
         >
           <AnimatePresence initial={false} mode="popLayout">
@@ -386,6 +437,28 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
             </div>
           )}
           <div ref={messagesEndRef} className="h-px" />
+
+          {/* Jump to Live Stream Pill (Screenshot Principle 1 & 2: Follow only while following) */}
+          <AnimatePresence>
+            {isUserScrolledUp && (
+              <motion.button
+                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                onClick={jumpToLiveStream}
+                className="sticky bottom-2 left-1/2 -translate-x-1/2 z-30 px-3 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-wider flex items-center gap-1.5 shadow-xl border cursor-pointer hover:scale-105 transition-all"
+                style={{
+                  backgroundColor: 'var(--c-card)',
+                  borderColor: 'var(--c-border-hover)',
+                  color: 'var(--c-heading)',
+                  backdropFilter: 'blur(10px)',
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                <span>Live stream active · Jump to bottom ↓</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Suggested Questions */}
@@ -453,9 +526,12 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
           <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase block mb-3" style={{ color: 'var(--c-muted)' }}>
             [ 09 / INTERACTIVE ASSISTANT ]
           </span>
-          <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight mb-5" style={{ color: 'var(--c-heading)' }}>
-            Chat About Me
-          </h2>
+          <div className="flex items-center justify-center gap-3 mb-5">
+            <MessageSquare className="w-7 h-7" style={{ color: 'var(--c-dot)' }} />
+            <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
+              Chat About Me
+            </h2>
+          </div>
           <p className="max-w-2xl mx-auto text-base sm:text-lg font-handwriting leading-relaxed" style={{ color: 'var(--c-body)' }}>
             Curious about my workflow, tech stack, or specific projects? Ask my AI assistant for instant answers.
           </p>
@@ -508,11 +584,13 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
           {/* Chat Messages */}
           <div 
             ref={scrollRef}
-            className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar"
+            onScroll={handleScrollContainer}
+            className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar relative"
             style={{ 
               backgroundImage: 'radial-gradient(var(--c-dot) 0.5px, transparent 0.5px)', 
               backgroundSize: '32px 32px',
-              scrollBehavior: 'smooth'
+              scrollBehavior: userScrolledAwayRef.current ? 'auto' : 'smooth',
+              overflowAnchor: 'auto'
             }}
           >
             <AnimatePresence initial={false} mode="popLayout">
@@ -618,6 +696,28 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
               </motion.div>
             )}
             <div ref={messagesEndRef} className="h-px" />
+
+            {/* Jump to Live Stream Pill (Screenshot Principle 1 & 2: Follow only while following) */}
+            <AnimatePresence>
+              {isUserScrolledUp && (
+                <motion.button
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                  onClick={jumpToLiveStream}
+                  className="sticky bottom-3 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider flex items-center gap-2 shadow-2xl border cursor-pointer hover:scale-105 transition-all"
+                  style={{
+                    backgroundColor: 'var(--c-card)',
+                    borderColor: 'var(--c-border-hover)',
+                    color: 'var(--c-heading)',
+                    backdropFilter: 'blur(12px)',
+                  }}
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  <span>Live stream active · Jump to bottom ↓</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Suggested Questions */}

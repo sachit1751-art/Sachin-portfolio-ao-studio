@@ -230,9 +230,12 @@ export const Projects = memo(() => {
     <ScrollReveal>
       <section id="projects" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
-        <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
-          <CharReveal text="Featured" /> <CharReveal text="Projects" baseDelay={0.2} />
-        </h2>
+        <div className="flex items-center gap-3">
+          <Code2 className="w-8 h-8" style={{ color: 'var(--c-dot)' }} />
+          <h2 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--c-heading)' }}>
+            <CharReveal text="Featured" /> <CharReveal text="Projects" baseDelay={0.2} />
+          </h2>
+        </div>
       </div>
 
       <div ref={cardsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -8,12 +8,11 @@ import { QuoteRoll } from '../UI/QuoteRoll';
 import { GitHubIcon } from '../UI/Icons';
 
 const DEV_QUOTES = [
-  '"Simplicity is the ultimate sophistication." • Da Vinci',
-  '"Talk is cheap. Show me the code." • Linus Torvalds',
-  '"Make it work, make it right, make it fast." • Kent Beck',
-  '"Code is read much more often than it is written." • Guido van Rossum',
-  '"First, solve the problem. Then, write the code." • John Johnson',
-  '"Any fool can write code that a computer can understand." • Martin Fowler'
+  '"Talk is cheap. Show me the code." · Linus Torvalds',
+  '"Simplicity is the ultimate sophistication." · Leonardo da Vinci',
+  '"Make it work, make it right, make it fast." · Kent Beck',
+  '"First, solve the problem. Then, write the code." · John Johnson',
+  '"Code is read much more often than it is written." · Guido van Rossum'
 ];
 
 interface HeroProps {
@@ -89,25 +88,24 @@ export const Hero = memo<HeroProps>(({
   }, []);
 
   return (
-    <section ref={heroRef} id="hero" className="relative mb-8 pt-2 pb-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
-        <div className="gsap-hero-header inline-flex items-center gap-2 text-sm font-handwriting" style={{ color: 'var(--c-subtle)' }}>
-          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--c-dot)' }} />
-          <QuoteRoll quotes={DEV_QUOTES} interval={4000} />
-        </div>
-
-        <div className="gsap-hero-header flex items-center gap-3" style={{ color: 'var(--c-muted)' }}>
-          <div className="w-[30px] h-[1px]" style={{ backgroundColor: 'var(--c-muted)' }} />
-          <span className="text-xs font-mono uppercase tracking-[0.15em]">
-            i can build anything.
-          </span>
-        </div>
-      </div>
-
-      <div className="mb-12">
-        <div className="gsap-hero-status flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] mb-4" style={{ color: 'var(--c-subtle)' }}>
-          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--c-dot)' }} />
-          <span>Available for select projects · 2026</span>
+    <section ref={heroRef} id="hero" className="relative mb-4 pt-0 pb-4">
+      <div className="mb-6">
+        <div
+          className="gsap-hero-status flex flex-wrap items-center justify-between gap-3 text-xs pb-3.5 mb-6 border-b"
+          style={{ borderColor: 'var(--c-border)', color: 'var(--c-subtle)' }}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--c-dot)' }} />
+            <QuoteRoll
+              quotes={DEV_QUOTES}
+              interval={4500}
+              className="font-handwriting text-base sm:text-lg italic tracking-normal"
+            />
+          </div>
+          <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] opacity-80 flex-shrink-0" style={{ color: 'var(--c-heading)' }}>
+            <span className="opacity-40">—</span>
+            <span>I CAN BUILD ANYTHING.</span>
+          </div>
         </div>
         <p className="gsap-hero-subtitle font-handwriting text-lg sm:text-xl mb-3" style={{ color: 'var(--c-subtle)' }}>
           Independent Developer
