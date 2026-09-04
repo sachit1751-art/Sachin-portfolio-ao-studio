@@ -1,68 +1,98 @@
 <div align="center">
 
-# Hey, I'm Sachit 👋
+<!-- Animated Wavy Header Banner -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=1a1917&height=230&section=header&text=Hey%2C%20I'm%20Sachit%20%F0%9F%91%8B&fontSize=44&fontColor=f5f1eb&fontAlignY=38&desc=%E2%9A%A1%20AI%20%26%20Web%20Developer%20%C2%B7%20Full-Stack%20Architect%20%C2%B7%20Tech%20Builder&descSize=16&descAlignY=60&descAlign=50" width="100%" alt="Sachit Profile Header" />
 
-### `> building things that work.`
-
-**AI & Web Developer · Full-Stack Architect · Prompt Engineer**
-
-[![Portfolio](https://img.shields.io/badge/🌐_Portfolio-sachit--portfolio.vercel.app-1a1917?style=for-the-badge&logo=vercel&logoColor=white)](https://sachit-portfolio.vercel.app)
-[![LinkedIn](https://img.shields.io/badge/💼_LinkedIn-sachit-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/sachit)
-[![Email](https://img.shields.io/badge/✉️_Email-sachit1751@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:sachit1751@gmail.com)
+<!-- Dynamic Animated Terminal Typing SVG -->
+<a href="https://sachit-portfolio.vercel.app">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=3000&pause=1200&color=D97706&center=true&vCenter=true&width=650&height=55&lines=%3E+building+practical+software+that+scales.;%3E+AI+%26+Full-Stack+Architect;%3E+Student+Developer+(Class+12+%E2%80%94+PCMB);%3E+Prompt+Engineering+%26+Agentic+Workflows;%3E+Learn+by+building+%E2%86%92+Ship+%E2%86%92+Iterate." alt="Animated Typing Subtitle" />
+</a>
 
 <br/>
 
-I build full-stack web applications, architect AI integrations, and automate workflows.
-Student developer learning by turning ideas into working projects.
+<!-- Interactive Quick Links & Social Badges -->
+<p align="center">
+  <a href="https://sachit-portfolio.vercel.app" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_Interactive_Portfolio-sachit--portfolio.vercel.app-1a1917?style=for-the-badge&logo=vercel&logoColor=white&labelColor=11100f" alt="Portfolio" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/sachit1751-art" target="_blank">
+    <img src="https://img.shields.io/badge/🐙_GitHub-sachit1751--art-1a1917?style=for-the-badge&logo=github&logoColor=white&labelColor=11100f" alt="GitHub" />
+  </a>
+  &nbsp;
+  <a href="https://www.linkedin.com/in/sachit" target="_blank">
+    <img src="https://img.shields.io/badge/💼_LinkedIn-sachit-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=084b8a" alt="LinkedIn" />
+  </a>
+  &nbsp;
+  <a href="mailto:sachit1751@gmail.com">
+    <img src="https://img.shields.io/badge/✉️_Email_Me-sachit1751@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white&labelColor=b22f24" alt="Email" />
+  </a>
+</p>
 
 </div>
 
 ---
 
-## ⚡ What I Do
+### ⚡ About Me
 
-```
-const sachit = {
-  role: "Independent Developer",
-  education: "Class 12 — PCMB",
-  focus: ["Full-Stack", "AI/ML", "Automation", "Open Source"],
-  philosophy: "Learn by building → Ship → Iterate",
-  available: true,
+```typescript
+const developer = {
+  name: "Sachit",
+  pronouns: "he/him",
+  status: "Student Software Developer & Tech Builder",
+  academics: "Class 12 — PCMB (Physics, Chemistry, Math, Biology)",
+  location: "Remote building mode 🌐",
+  coreFocus: [
+    "Full-Stack Web Applications",
+    "AI/LLM Integrations (Gemini, Claude, MCP)",
+    "Automation Engines & Distributed Systems",
+    "On-Device AI & Custom Android Distributions"
+  ],
+  engineeringPhilosophy: [
+    "Learn by building (real projects > abstract theory)",
+    "Keep it simple (clean architecture over needless complexity)",
+    "Design matters (tactile, responsive & accessible UI/UX)",
+    "Continuous iteration & shipping"
+  ]
 };
 ```
 
 ---
 
-## 🛠️ Tech Stack
+### 🛠️ Tech Stack & Tooling
 
 <div align="center">
 
-![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwind-css&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white)
+#### 🎨 Frontend & Interactive UI
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=react,nextjs,ts,js,tailwind,html,css,vite&perline=8" alt="Frontend Stack" />
+</p>
 
-![Gemini API](https://img.shields.io/badge/Gemini_API-4285F4?style=flat-square&logo=google&logoColor=white)
-![Claude API](https://img.shields.io/badge/Claude_API-D97757?style=flat-square&logo=anthropic&logoColor=white)
-![MCP](https://img.shields.io/badge/MCP-FF6B35?style=flat-square&logo=data MOSAIC&logoColor=white)
-![TensorFlow Lite](https://img.shields.io/badge/TensorFlow_Lite-FF6F00?style=flat-square&logo=tensorflow&logoColor=white)
-![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=three.js&logoColor=white)
-![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=flat-square&logo=greensock&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
-![Go](https://img.shields.io/badge/Go-00ADD8?style=flat-square&logo=go&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white)
+#### 🧠 AI, Backend & Databases
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=py,nodejs,express,postgres,supabase,redis,go,rust&perline=8" alt="Backend and AI Stack" />
+</p>
+
+#### ⚙️ DevOps, Mobile & Systems
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=git,github,docker,linux,androidstudio,bash,vscode,postman&perline=8" alt="DevOps and Systems" />
+</p>
+
+<!-- Specialized Skill Badges -->
+<p align="center">
+  <img src="https://img.shields.io/badge/Google_Gemini_API-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini API" />
+  <img src="https://img.shields.io/badge/Anthropic_Claude_API-D97757?style=flat-square&logo=anthropic&logoColor=white" alt="Claude API" />
+  <img src="https://img.shields.io/badge/Model_Context_Protocol_(MCP)-FF6B35?style=flat-square&logo=open-source-initiative&logoColor=white" alt="MCP" />
+  <img src="https://img.shields.io/badge/TensorFlow_Lite-FF6F00?style=flat-square&logo=tensorflow&logoColor=white" alt="TFLite" />
+  <img src="https://img.shields.io/badge/Three.js_(WebGL)-000000?style=flat-square&logo=three.js&logoColor=white" alt="Three.js" />
+  <img src="https://img.shields.io/badge/GSAP_Animations-88CE02?style=flat-square&logo=greensock&logoColor=white" alt="GSAP" />
+</p>
 
 </div>
 
 ---
 
-## 🔥 Featured Projects
+### 🔥 Featured Projects
 
 <table>
 <tr>
@@ -71,19 +101,25 @@ const sachit = {
 ### 🤖 [SKY ROMs](https://sky-roms.vercel.app)
 **Android Custom ROM Discovery & Management Platform**
 
-React · TypeScript · Supabase · Tailwind CSS
+`React` · `TypeScript` · `Vite` · `Supabase` · `Tailwind CSS`
 
-A full-stack platform for discovering, comparing, and managing custom ROMs for Android devices. Features ROM discovery, device compatibility checks, user reviews, and download management.
+- Device compatibility engine with dynamic model filtering.
+- Side-by-side ROM comparisons, verified changelogs, and user reviews.
+- Seamless download asset pipeline with Supabase backend.
+- 🔗 **[Live Production App ↗](https://sky-roms.vercel.app)**
 
 </td>
 <td width="50%" valign="top">
 
 ### 🧠 [Sentience OS](#)
-**Custom Android Distribution with Local LLMs**
+**Custom Android Distribution with On-Device AI**
 
-AOSP · Kotlin · TensorFlow Lite
+`AOSP` · `Kotlin` · `TensorFlow Lite` · `Local LLMs`
 
-Custom Android distribution with integrated local LLMs for proactive privacy hardening and context-aware automation. Pushing the boundaries of on-device AI.
+- Custom Android build integrating on-device neural inferencing.
+- Privacy-first contextual automation and permission hardening.
+- Optimized for edge compute without telemetry reliance.
+- 🔗 **[Architecture Documentation ↗](#)**
 
 </td>
 </tr>
@@ -93,19 +129,25 @@ Custom Android distribution with integrated local LLMs for proactive privacy har
 ### 🏗️ [Nexus Core](#)
 **Next-Gen ERP for Distributed Teams**
 
-Next.js · Go · PostgreSQL · Redis · Socket.io
+`Next.js` · `Go` · `PostgreSQL` · `Redis` · `Socket.io`
 
-Highly scalable enterprise resource planning system with real-time collaborative state management, automated resource allocation, and predictive scaling.
+- Real-time collaborative state management using CRDTs.
+- Distributed resource scheduler with predictive scaling algorithms.
+- Low-latency WebSocket pub/sub synchronization layer.
+- 🔗 **[Repository & Benchmark ↗](#)**
 
 </td>
 <td width="50%" valign="top">
 
 ### 🔐 [Ghost Protocol](#)
-**E2EE Messaging Protocol**
+**Military-Grade E2EE Messaging Protocol**
 
-Rust · React Native · WebAssembly · Libp2p
+`Rust` · `React Native` · `WebAssembly` · `Zero-Knowledge`
 
-Military-grade end-to-end encrypted messaging with zero-knowledge proof identity verification and decentralized relay nodes.
+- Decentralized peer-to-peer relay nodes with zero-knowledge identity proofs.
+- Forward secrecy with double ratchet key exchange mechanism.
+- Cross-platform core compiled to WebAssembly.
+- 🔗 **[Protocol Spec & Code ↗](#)**
 
 </td>
 </tr>
@@ -113,21 +155,27 @@ Military-grade end-to-end encrypted messaging with zero-knowledge proof identity
 <td width="50%" valign="top">
 
 ### 📄 [Claude Document Summarizer](#)
-**AI-Powered Summarization Tool**
+**High-Speed Document Intelligence Engine**
 
-Python · Claude API · Prompt Engineering · Prompt Caching
+`Python` · `Anthropic Claude API` · `Prompt Caching`
 
-Intelligent document summarization using Anthropic Claude API with advanced prompt engineering and prompt caching for efficiency.
+- Intelligent document distillation and structural key-takeaway extraction.
+- Implements prompt caching for 90% latency and cost reduction.
+- Handles multi-format document ingestion pipelines.
+- 🔗 **[View Project ↗](#)**
 
 </td>
 <td width="50%" valign="top">
 
 ### ⏰ [Schedule Planner](#)
-**Automation Engine for Tasks & Alerts**
+**Automated Event Engine & Notification Dispatcher**
 
-Python · Node.js · REST APIs
+`Python` · `Node.js` · `RESTful APIs` · `Task Queue`
 
-Automated schedule planner and notification engine for managing tasks, recurring events, and sending alerts.
+- Automated task scheduling system with cron-like recurrence rules.
+- Multi-channel notification pipeline with priority dispatch.
+- Resilient background worker architecture.
+- 🔗 **[View Project ↗](#)**
 
 </td>
 </tr>
@@ -135,55 +183,60 @@ Automated schedule planner and notification engine for managing tasks, recurring
 
 ---
 
-## 🎯 Focus Areas
-
-```
-▸ Web Development       → React, TypeScript, Vite, Next.js
-▸ AI & Agents           → Gemini API, Claude API, MCP, Prompt Engineering
-▸ Systems Architecture  → PostgreSQL, Redis, Go, Distributed Systems
-▸ Android Platform      → AOSP, Custom ROMs, TensorFlow Lite
-▸ Security              → E2EE, Rust, Zero-Knowledge Proofs
-▸ Interactive 3D        → Three.js, WebGL, GSAP Animations
-```
-
----
-
-## 📊 GitHub Stats
+### 📊 GitHub Activity & Metrics
 
 <div align="center">
 
-![Sachit's GitHub stats](https://github-readme-stats.vercel.app/api?username=sachit1751-art&show_icons=true&theme=transparent&hide_border=true&title_color=1a1917&text_color=63615d&icon_color=1a1917)
+<!-- GitHub Stats Card & Streak Stats side by side -->
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=sachit1751-art&show_icons=true&theme=tokyonight&hide_border=false&border_color=332f2b&bg_color=161514&title_color=d97706&text_color=e6e2dc&icon_color=d97706&count_private=true&include_all_commits=true" height="175" alt="Sachit's GitHub Stats" />
+  &nbsp;
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=sachit1751-art&theme=tokyonight&hide_border=false&border_color=332f2b&background=161514&stroke=332f2b&ring=d97706&fire=d97706&currStreakLabel=d97706&currStreakNum=f5f1eb&sideNums=f5f1eb&sideLabels=a8a29e&dates=78716c" height="175" alt="Sachit's Streak Stats" />
+</p>
 
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=sachit1751-art&layout=compact&theme=transparent&hide_border=true&title_color=1a1917&text_color=63615d)
+<!-- Top Languages Chart -->
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=sachit1751-art&layout=compact&theme=tokyonight&hide_border=false&border_color=332f2b&bg_color=161514&title_color=d97706&text_color=e6e2dc&langs_count=8" alt="Top Languages" />
+</p>
+
+<!-- Contribution Snake Animation -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sachit1751-art/sachit1751-art/output/github-contribution-grid-snake-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/sachit1751-art/sachit1751-art/output/github-contribution-grid-snake.svg">
+  <img alt="GitHub contribution snake animation" src="https://raw.githubusercontent.com/sachit1751-art/sachit1751-art/output/github-contribution-grid-snake.svg" width="100%">
+</picture>
 
 </div>
 
 ---
 
-## 🌱 Currently Building
+### 🌱 What I'm Currently Building
 
-- **Portfolio v2** — 3D paper-themed interactive portfolio with WebGL shaders, procedural textures, and GSAP animations
-- **AI Agent Workflows** — Exploring MCP architectures and Claude API integrations
-- **Open Source Tools** — Building developer tools and automation scripts
-
----
-
-## 📫 Let's Connect
-
-<div align="center">
-
-[![Portfolio](https://img.shields.io/badge/🌐_Portfolio-1a1917?style=for-the-badge&logo=vercel&logoColor=white)](https://sachit-portfolio.vercel.app)
-[![GitHub](https://img.shields.io/badge/🐙_GitHub-sachit1751--art-1a1917?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sachit1751-art)
-[![LinkedIn](https://img.shields.io/badge/💼_LinkedIn-sachit-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/sachit)
-[![Email](https://img.shields.io/badge/✉️_Email-sachit1751@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:sachit1751@gmail.com)
-[![Instagram](https://img.shields.io/badge/📷_Instagram-sachit-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/sachit)
-
-</div>
+- 📜 **Portfolio v2 (Paper Studio)**: An interactive 3D paper-themed web experience powered by Three.js WebGL procedural shaders, GSAP physics, and live Gemini AI conversation context.
+- 🤖 **Agentic MCP Workflows**: Building dynamic context engines conforming to Anthropic's Model Context Protocol.
+- 📱 **Android System Tooling**: Iterating on custom ROM optimization tools and low-overhead local LLM runtimes.
 
 ---
 
+### 📬 Connect With Me
+
 <div align="center">
 
-*"Talk is cheap. Show me the code."* — Linus Torvalds
+[![Portfolio](https://img.shields.io/badge/Portfolio-1a1917?style=for-the-badge&logo=vercel&logoColor=white)](https://sachit-portfolio.vercel.app)
+&nbsp;
+[![GitHub](https://img.shields.io/badge/GitHub-1a1917?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sachit1751-art)
+&nbsp;
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/sachit)
+&nbsp;
+[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:sachit1751@gmail.com)
+
+<br/>
+
+<!-- Animated Wavy Footer Banner -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=1a1917&height=120&section=footer" width="100%" alt="Footer Banner" />
+
+<p align="center">
+  <sub><i>"Talk is cheap. Show me the code." — Linus Torvalds</i></sub>
+</p>
 
 </div>

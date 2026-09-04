@@ -1,11 +1,10 @@
 import React, { memo } from 'react';
-import { motion } from 'motion/react';
 import { usePerformance } from '../../hooks/usePerformance';
 
 export const BackgroundTextPath = memo(() => {
   const { simplify } = usePerformance();
   const text = "SACHIT • DEVELOPER • AI • DESIGN • CREATE • ";
-  const repeatedText = text.repeat(simplify ? 16 : 40);
+  const repeatedText = text.repeat(simplify ? 8 : 16);
 
   return (
     <div 
@@ -35,31 +34,19 @@ export const BackgroundTextPath = memo(() => {
 
         <g className="font-sans font-black uppercase tracking-[0.5em]" style={{ fill: 'var(--c-heading)', fontSize: '36px' }}>
           <text>
-            <motion.textPath
-              href="#bg-wavy-1"
-              animate={{ startOffset: ["0%", "-50%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 250 }}
-            >
+            <textPath href="#bg-wavy-1" className="bg-text-path-1">
               {repeatedText}
-            </motion.textPath>
+            </textPath>
           </text>
           <text>
-            <motion.textPath
-              href="#bg-wavy-2"
-              animate={{ startOffset: ["-50%", "0%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 300 }}
-            >
+            <textPath href="#bg-wavy-2" className="bg-text-path-2">
               {repeatedText}
-            </motion.textPath>
+            </textPath>
           </text>
           <text>
-            <motion.textPath
-              href="#bg-wavy-3"
-              animate={{ startOffset: ["0%", "-50%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 280 }}
-            >
+            <textPath href="#bg-wavy-3" className="bg-text-path-3">
               {repeatedText}
-            </motion.textPath>
+            </textPath>
           </text>
         </g>
       </svg>

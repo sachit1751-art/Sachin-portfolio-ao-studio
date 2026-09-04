@@ -41,7 +41,7 @@ export const ScrollReveal = memo<ScrollRevealProps>(({
       (isIntersecting) => {
         if (isIntersecting) setVisible(true);
       },
-      { root: scroller, threshold: 0, rootMargin: '0px 0px -20% 0px' }
+      { root: scroller, threshold: 0, rootMargin: '0px 0px -5% 0px' }
     );
   }, [simplify]);
 

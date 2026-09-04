@@ -56,6 +56,7 @@ export const Contact = memo(() => {
   const [errors, setErrors] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isAutoTypingForm, setIsAutoTypingForm] = useState(false);
 
   // Field validation helper
@@ -158,19 +159,43 @@ export const Contact = memo(() => {
     return !nameErr && !emailErr && !messageErr;
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
     if (validateForm()) {
       setIsSubmitting(true);
-      setTimeout(() => {
+      setSubmitError(null);
+
+      try {
+        const payload = new FormData();
+        payload.append('access_key', '7b8d5731-c857-47c5-a939-36f895804f58');
+        payload.append('name', formData.name.trim());
+        payload.append('email', formData.email.trim());
+        payload.append('message', formData.message.trim());
+        payload.append('subject', `Portfolio Dispatch from ${formData.name.trim()}`);
+        payload.append('from_name', `${formData.name.trim()} (via Portfolio)`);
+
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: payload,
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setIsSuccess(true);
+          setFormData({ name: '', email: '', message: '' });
+          setTouched({ name: false, email: false, message: false });
+          setErrors({ name: '', email: '', message: '' });
+          setSubmitError(null);
+        } else {
+          setSubmitError(data.message || 'Failed to transmit message. Please try again or reach out via email directly.');
+        }
+      } catch {
+        setSubmitError('Network error transmitting dispatch. Please check your connection or contact directly via email.');
+      } finally {
         setIsSubmitting(false);
-        setIsSuccess(true);
-        setFormData({ name: '', email: '', message: '' });
-        setTouched({ name: false, email: false, message: false });
-        setErrors({ name: '', email: '', message: '' });
-        setTimeout(() => setIsSuccess(false), 5000);
-      }, 1400);
+      }
     }
   };
 
@@ -420,7 +445,13 @@ export const Contact = memo(() => {
                   </div>
 
                   {/* Form Readiness & Validation Status Banner */}
-                  <div className="pt-2">
+                  <div className="pt-2 space-y-2">
+                    {submitError && (
+                      <div className="p-2.5 rounded-[var(--radius-md)] font-mono text-xs flex items-center gap-2 bg-red-500/10 text-red-600 border border-red-500/30">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+                        <span>{submitError}</span>
+                      </div>
+                    )}
                     {touched.name && touched.email && touched.message && !errors.name && !errors.email && !errors.message && formData.name.trim() && formData.email.trim() && formData.message.trim() ? (
                       <div className="p-2.5 rounded-[var(--radius-md)] font-mono text-xs flex items-center gap-2 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                         <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
@@ -561,7 +592,7 @@ export const Contact = memo(() => {
             {/* Footer */}
             <div className="pt-6 text-center space-y-3" style={{ borderTop: '1px solid var(--c-border)' }}>
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono" style={{ color: 'var(--c-subtle)' }}>
-                <span>📍 San Francisco, CA / Remote (Worldwide)</span>
+                <span>📍 New Delhi, India / Remote (Worldwide)</span>
                 <span>•</span>
                 <span>⚡ Avg Response: &lt; 24h</span>
                 <span>•</span>
@@ -581,6 +612,16 @@ export const Contact = memo(() => {
                   style={{ color: 'var(--c-heading)' }}
                 >
                   Terms of Service
+                </button>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-404'))}
+                  className="underline hover:opacity-100 cursor-pointer"
+                  style={{ color: 'var(--c-heading)' }}
+                  title="View Domino NY inspired 404 experience"
+                >
+                  404 Page
                 </button>
               </div>
               <p className="text-sm font-handwriting tracking-wide" style={{ color: 'var(--c-muted)' }}>

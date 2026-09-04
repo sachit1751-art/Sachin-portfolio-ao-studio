@@ -98,8 +98,8 @@ export const Hero = memo<HeroProps>(({
 
         <div className="gsap-hero-header flex items-center gap-3" style={{ color: 'var(--c-muted)' }}>
           <div className="w-[30px] h-[1px]" style={{ backgroundColor: 'var(--c-muted)' }} />
-          <span className="text-xs font-mono uppercase tracking-[0.2em]">
-            Portfolio · 2026
+          <span className="text-xs font-mono uppercase tracking-[0.15em]">
+            i can build anything.
           </span>
         </div>
       </div>

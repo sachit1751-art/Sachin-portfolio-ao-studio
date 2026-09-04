@@ -49,21 +49,21 @@ export function createPaperUnfoldTimeline(
       callbacks.onSound?.();
       callbacks.onStateChange?.('opening');
 
-      // Stage 1: Quick squeeze + initial burst (200ms)
+      // Stage 1: Quick squeeze + initial burst (300ms)
       stage1Anim = animate(params, {
         progress: 0.15,
         scale: 0.92,
         rotationX: params.rotationX + 0.12,
         rotationY: params.rotationY - 0.15,
         positionY: -0.08,
-        duration: 200,
+        duration: 300,
         ease: 'inQuad',
         onUpdate: () => callbacks.onUpdate?.(),
         onComplete: () => {
           if (!active) return;
           callbacks.onStateChange?.('unfolding');
 
-          // Stage 2: Full unfold → flat sheet (1800ms)
+          // Stage 2: Full unfold → flat sheet (2600ms with smooth cubic-out, total 2.9s)
           stage2Anim = animate(params, {
             progress: 1.0,
             scale: 1.0,
@@ -78,8 +78,8 @@ export function createPaperUnfoldTimeline(
             creaseIntensity: 1.0,
             cameraZ: 18.0,
             paperScale: 4.0,
-            duration: 1800,
-            ease: 'inOutSine',
+            duration: 2600,
+            ease: 'outCubic',
             onUpdate: () => callbacks.onUpdate?.(),
             onComplete: () => {
               active = false;
@@ -99,10 +99,9 @@ export function createPaperUnfoldTimeline(
   };
 
   // Wrap in a GSAP timeline so PaperScene.tsx can call .play() / .kill() / .isActive()
-  // Fake tween keeps the timeline "active" for the full anime.js duration (2s)
   const tl = gsap.timeline({ paused: true });
   tl.call(() => handle.play());
-  tl.to({ _dummy: 0 }, { _dummy: 1, duration: 2.0, ease: 'none' });
+  tl.to({ _dummy: 0 }, { _dummy: 1, duration: 2.9, ease: 'none' });
 
   // Patch the timeline methods to delegate to our handle
   const origKill = tl.kill.bind(tl);
@@ -127,7 +126,7 @@ export function createPaperCrumpleTimeline(
     },
   });
 
-  // Reverse: paper shrinks + camera zooms in + crumples back
+  // Reverse: paper folds, shrinks, camera zooms in, and crumples back (2.9s duration synced with audio)
   tl.to(params, {
     progress: 0.0,
     scale: 1.0,
@@ -141,8 +140,8 @@ export function createPaperCrumpleTimeline(
     shadowOpacity: 0.65,
     cameraZ: 8.2,
     paperScale: 1.0,
-    duration: 1.6,
-    ease: 'power3.inOut',
+    duration: 2.9,
+    ease: 'power2.inOut',
     onStart: () => {
       callbacks.onSound?.();
       callbacks.onStateChange?.('settling');

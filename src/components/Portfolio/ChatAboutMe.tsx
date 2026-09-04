@@ -1,36 +1,68 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
-// ​‌sachit-portfolio-2026-original-authored‌​
-import { Send, User, Bot, Loader2, MessageSquare, Trash2, RotateCcw } from 'lucide-react';
+import { Send, User, Bot, Loader2, MessageSquare, Trash2, RotateCcw, FileText, ExternalLink, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ScrollReveal } from '../UI/ScrollReveal';
 import { useActiveSection } from '../../hooks/useActiveSection';
+import { useConversationContext } from '../../hooks/useConversationContext';
+import { PaperTheme, PaperState } from '../../types';
 
 interface Message {
   role: 'user' | 'model';
   content: string;
 }
 
+interface ChatAboutMeProps {
+  theme?: PaperTheme;
+  paperState?: PaperState;
+  mode?: 'full' | 'compact-floating';
+  activeTab?: string;
+}
+
 const INITIAL_MESSAGE: Message = { 
   role: 'model', 
-  content: "Hi! I'm Sachit's AI assistant. Ask me anything about his projects (like SKY ROMs, Claude Document Summarizer, Nexus Core, or Sentience OS), his tech stack, philosophy, or background!" 
+  content: "Hi! I'm Sachit's AI assistant powered by machine-readable `/llms.txt` context. Ask me anything about his projects (like SKY ROMs, AI Chatbot & Assistant, Claude Document Summarizer, Nexus Core, or Sentience OS), tech stack, philosophy, or background!" 
 };
 
 const SUGGESTIONS: Record<string, string[]> = {
   hero: ["Tell me about Sachit", "What is his core philosophy?"],
   about: ["What is Class 12 PCMB?", "Where is he based?"],
   philosophy: ["Explain 'Learn by Building'", "How does he view AI?"],
-  projects: ["Tell me about SKY ROMs", "What is Nexus Core?", "What is Claude Document Summarizer?"],
+  projects: ["Tell me about SKY ROMs", "What is the AI Chatbot project?", "What is Claude Document Summarizer?"],
   skills: ["What programming languages does he know?", "What AI tools does he use?"],
   experience: ["What projects has he built?", "What are his core focus areas?"],
   education: ["What is he currently studying?", "What subjects are in PCMB?"],
   contact: ["How can I contact Sachit?", "Is he open to remote work?"],
 };
 
-// ﻿provenance:sachit-2026-original﻿
-export const ChatAboutMe = memo(() => {
+const STRUCTURE_SUGGESTIONS: Record<string, string[]> = {
+  architecture: ["Explain the 3-layer architecture", "How does paper unfold work?", "Explain the event pipelines"],
+  'file-structure': ["Explain the component directory", "Where is WebGL initialized?", "How are sound hooks organized?"],
+  'tech-stack': ["Why Vite & React 18?", "What is used for 3D graphics?", "Tell me about Tailwind setup"],
+  animation: ["Explain the GSAP & Three.js loop", "How is 60fps locked?", "Explain SVG path compositor"],
+  performance: ["How is WebGL GPU throttled?", "Explain CSS contain: content", "What is pixel ratio capping?"],
+  decisions: ["Why the tactile paper theme?", "Explain Typography choices", "Why no generic UI clichés?"],
+  'mood-game': ["What is the MOOD game easter egg?", "How is it triggered?", "Explain the game loop"],
+  procedural: ["How does paper crumple generation work?", "Explain vertex noise", "How are normals computed?"],
+  settings: ["How does sound synthesis work?", "What themes are supported?", "How are preferences stored?"],
+};
+
+export const ChatAboutMe = memo<ChatAboutMeProps>(({ 
+  theme = 'kraft', 
+  paperState = 'opened',
+  mode = 'full',
+  activeTab = 'architecture'
+}) => {
   const activeSection = useActiveSection();
+  const effectiveRoute = mode === 'compact-floating' ? `structure-room:${activeTab}` : undefined;
+  const { contextPayload } = useConversationContext({ 
+    theme, 
+    paperState,
+    activeRoute: effectiveRoute
+  });
+
+  const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem('portfolio-chat-history');
     return saved ? JSON.parse(saved) : [INITIAL_MESSAGE];
@@ -83,6 +115,7 @@ export const ChatAboutMe = memo(() => {
         body: JSON.stringify({ 
           messages: newMessages,
           activeSection: activeSection,
+          conversationContext: contextPayload,
           stream: true
         }),
       });
@@ -120,9 +153,13 @@ export const ChatAboutMe = memo(() => {
             try {
               const parsed = JSON.parse(dataStr);
               if (parsed.error) {
-                throw new Error(parsed.error);
-              }
-              if (parsed.text) {
+                accumulatedText = parsed.error;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { role: 'model', content: accumulatedText };
+                  return updated;
+                });
+              } else if (parsed.text) {
                 accumulatedText += parsed.text;
                 setMessages((prev) => {
                   const updated = [...prev];
@@ -134,6 +171,18 @@ export const ChatAboutMe = memo(() => {
               // Ignore single token parsing errors
             }
           }
+        }
+
+        // If no text was accumulated, provide a helpful default
+        if (!accumulatedText.trim()) {
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = { 
+              role: 'model', 
+              content: "I'm ready to answer any questions about Sachit's projects (like SKY ROMs and the AI Chatbot), technical skills, or background. What would you like to know?" 
+            };
+            return updated;
+          });
         }
       } else {
         const data = await response.json();
@@ -165,6 +214,216 @@ export const ChatAboutMe = memo(() => {
     }
   };
 
+  // Compact Floating Mode for Structure Room to avoid blocking architecture flow charts
+  if (mode === 'compact-floating') {
+    if (isMinimized) {
+      return (
+        <div className="fixed bottom-5 right-5 z-50 pointer-events-auto">
+          <motion.button
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsMinimized(false)}
+            className="flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-2xl border font-mono text-xs uppercase tracking-wider cursor-pointer"
+            style={{
+              backgroundColor: 'var(--c-surface)',
+              borderColor: 'var(--c-border)',
+              color: 'var(--c-heading)',
+              boxShadow: '0 10px 30px -5px rgba(0,0,0,0.3)',
+              backdropFilter: 'blur(12px)'
+            }}
+            title="Open Architecture Assistant"
+          >
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <Bot size={15} className="text-amber-500" />
+            <span className="font-bold">Architecture AI</span>
+            <MessageSquare size={12} className="opacity-50 ml-1" />
+          </motion.button>
+        </div>
+      );
+    }
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.92 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 30, scale: 0.92 }}
+        transition={{ duration: 0.25 }}
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] h-[480px] max-h-[75vh] rounded-2xl overflow-hidden flex flex-col pointer-events-auto shadow-2xl border"
+        style={{
+          backgroundColor: 'var(--c-card)',
+          borderColor: 'var(--c-border)',
+          boxShadow: '0 20px 50px -10px rgba(0,0,0,0.35)',
+          backdropFilter: 'blur(16px)'
+        }}
+      >
+        {/* Floating Header Bar */}
+        <div 
+          className="px-3.5 py-2.5 border-b flex items-center justify-between gap-2 flex-shrink-0"
+          style={{ borderColor: 'var(--c-border)', backgroundColor: 'rgba(255,255,255,0.04)' }}
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider opacity-80" style={{ color: 'var(--c-heading)' }}>
+              Architecture AI
+            </span>
+            <a
+              href="/llms.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold transition-opacity hover:opacity-100 opacity-70"
+              style={{
+                backgroundColor: 'var(--c-input-bg)',
+                border: '1px solid var(--c-border)',
+                color: 'var(--c-heading)'
+              }}
+              title="View machine-readable llms.txt context"
+            >
+              <FileText size={9} className="text-amber-500" />
+              <span>llms.txt</span>
+            </a>
+          </div>
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={clearChat}
+              className="p-1 rounded transition-colors opacity-50 hover:opacity-100 hover:text-red-500 cursor-pointer"
+              title="Clear Conversation"
+            >
+              <RotateCcw size={13} />
+            </button>
+            <button 
+              onClick={() => setIsMinimized(true)}
+              className="p-1 rounded transition-colors opacity-60 hover:opacity-100 cursor-pointer"
+              style={{ color: 'var(--c-heading)' }}
+              title="Minimize to avoid blocking architecture flow charts"
+            >
+              <Minus size={15} />
+            </button>
+          </div>
+        </div>
+
+        {/* Chat Messages */}
+        <div 
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto p-3 space-y-3.5 custom-scrollbar"
+          style={{ 
+            backgroundImage: 'radial-gradient(var(--c-dot) 0.5px, transparent 0.5px)', 
+            backgroundSize: '24px 24px',
+            scrollBehavior: 'smooth'
+          }}
+        >
+          <AnimatePresence initial={false} mode="popLayout">
+            {messages.map((m, i) => (
+              <motion.div
+                key={i}
+                layout
+                initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.2 }}
+                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`flex max-w-[92%] gap-2.5 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div 
+                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm"
+                    style={{ 
+                      backgroundColor: m.role === 'user' ? 'var(--c-btn-bg)' : 'var(--c-input-bg)',
+                      border: '1px solid var(--c-border)',
+                      color: m.role === 'user' ? 'var(--c-btn-text)' : 'var(--c-heading)'
+                    }}
+                  >
+                    {m.role === 'user' ? <User size={13} /> : <Bot size={13} />}
+                  </div>
+                  <div 
+                    className={`p-2.5 sm:p-3 rounded-xl shadow-sm text-xs sm:text-[13px] ${
+                      m.role === 'user' ? 'rounded-tr-none' : 'rounded-tl-none'
+                    }`}
+                    style={{ 
+                      backgroundColor: m.role === 'user' ? 'var(--c-btn-bg)' : 'var(--c-bg)',
+                      color: m.role === 'user' ? 'var(--c-btn-text)' : 'var(--c-body)',
+                      border: '1px solid var(--c-border)',
+                      lineHeight: '1.6'
+                    }}
+                  >
+                    <div className="markdown-body prose prose-xs max-w-none prose-neutral dark:prose-invert text-xs">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {isLoading && (
+            <div className="flex justify-start pb-2">
+              <div className="flex gap-2 items-center text-xs opacity-60 font-mono">
+                <Bot size={14} className="animate-spin text-amber-500" />
+                <span>Analyzing blueprint...</span>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} className="h-px" />
+        </div>
+
+        {/* Suggested Questions */}
+        <div className="px-2.5 py-1.5 bg-[var(--c-bg)] border-t border-b overflow-x-auto custom-scrollbar-hide flex-shrink-0" style={{ borderColor: 'var(--c-border)' }}>
+          <div className="flex gap-1.5 min-w-max">
+            {(STRUCTURE_SUGGESTIONS[activeTab || 'architecture'] || STRUCTURE_SUGGESTIONS.architecture).map((suggestion, idx) => (
+              <button
+                key={`sr-${activeTab}-${idx}`}
+                onClick={() => sendMessage(suggestion)}
+                className="px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wider transition-all hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+                style={{ 
+                  backgroundColor: 'var(--c-input-bg)',
+                  border: '1px solid var(--c-border)',
+                  color: 'var(--c-muted)'
+                }}
+                disabled={isLoading}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Chat Input */}
+        <form 
+          onSubmit={handleSubmit}
+          className="p-2.5 border-t relative z-10 flex-shrink-0"
+          style={{ borderColor: 'var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
+        >
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask about this diagram..."
+              className="w-full py-2 px-3 pr-10 rounded-lg border outline-none text-xs"
+              style={{ 
+                backgroundColor: 'var(--c-bg)',
+                borderColor: 'var(--c-border)',
+                color: 'var(--c-body)'
+              }}
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || isLoading}
+              className="absolute right-1.5 p-1.5 rounded-md transition-all active:scale-95 disabled:opacity-30 cursor-pointer"
+              style={{ 
+                backgroundColor: 'var(--c-btn-bg)',
+                color: 'var(--c-btn-text)'
+              }}
+            >
+              {isLoading ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    );
+  }
+
   return (
     <ScrollReveal>
       <section id="chat" className="relative mb-28 pt-12" style={{ borderTop: '1px solid var(--c-border)' }}>
@@ -190,10 +449,26 @@ export const ChatAboutMe = memo(() => {
           }}
         >
           {/* Header Bar */}
-          <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'var(--c-border)', backgroundColor: 'rgba(255,255,255,0.05)' }}>
-            <div className="flex items-center gap-2">
+          <div className="px-4 py-3 border-b flex items-center justify-between gap-2" style={{ borderColor: 'var(--c-border)', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+            <div className="flex items-center gap-2.5">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <span className="text-[10px] font-mono font-bold uppercase tracking-widest opacity-60">Assistant Online</span>
+              <a
+                href="/llms.txt"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold transition-all hover:scale-105"
+                style={{
+                  backgroundColor: 'var(--c-input-bg)',
+                  border: '1px solid var(--c-border)',
+                  color: 'var(--c-heading)'
+                }}
+                title="View machine-readable llms.txt context"
+              >
+                <FileText size={11} className="text-amber-500" />
+                <span>/llms.txt</span>
+                <ExternalLink size={9} className="opacity-50" />
+              </a>
             </div>
             <button 
               onClick={clearChat}

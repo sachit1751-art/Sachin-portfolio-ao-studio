@@ -1,39 +1,32 @@
 import express from "express";
 // ​‌sachit-portfolio-2026-original-author‌​
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
+
+// Read machine-readable llms.txt context
+let LLMS_TXT_CONTENT = "";
+try {
+  const llmsPath = path.join(process.cwd(), "public", "llms.txt");
+  if (fs.existsSync(llmsPath)) {
+    LLMS_TXT_CONTENT = fs.readFileSync(llmsPath, "utf-8");
+  }
+} catch (e) {
+  console.warn("Could not read public/llms.txt:", e);
+}
 
 const SYSTEM_INSTRUCTION = `You are an intelligent, fast, and helpful AI assistant for Sachit's portfolio website. Your goal is to answer questions about Sachit, his background, skills, philosophy, and software projects in a direct, friendly, and professional tone.
 
-About Sachit:
-- Role: Student Software Developer & Tech Builder.
-- Education: Class 12 (PCMB - Physics, Chemistry, Mathematics, Biology).
-- Location/Mode: Remote building mode.
-- Core Focus: Building practical software, AI integrations, web applications, automation engines, and open-source tech.
-- Philosophy: "Learn by Building" (learning technologies by building real projects rather than just studying theory), "Keep It Simple" (clear, clean solutions over unnecessary complexity), "Experiment & Iterate", "Design Matters", "Continuous Learning".
-- Current Status: Currently in the planning & product exploration phase for a new software application.
+You operate with full context provided by the site's machine-readable \`/llms.txt\` document below:
 
-Technical Skills:
-- Languages: Python, JavaScript, TypeScript, Go, Rust, Kotlin, HTML5, CSS3.
-- Web & Interactive: React, Next.js, Vite, Tailwind CSS, Three.js, WebGL, GSAP, Framer Motion, Responsive & Accessible UI/UX.
-- Backend & Storage: Node.js, Express, Go, Supabase (PostgreSQL, Storage), Redis, REST-style APIs.
-- AI / ML & Automation: Gemini API, Claude API, MCP (Model Context Protocol), Prompt Engineering, Prompt Caching, TensorFlow Lite, Minimax AI algorithm.
-- Tools & Practices: Git, GitHub, Render, Netlify, Security Headers, CSRF checks.
+---
+${LLMS_TXT_CONTENT}
+---
 
-Comprehensive Project Portfolio:
-1. SKY ROMs (2025): Android Custom ROM Discovery & Management Platform. Features device compatibility checks, ROM comparisons, download management, and user reviews. Built with React, TypeScript, Vite, Supabase, Tailwind CSS. Demo at https://sky-roms.vercel.app.
-2. Claude Document Summarizer (2025): AI tool that summarizes uploaded documents using Anthropic Claude API, intelligent prompt engineering, and prompt caching for high speed and efficiency (Python, Claude API).
-3. Schedule Planner (2025): Automated task schedule planner and notification engine for sending timely alerts and recurring event updates (Python, Node.js, REST APIs).
-4. Tic-Tac-Toe Mini Game (2025): Polished browser game with Minimax AI algorithm featuring Easy & Hard modes, turn locking, and win/draw evaluation (JS, HTML, CSS).
-5. MCP Integration Tool (2025): Tool for working with Model Context Protocol architectures, built following Anthropic Developer curriculum (Python, Claude API, MCP).
-6. Nexus Core (2024): Enterprise resource planning (ERP) system for distributed teams, featuring real-time CRDT collaborative state management and automated resource allocation (Next.js, Go, PostgreSQL, Redis, Socket.io).
-7. Sentience OS: Custom Android distribution integrating local LLMs via TensorFlow Lite (AOSP, Kotlin, TFLite).
-8. Ghost Protocol: End-to-end encrypted messaging protocol (Rust, React Native).
-
-Communication Style:
+Communication Style & Instructions:
 - Be concise, punchy, and direct.
-- Give fast, accurate, and structured answers.
+- Give fast, accurate, and structured answers grounded strictly in Sachit's actual portfolio data.
 - Avoid flowery filler phrases or long intros.
 - Use clean formatting (bullet points or bolding) when listing multiple items.
 - If asked about something not covered in his professional/academic profile, politely mention that you focus on Sachit's software, skills, and portfolio work.`;
@@ -151,6 +144,102 @@ async function fetchGitHubContributions(username: string): Promise<ContributionD
   return result;
 }
 
+// Grounded fallback response generator from llms.txt when external API is under temporary high demand
+function generatePortfolioGroundedFallback(contents: any[]): string {
+  const lastUserMsg = [...contents].reverse().find(c => c.role === 'user')?.parts?.[0]?.text?.toLowerCase() || '';
+  
+  if (lastUserMsg.includes('sky rom') || lastUserMsg.includes('android')) {
+    return "### SKY ROMs\n**SKY ROMs** is Sachit's Android Custom ROM Discovery & Management Platform. Built with React, TypeScript, Vite, Supabase, and Tailwind CSS, it offers ROM discovery, device compatibility checks, comparisons, and download management. [Live Demo: sky-roms.vercel.app](https://sky-roms.vercel.app)";
+  }
+  if (lastUserMsg.includes('chatbot') || lastUserMsg.includes('ai chat') || lastUserMsg.includes('assistant')) {
+    return "### AI Chatbot & Assistant\nAn open-source, full-stack multi-model conversational platform built with Next.js, Vercel AI SDK, and serverless Postgres. Features multi-model routing (Claude, OpenAI, xAI, DeepSeek), persistent chat histories, and streaming UI. [Live Demo: chatbot-seven-dun-evb9u88zkv.vercel.app](https://chatbot-seven-dun-evb9u88zkv.vercel.app)";
+  }
+  if (lastUserMsg.includes('claude') || lastUserMsg.includes('summariz') || lastUserMsg.includes('document')) {
+    return "### Claude Document Summarizer\nA high-speed document summarization engine built in Python using Anthropic's Claude API with prompt caching for minimal latency and cost efficiency. It handles deep text extraction and markdown reporting.";
+  }
+  if (lastUserMsg.includes('skill') || lastUserMsg.includes('stack') || lastUserMsg.includes('technolog')) {
+    return "### Technical Skills & Stack\n- **Languages & Frameworks**: TypeScript, JavaScript, React, Next.js, Python, Tailwind CSS, Vite\n- **AI & Integrations**: Google GenAI SDK, Anthropic Claude API, Model Context Protocol (MCP), Vercel AI SDK\n- **Backend & Cloud**: Supabase, PostgreSQL, REST APIs, Node.js/Express, Git\n- **Core Philosophy**: Learn by building and creating real, working software.";
+  }
+  if (lastUserMsg.includes('education') || lastUserMsg.includes('study') || lastUserMsg.includes('pcmb') || lastUserMsg.includes('class 12')) {
+    return "Sachit is currently a Senior High School Student (Class 12) pursuing a **PCMB** curriculum (Physics, Chemistry, Mathematics, Biology) in India, combining rigorous STEM fundamentals with hands-on software development and AI engineering.";
+  }
+  if (lastUserMsg.includes('nexus') || lastUserMsg.includes('sentience') || lastUserMsg.includes('project')) {
+    return "Sachit has engineered several notable projects:\n1. **SKY ROMs** — Android Custom ROM Discovery Platform\n2. **AI Chatbot & Assistant** — Multi-model conversational AI platform\n3. **Claude Document Summarizer** — Fast document breakdown with prompt caching\n4. **Nexus Core / Sentience OS** — Experimental modular software architectures\n5. **MCP Integration Tools** — Local model context protocol tools\n\nFeel free to ask about any specific project!";
+  }
+
+  return "Sachit is a software developer and prompt engineer focused on full-stack web applications, AI integrations, and developer tooling. He builds with TypeScript, Next.js, Python, and modern LLM APIs. Explore his featured projects (like SKY ROMs and the AI Chatbot) or ask for specific details on his tech stack!";
+}
+
+const CANDIDATE_MODELS = [
+  "gemini-3.8-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-flash-latest",
+];
+
+async function generateContentStreamWithFallback(
+  validContents: any[],
+  contextualInstruction: string,
+  onChunk: (text: string) => void
+) {
+  let streamSucceeded = false;
+
+  for (const modelName of CANDIDATE_MODELS) {
+    try {
+      const responseStream = await ai.models.generateContentStream({
+        model: modelName,
+        contents: validContents,
+        config: {
+          systemInstruction: contextualInstruction,
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        },
+      });
+
+      for await (const chunk of responseStream) {
+        if (chunk.text) {
+          streamSucceeded = true;
+          onChunk(chunk.text);
+        }
+      }
+
+      if (streamSucceeded) {
+        return; // Successfully streamed entire response
+      }
+    } catch (err: any) {
+      console.warn(`Streaming attempt failed with model ${modelName}:`, err?.message || err);
+      // Try next candidate model
+    }
+  }
+
+  // If all models failed or threw 503 / high demand, yield grounded fallback
+  const fallback = generatePortfolioGroundedFallback(validContents);
+  onChunk(fallback);
+}
+
+async function generateContentWithFallback(
+  validContents: any[],
+  contextualInstruction: string
+): Promise<string> {
+  for (const modelName of CANDIDATE_MODELS) {
+    try {
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents: validContents,
+        config: {
+          systemInstruction: contextualInstruction,
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        },
+      });
+      if (response.text) {
+        return response.text;
+      }
+    } catch (err: any) {
+      console.warn(`GenerateContent attempt failed with model ${modelName}:`, err?.message || err);
+    }
+  }
+
+  return generatePortfolioGroundedFallback(validContents);
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -158,83 +247,77 @@ async function startServer() {
   // Add body parsing middleware
   app.use(express.json());
 
-  // Gemini Chat Route (supports both streaming and single-shot)
+  // Gemini Chat Route (supports both streaming and single-shot with multi-model resilience)
   app.post("/api/chat", async (req, res) => {
-    const { messages, activeSection, stream = true } = req.body;
+    const { messages, activeSection, conversationContext, stream = true } = req.body;
     
+    // Format contents for Gemini SDK
+    const contents = (messages || []).map((m: any) => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content || '' }]
+    }));
+
+    // Ensure contents are valid (must start with user)
+    const validContents = contents.length > 0 && contents[0].role !== 'user' ? contents.slice(1) : contents;
+
+    // Add contextual info about what the user is currently viewing & local app state
+    let contextualInstruction = SYSTEM_INSTRUCTION;
+
+    if (conversationContext) {
+      const { theme, paperState, activeRoute, projectSummaries } = conversationContext;
+      contextualInstruction += `\n\n[DYNAMIC APP CONTEXT]:
+- Selected Theme: ${theme || 'kraft'}
+- Paper Intro State: ${paperState || 'opened'}
+- Current Section/Route: ${activeRoute || activeSection || 'home'}
+- Featured Project Summaries: ${JSON.stringify(projectSummaries || [])}`;
+    } else if (activeSection) {
+      const sectionLabel = activeSection.replace(/-/g, ' ');
+      contextualInstruction += `\n\n[USER CONTEXT]: The user is currently viewing the "${sectionLabel}" section. If they ask about "this" or "what I'm looking at", refer to the content in this section.`;
+    }
+
     if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: "Gemini API key not configured" });
+      // Return grounded fallback if API key is not yet set
+      const fallbackText = generatePortfolioGroundedFallback(validContents);
+      if (stream) {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache, no-transform');
+        res.setHeader('Connection', 'keep-alive');
+        res.write(`data: ${JSON.stringify({ text: fallbackText })}\n\n`);
+        res.write(`data: [DONE]\n\n`);
+        return res.end();
+      }
+      return res.json({ text: fallbackText });
     }
 
     try {
-      // Add contextual info about what the user is currently viewing
-      let contextualInstruction = SYSTEM_INSTRUCTION;
-      if (activeSection) {
-        const sectionLabel = activeSection.replace(/-/g, ' ');
-        contextualInstruction += `\n\n[USER CONTEXT]: The user is currently viewing the "${sectionLabel}" section. If they ask about "this" or "what I'm looking at", refer to the content in this section.`;
-      }
-
-      // Format contents for Gemini SDK
-      const contents = (messages || []).map((m: any) => ({
-        role: m.role === 'user' ? 'user' : 'model',
-        parts: [{ text: m.content || '' }]
-      }));
-
-      // Ensure contents are valid (must start with user)
-      const validContents = contents.length > 0 && contents[0].role !== 'user' ? contents.slice(1) : contents;
-
       if (stream) {
         // Set headers for Server-Sent Events (SSE)
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache, no-transform');
         res.setHeader('Connection', 'keep-alive');
 
-        try {
-          const responseStream = await ai.models.generateContentStream({
-            model: "gemini-3.8-flash",
-            contents: validContents,
-            config: {
-              systemInstruction: contextualInstruction,
-              maxOutputTokens: 250,
-            }
-          });
+        await generateContentStreamWithFallback(validContents, contextualInstruction, (chunkText) => {
+          res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+        });
 
-          for await (const chunk of responseStream) {
-            if (chunk.text) {
-              res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
-            }
-          }
-          res.write(`data: [DONE]\n\n`);
-          return res.end();
-        } catch (streamError: any) {
-          console.error("Gemini Stream Error:", streamError);
-          res.write(`data: ${JSON.stringify({ error: streamError.message || "Streaming error occurred" })}\n\n`);
-          return res.end();
-        }
+        res.write(`data: [DONE]\n\n`);
+        return res.end();
       }
 
       // Non-streaming fallback
-      const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
-        contents: validContents,
-        config: {
-          systemInstruction: contextualInstruction,
-          maxOutputTokens: 250,
-        }
-      });
-
-      res.json({ text: response.text });
+      const text = await generateContentWithFallback(validContents, contextualInstruction);
+      res.json({ text });
     } catch (error: any) {
       console.error("Gemini API Error:", error);
+      const fallback = generatePortfolioGroundedFallback(validContents);
       
-      if (error.message?.includes('503') || error.message?.includes('high demand')) {
-        return res.status(503).json({ 
-          error: "Service unavailable", 
-          message: "The AI model is currently experiencing high demand. Please try again in a moment." 
-        });
+      if (stream) {
+        res.write(`data: ${JSON.stringify({ text: fallback })}\n\n`);
+        res.write(`data: [DONE]\n\n`);
+        return res.end();
       }
 
-      res.status(500).json({ error: "Failed to generate response", message: error.message });
+      res.json({ text: fallback });
     }
   });
 
@@ -257,6 +340,18 @@ async function startServer() {
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
+
+  // Machine-readable llms.txt standard endpoints
+  const serveLlmsTxt = (req: express.Request, res: express.Response) => {
+    const llmsPath = path.join(process.cwd(), "public", "llms.txt");
+    if (fs.existsSync(llmsPath)) {
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
+      return res.sendFile(llmsPath);
+    }
+    res.status(404).send("llms.txt file not found");
+  };
+  app.get("/llms.txt", serveLlmsTxt);
+  app.get("/.well-known/llms.txt", serveLlmsTxt);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

@@ -44,7 +44,6 @@ const ALL_SECTIONS = [
   'strengths',
   'building-in-public',
   'contact',
-  'quick-contact',
 ];
 
 // ﻿author:sachit-2026-original﻿
@@ -325,9 +324,9 @@ export const Header = memo<HeaderProps>(({
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
           backgroundColor: scrolled ? 'var(--c-header-bg)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
           borderBottom: scrolled ? '1px solid var(--c-header-border)' : '1px solid transparent',
-          backdropFilter: scrolled ? 'blur(16px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
           boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
         }}
       >
@@ -376,6 +375,7 @@ export const Header = memo<HeaderProps>(({
                   key={id}
                   ref={(el) => { navBtns.current[id] = el; }}
                   onClick={() => handleNavClick(id, isResume)}
+                  onMouseEnter={isResume ? () => { import('./ResumeViewer'); } : undefined}
                   className="relative px-3.5 py-1.5 text-sm font-body transition-colors cursor-pointer rounded-md"
                   style={{
                     color: isActive ? 'var(--c-heading)' : 'var(--c-subtle)',
@@ -432,6 +432,19 @@ export const Header = memo<HeaderProps>(({
               </span>
             </div>
 
+            {/* Resume Button */}
+            <button
+              id="header-resume-btn"
+              onClick={onViewResume}
+              onMouseEnter={() => { import('./ResumeViewer'); }}
+              className="px-3 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
+              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
+              title="View Resume"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Resume</span>
+            </button>
+
             {/* Fold Button */}
             <button
               id="recrumple-btn"
@@ -445,7 +458,7 @@ export const Header = memo<HeaderProps>(({
             </button>
           </div>
 
-          {/* Mobile Right Controls: Theme Dots + Fold + Hamburger (Clean single bar, matching PC) */}
+          {/* Mobile Right Controls: Theme Dots + Resume + Fold + Hamburger */}
           <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
             {/* Theme Dots */}
             <div
@@ -471,6 +484,17 @@ export const Header = memo<HeaderProps>(({
                 />
               ))}
             </div>
+
+            {/* Resume Button */}
+            <button
+              onClick={onViewResume}
+              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
+              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
+              title="View Resume"
+              aria-label="View Resume"
+            >
+              <FileText className="w-4 h-4" />
+            </button>
 
             {/* Fold Button */}
             <button

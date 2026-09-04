@@ -24,6 +24,7 @@ import {
   Terminal
 } from 'lucide-react';
 import { PaperTheme } from '../../types';
+import { BackgroundTextPath } from '../UI/BackgroundTextPath';
 
 /**
  * Editorial framer-motion variants applying a soft fade-in and subtle slide-up effect
@@ -145,25 +146,31 @@ PROJECTS
    - Developed a secure Supabase and PostgreSQL backend featuring user authentication, role-based authorization, CRUD operations, and persistent cloud storage, ensuring administrative controls and role assignments are enforced strictly server-side.
    - Synchronized the production web application into a native mobile experience using Capacitor and Android Studio, maintaining version control through Git branching workflows.
 
-2. Claude-Powered Document Summarizer
+2. AI Chatbot & Assistant Platform (https://chatbot-seven-dun-evb9u88zkv.vercel.app)
+   Technologies: Next.js, React, TypeScript, Vercel AI SDK, Neon PostgreSQL, Tailwind CSS, Radix UI, Git/GitHub
+   - Engineered an open-source, full-stack multi-model conversational assistant with streaming generative UI and real-time LLM gateway integration.
+   - Implemented persistent chat histories and user data workflows with Neon Serverless Postgres and responsive Radix UI / Tailwind CSS styling.
+   - Designed modular AI provider routing (Claude, OpenAI, xAI, DeepSeek) through Vercel AI SDK and unified API hooks.
+
+3. Claude-Powered Document Summarizer
    Technologies: Python, Streamlit, Anthropic Claude API, Git
    - Built a web interface using Streamlit to allow users to seamlessly upload PDF and TXT files for real-time text extraction and analysis.
    - Integrated Anthropic's Claude API using structured system instructions and clear contextual boundaries to eliminate factual hallucinations.
    - Implemented prompt caching strategies for recurring document formats, reducing API response times by up to 40% and lowering token consumption costs.
 
-3. Automated Schedule Planner & Notification Engine
+4. Automated Schedule Planner & Notification Engine
    Technologies: Python, JSON, SMTPlib, Cron Tasks
    - Engineered a Python script to parse, validate, and query user schedule matrices stored within local JSON data structures.
    - Configured automated notification delivery using Python's native smtplib to compile and dispatch structured daily agendas every morning.
    - Utilized background task scheduling methods to ensure consistent, low-overhead script execution across different system uptime periods.
 
-4. Open-Source Web Music Streaming Application
+5. Open-Source Web Music Streaming Application
    Technologies: JavaScript, HTML5, CSS3, REST APIs, Git
    - Developed a responsive web audio player capable of streaming tracks smoothly across desktop and mobile browsers.
    - Implemented dynamic playlist controls, search filtering, and volume management for an intuitive user experience.
    - Integrated modern UI styling and local storage caching to save user preferences and recent playback states.
 
-5. AI-Powered Model Context Protocol (MCP) Integration Tool
+6. AI-Powered Model Context Protocol (MCP) Integration Tool
    Technologies: Python, Anthropic Claude API, MCP Servers, JSON-RPC
    - Configured Model Context Protocol (MCP) server endpoints to allow large language models to securely query local resources and system datasets.
    - Implemented clean JSON-RPC messaging handlers to streamline communication between client interfaces and modular backend tools.
@@ -202,9 +209,11 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="resume-viewer-main relative w-full min-h-screen py-6 sm:py-10 px-3 sm:px-6 md:px-10 transition-colors duration-300"
-      style={{ backgroundColor: 'var(--c-bg)', color: 'var(--c-body)' }}
+      className="resume-viewer-main relative w-full min-h-screen py-6 sm:py-10 px-3 sm:px-6 md:px-10 transition-colors duration-300 bg-transparent"
+      style={{ color: 'var(--c-body)' }}
     >
+      <BackgroundTextPath />
+
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -229,19 +238,20 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
         )}
       </AnimatePresence>
 
-      <motion.div variants={resumeContentVariants} className="max-w-5xl mx-auto flex flex-col gap-6">
+      <motion.div variants={resumeContentVariants} className="max-w-5xl mx-auto flex flex-col gap-6 relative z-10">
         {/* Top Control Bar */}
         <div
-          className="resume-controls no-print flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-5 rounded-[var(--radius-lg)] shadow-xs"
+          className="resume-controls no-print flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-5 rounded-[var(--radius-lg)] shadow-xs backdrop-blur-md"
           style={{
-            backgroundColor: 'var(--c-input-bg)',
+            backgroundColor: 'var(--c-card)',
             border: '1px solid var(--c-border)',
           }}
         >
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] cursor-pointer transition-all hover:bg-[var(--c-bg)] hover:border-[var(--c-border-focus)] active:scale-95"
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] cursor-pointer transition-all hover:bg-[var(--c-input-bg-focus)] hover:border-[var(--c-border-focus)] active:scale-95"
             style={{
+              backgroundColor: 'var(--c-input-bg)',
               color: 'var(--c-heading)',
               border: '1px solid var(--c-border)',
             }}
@@ -256,14 +266,14 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
           <div
             className="flex items-center gap-1 sm:gap-2 px-2 py-1 rounded-[var(--radius-md)]"
             style={{
-              backgroundColor: 'var(--c-bg)',
+              backgroundColor: 'var(--c-input-bg)',
               border: '1px solid var(--c-border)',
             }}
           >
             <button
               onClick={handleZoomOut}
               disabled={zoomLevel <= 70}
-              className="p-1.5 rounded hover:bg-[var(--c-input-bg)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              className="p-1.5 rounded hover:bg-[var(--c-input-bg-focus)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               title="Decrease scale (70% - 150%)"
               aria-label="Decrease text size"
             >
@@ -278,7 +288,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
             <button
               onClick={handleZoomIn}
               disabled={zoomLevel >= 150}
-              className="p-1.5 rounded hover:bg-[var(--c-input-bg)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              className="p-1.5 rounded hover:bg-[var(--c-input-bg-focus)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               title="Increase scale (70% - 150%)"
               aria-label="Increase text size"
             >
@@ -287,7 +297,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
             <div className="w-[1px] h-4 mx-1 bg-[var(--c-border)]" />
             <button
               onClick={handleResetZoom}
-              className="p-1.5 rounded hover:bg-[var(--c-input-bg)] cursor-pointer transition-colors"
+              className="p-1.5 rounded hover:bg-[var(--c-input-bg-focus)] cursor-pointer transition-colors"
               title="Reset scale to 100%"
               aria-label="Reset scale"
             >
@@ -300,7 +310,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
             <button
               type="button"
               onClick={handleCopyText}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] transition-all hover:bg-[var(--c-bg)] hover:border-[var(--c-border-focus)] active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] transition-all hover:bg-[var(--c-input-bg)] hover:border-[var(--c-border-focus)] active:scale-95 cursor-pointer"
               style={{
                 color: 'var(--c-heading)',
                 border: '1px solid var(--c-border)',
@@ -331,7 +341,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] transition-all hover:bg-[var(--c-bg)] hover:border-[var(--c-border-focus)] active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] transition-all hover:bg-[var(--c-input-bg)] hover:border-[var(--c-border-focus)] active:scale-95 cursor-pointer"
               style={{
                 color: 'var(--c-heading)',
                 border: '1px solid var(--c-border)',
@@ -340,7 +350,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               title="Print resume clean layout or save as PDF"
               aria-label="Print resume to PDF"
             >
-              <Printer className="w-4 h-4 text-[var(--c-accent)]" />
+              <Printer className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
               <span>Print to PDF</span>
             </button>
 
@@ -348,7 +358,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               href="/Sachit_Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] transition-all hover:bg-[var(--c-bg)] hover:border-[var(--c-border-focus)] active:scale-95"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-body font-medium rounded-[var(--radius-md)] transition-all hover:bg-[var(--c-input-bg)] hover:border-[var(--c-border-focus)] active:scale-95"
               style={{
                 color: 'var(--c-heading)',
                 border: '1px solid var(--c-border)',
@@ -364,11 +374,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
 
         {/* Paper Sheet Document Canvas Container */}
         <div
-          className="resume-viewer-container relative w-full rounded-[var(--radius-lg)] overflow-x-auto overflow-y-visible flex flex-col p-3 sm:p-6 md:p-8 shadow-sm"
-          style={{
-            backgroundColor: 'var(--c-bg)',
-            border: '1px solid var(--c-border)',
-          }}
+          className="resume-viewer-container relative w-full overflow-x-auto overflow-y-visible flex flex-col p-0 sm:p-2 bg-transparent"
         >
           {/* Paper Header / Metadata */}
           <div className="resume-metadata-bar flex items-center justify-between px-2 pb-4 mb-6 border-b border-[var(--c-border)]">
@@ -376,9 +382,16 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest"
               style={{ color: 'var(--c-subtle)' }}
             >
-              <FileText className="w-4 h-4 text-[var(--c-accent)]" />
+              <FileText className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
               <span>Sachit_Resume.pdf</span>
-              <span className="ml-2 px-2 py-0.5 rounded-full text-[10px] bg-[var(--c-input-bg)] text-[var(--c-heading)] border border-[var(--c-border)]">
+              <span
+                className="ml-2 px-2 py-0.5 rounded-full text-[10px] border"
+                style={{
+                  backgroundColor: 'var(--c-input-bg)',
+                  borderColor: 'var(--c-border)',
+                  color: 'var(--c-heading)',
+                }}
+              >
                 2 Pages • Verified Text Output
               </span>
             </div>
@@ -401,12 +414,12 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
             {/* PAGE 1: Header, Summary, Technical Skills, Projects, Education */}
             {/* ============================================================ */}
             <article
-              className="resume-page-card resume-sheet w-full max-w-[850px] rounded-[var(--radius-md)] p-6 sm:p-10 md:p-12 shadow-md transition-all select-text"
+              className="resume-page-card resume-sheet w-full max-w-[850px] rounded-[var(--radius-lg)] p-6 sm:p-10 md:p-12 transition-all select-text backdrop-blur-md"
               style={{
-                backgroundColor: 'var(--c-card-bg)',
+                backgroundColor: 'var(--c-card)',
                 border: '1px solid var(--c-border)',
                 color: 'var(--c-body)',
-                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06)',
               }}
             >
               {/* Top Banner Page Indicator (Screen Only) */}
@@ -438,7 +451,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
 
                 <p
                   className="font-mono text-xs sm:text-sm font-semibold tracking-wider uppercase"
-                  style={{ color: 'var(--c-accent)' }}
+                  style={{ color: 'var(--c-heading)' }}
                 >
                   Aspiring Software Developer & Prompt Engineer
                 </p>
@@ -489,7 +502,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               {/* 1. PROFESSIONAL SUMMARY */}
               <section className="mb-8">
                 <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[var(--c-border)]">
-                  <Briefcase className="w-4 h-4 text-[var(--c-accent)]" />
+                  <Briefcase className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                   <h2
                     className="font-heading text-sm font-bold uppercase tracking-wider"
                     style={{ color: 'var(--c-heading)' }}
@@ -509,7 +522,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               {/* 2. TECHNICAL SKILLS */}
               <section className="mb-8">
                 <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[var(--c-border)]">
-                  <Terminal className="w-4 h-4 text-[var(--c-accent)]" />
+                  <Terminal className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                   <h2
                     className="font-heading text-sm font-bold uppercase tracking-wider"
                     style={{ color: 'var(--c-heading)' }}
@@ -568,7 +581,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               {/* 3. PROJECTS (First 3 on Page 1) */}
               <section className="mb-8">
                 <div className="flex items-center gap-2 pb-2 mb-4 border-b border-[var(--c-border)]">
-                  <Code2 className="w-4 h-4 text-[var(--c-accent)]" />
+                  <Code2 className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                   <h2
                     className="font-heading text-sm font-bold uppercase tracking-wider"
                     style={{ color: 'var(--c-heading)' }}
@@ -589,7 +602,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs font-mono underline hover:text-[var(--c-heading)]"
-                        style={{ color: 'var(--c-accent)' }}
+                        style={{ color: 'var(--c-heading)' }}
                       >
                         sky-roms.vercel.app
                       </a>
@@ -610,7 +623,50 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
                     </ul>
                   </div>
 
-                  {/* Project 2 */}
+                  {/* Project 2: AI Chatbot & Assistant */}
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-wrap items-baseline justify-between gap-1">
+                      <h3 className="font-heading font-bold text-sm sm:text-base" style={{ color: 'var(--c-heading)' }}>
+                        AI Chatbot & Assistant Platform
+                      </h3>
+                      <div className="flex items-center gap-3 text-xs font-mono">
+                        <a
+                          href="https://github.com/sachit1751-art/chatbot"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline hover:text-[var(--c-heading)]"
+                          style={{ color: 'var(--c-heading)' }}
+                        >
+                          github.com/sachit1751-art/chatbot
+                        </a>
+                        <a
+                          href="https://chatbot-seven-dun-evb9u88zkv.vercel.app"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline hover:text-[var(--c-heading)]"
+                          style={{ color: 'var(--c-heading)' }}
+                        >
+                          live demo
+                        </a>
+                      </div>
+                    </div>
+                    <p className="text-xs font-mono" style={{ color: 'var(--c-subtle)' }}>
+                      <strong className="text-[var(--c-heading)]">Technologies:</strong> Next.js, React, TypeScript, Vercel AI SDK, Neon PostgreSQL, Tailwind CSS, Radix UI, Git/GitHub
+                    </p>
+                    <ul className="list-disc list-outside pl-4 space-y-1 text-xs sm:text-sm font-body leading-relaxed" style={{ color: 'var(--c-body)' }}>
+                      <li>
+                        Engineered an open-source, full-stack multi-model conversational assistant with streaming generative UI and real-time LLM gateway integration.
+                      </li>
+                      <li>
+                        Implemented persistent chat histories and user data workflows with Neon Serverless Postgres and responsive Radix UI / Tailwind CSS styling.
+                      </li>
+                      <li>
+                        Designed modular AI provider routing (Claude, OpenAI, xAI, DeepSeek) through Vercel AI SDK and unified API hooks.
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Project 3 */}
                   <div className="flex flex-col gap-1.5">
                     <div className="flex flex-wrap items-baseline justify-between gap-1">
                       <h3 className="font-heading font-bold text-sm sm:text-base" style={{ color: 'var(--c-heading)' }}>
@@ -662,7 +718,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-[var(--c-border)]">
                 <div>
                   <div className="flex items-center gap-2 pb-2 mb-2 border-b border-[var(--c-border)]">
-                    <GraduationCap className="w-4 h-4 text-[var(--c-accent)]" />
+                    <GraduationCap className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                     <h2
                       className="font-heading text-xs font-bold uppercase tracking-wider"
                       style={{ color: 'var(--c-heading)' }}
@@ -676,14 +732,14 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
                   <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--c-subtle)' }}>
                     Class 12 | Stream: PCMB (Physics, Chemistry, Mathematics, Biology)
                   </p>
-                  <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--c-accent)' }}>
+                  <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--c-subtle)' }}>
                     Expected 2028
                   </p>
                 </div>
 
                 <div>
                   <div className="flex items-center gap-2 pb-2 mb-2 border-b border-[var(--c-border)]">
-                    <Award className="w-4 h-4 text-[var(--c-accent)]" />
+                    <Award className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                     <h2
                       className="font-heading text-xs font-bold uppercase tracking-wider"
                       style={{ color: 'var(--c-heading)' }}
@@ -705,12 +761,12 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
             {/* PAGE 2: Additional Projects, Achievements, Activities, Langs */}
             {/* ============================================================ */}
             <article
-              className="resume-page-card resume-sheet w-full max-w-[850px] rounded-[var(--radius-md)] p-6 sm:p-10 md:p-12 shadow-md transition-all select-text"
+              className="resume-page-card resume-sheet w-full max-w-[850px] rounded-[var(--radius-lg)] p-6 sm:p-10 md:p-12 transition-all select-text backdrop-blur-md"
               style={{
-                backgroundColor: 'var(--c-card-bg)',
+                backgroundColor: 'var(--c-card)',
                 border: '1px solid var(--c-border)',
                 color: 'var(--c-body)',
-                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06)',
               }}
             >
               {/* Top Banner Page Indicator (Screen Only) */}
@@ -722,7 +778,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               {/* Continued Projects */}
               <section className="mb-8">
                 <div className="flex items-center gap-2 pb-2 mb-4 border-b border-[var(--c-border)]">
-                  <Code2 className="w-4 h-4 text-[var(--c-accent)]" />
+                  <Code2 className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                   <h2
                     className="font-heading text-sm font-bold uppercase tracking-wider"
                     style={{ color: 'var(--c-heading)' }}
@@ -783,7 +839,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               {/* ACHIEVEMENTS */}
               <section className="mb-8">
                 <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[var(--c-border)]">
-                  <Sparkles className="w-4 h-4 text-[var(--c-accent)]" />
+                  <Sparkles className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                   <h2
                     className="font-heading text-sm font-bold uppercase tracking-wider"
                     style={{ color: 'var(--c-heading)' }}
@@ -804,7 +860,7 @@ INTERESTS: Generative AI Architectures, Open-Source Development, Technical Hacka
               {/* LEADERSHIP / EXTRACURRICULAR ACTIVITIES */}
               <section className="mb-8">
                 <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[var(--c-border)]">
-                  <Layers className="w-4 h-4 text-[var(--c-accent)]" />
+                  <Layers className="w-4 h-4" style={{ color: 'var(--c-heading)' }} />
                   <h2
                     className="font-heading text-sm font-bold uppercase tracking-wider"
                     style={{ color: 'var(--c-heading)' }}

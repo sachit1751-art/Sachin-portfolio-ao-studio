@@ -61,7 +61,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBack }) => {
           </p>
           <ul className="list-disc pl-6 space-y-1.5 font-mono text-xs">
             <li><strong>Theme Preference:</strong> Remembers your chosen palette (Kraft, Cotton, Blueprint, Slate).</li>
-            <li><strong>Session Progress:</strong> Remembers if you completed the paper unfolding intro to avoid redundant playback.</li>
+            <li><strong>Session Progress:</strong> Remembers unlocked easter egg sequences during your active session.</li>
             <li><strong>Consent Settings:</strong> Persists your cookie and analytics preference choice.</li>
           </ul>
         </section>

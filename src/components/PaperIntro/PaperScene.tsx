@@ -96,9 +96,9 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
 
   const width = 3.8;
   const height = 5.1;
-  // Reduce segments on low-end devices
-  const segmentsX = simplify ? 24 : 50;
-  const segmentsY = simplify ? 32 : 66;
+  // Optimized segments density — maintains tactile paper crumple folds while reducing vertex array overhead
+  const segmentsX = simplify ? 18 : 32;
+  const segmentsY = simplify ? 24 : 44;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -119,10 +119,11 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       alpha: true,
       antialias: !simplify && !isMobile,
       powerPreference: 'high-performance',
+      preserveDrawingBuffer: true,
     });
     renderer.setSize(widthPx, heightPx);
-    // Low end: stick to 1.0 pixel ratio. Mobile: 1.5 max. Desktop: 2 max.
-    const maxPixelRatio = simplify ? 1.0 : (isMobile ? 1.5 : 2.0);
+    // Cap pixel ratio to 1.25 for mobile, 1.5 for desktop to avoid high-DPI fragment shader fill-rate lag
+    const maxPixelRatio = simplify ? 1.0 : (isMobile ? 1.25 : 1.5);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
     
     if (!simplify) {
@@ -321,9 +322,11 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     window.addEventListener('pointerup', handlePointerUp);
     window.addEventListener('pointercancel', handlePointerUp);
 
-    // Restart render loop on scroll so paper stays visible during page transitions
+    // Restart render loop on scroll only if paper is still transitioning or in interactive mood game
     const handleScroll = () => {
-      resumeRenderRef.current?.();
+      if (paperStateRef.current !== 'opened' || moodGameActiveRef.current) {
+        resumeRenderRef.current?.();
+      }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
 
@@ -331,46 +334,37 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     let tabHidden = false;
     const handleVisibility = () => {
       tabHidden = document.hidden;
-      if (!tabHidden) resumeRender();
+      if (!tabHidden && (paperStateRef.current !== 'opened' || moodGameActiveRef.current)) {
+        resumeRender();
+      }
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Animation loop — stops when fully idle, restarts on state change or interaction
+    // Animation loop — renders frames smoothly, settles on opened flat sheet, pauses when idle
     const animate = () => {
-      const currentState = paperStateRef.current;
-      const isFullyOpen = animControllerRef.current.progress >= 0.99;
-      const isAnimating = animTimelineRef.current && animTimelineRef.current.isActive();
-      const isIdle = currentState === 'opened' && isFullyOpen && !isAnimating && !moodGameActiveRef.current;
-
-      // If tab is hidden or idle for 3+ frames, stop the loop entirely
-      if (isIdle || tabHidden) {
-        idleFrameCountRef.current++;
-        if (idleFrameCountRef.current > 3 || tabHidden) {
-          reqAnimFrameRef.current = null;
-          return; // loop stops — resumeRenderRef will restart it
-        }
-      } else {
-        idleFrameCountRef.current = 0;
+      if (tabHidden) {
+        reqAnimFrameRef.current = null;
+        return;
       }
-
-      reqAnimFrameRef.current = requestAnimationFrame(animate);
 
       timeRef.current += 0.016;
 
-      if (!isIdle) {
-        mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.06;
-        mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.06;
-      }
-      // Skip expensive calculations when paper is fully open and no mouse movement
+      const currentState = paperStateRef.current;
+      const ctrl = animControllerRef.current;
+      const isFullyOpen = ctrl.progress >= 0.999 && Math.abs(ctrl.paperScale - 4.0) < 0.05;
+      const isAnimating = animTimelineRef.current && animTimelineRef.current.isActive();
+      const isIdle = currentState === 'opened' && isFullyOpen && !isAnimating && !moodGameActiveRef.current;
+
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.06;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.06;
       const skipHover = isFullyOpen && Math.abs(mouseRef.current.x) < 0.01 && Math.abs(mouseRef.current.y) < 0.01;
 
-      const ctrl = animControllerRef.current;
       const inter = interactionRef.current;
       const time = timeRef.current;
       const crumpled = crumpledVertsRef.current;
       const flat = flatVertsRef.current;
 
-      if (paperMesh && geometry && crumpled && flat && !isIdle) {
+      if (paperMesh && geometry && crumpled && flat) {
         const prog = ctrl.progress;
         const pos = geometry.attributes.position;
         const arr = pos.array as Float32Array;
@@ -396,21 +390,26 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         const t = Math.max(0, Math.min(1, prog));
         const ease = t * t * (3 - 2 * t);
 
-        for (let i = 0; i < vertexCount; i++) {
-          const i3 = i * 3;
-          const dmg = damageOffsetsRef.current.get(i);
-          const dx = dmg ? dmg.x : 0;
-          const dy = dmg ? dmg.y : 0;
-          const dz = dmg ? dmg.z : 0;
-          arr[i3] = crumpled[i3] + (flat[i3] - crumpled[i3]) * ease + dx;
-          arr[i3 + 1] = crumpled[i3 + 1] + (flat[i3 + 1] - crumpled[i3 + 1]) * ease + dy;
-          arr[i3 + 2] = crumpled[i3 + 2] + (flat[i3 + 2] - crumpled[i3 + 2]) * ease + dz;
-        }
-        pos.needsUpdate = true;
-        // Only recompute normals during unfold animation — skip when open
-        if (!isFullyOpen && Math.abs(ctrl.progress - prevProgressRef.current) > 0.001) {
-          geometry.computeVertexNormals();
-          prevProgressRef.current = ctrl.progress;
+        const hasProgressChanged = Math.abs(prog - prevProgressRef.current) > 0.0001;
+        const hasDamage = damageOffsetsRef.current.size > 0;
+
+        if (hasProgressChanged || prog < 0.999 || hasDamage || idleFrameCountRef.current < 2) {
+          for (let i = 0; i < vertexCount; i++) {
+            const i3 = i * 3;
+            const dmg = damageOffsetsRef.current.get(i);
+            const dx = dmg ? dmg.x : 0;
+            const dy = dmg ? dmg.y : 0;
+            const dz = dmg ? dmg.z : 0;
+            arr[i3] = crumpled[i3] + (flat[i3] - crumpled[i3]) * ease + dx;
+            arr[i3 + 1] = crumpled[i3 + 1] + (flat[i3 + 1] - crumpled[i3 + 1]) * ease + dy;
+            arr[i3 + 2] = crumpled[i3 + 2] + (flat[i3 + 2] - crumpled[i3 + 2]) * ease + dz;
+          }
+          pos.needsUpdate = true;
+
+          if (!isFullyOpen && hasProgressChanged) {
+            geometry.computeVertexNormals();
+          }
+          prevProgressRef.current = prog;
         }
 
         // Idle wobble fades out fast
@@ -432,13 +431,13 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         paperMesh.scale.setScalar(ctrl.paperScale);
       }
 
-      // Camera zoom — always active (needs to animate during fold)
+      // Camera zoom
       if (camera) {
         const targetZ = ctrl.cameraZ;
         camera.position.z += (targetZ - camera.position.z) * 0.08;
       }
 
-      // Shadow — always active (needs to animate during fold)
+      // Shadow
       if (shadowMeshRef.current) {
         const paperY = paperMesh ? paperMesh.position.y : 0;
         const dist = Math.abs(paperY) + 1.0;
@@ -452,7 +451,21 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         (shadowMeshRef.current.material as THREE.MeshBasicMaterial).opacity = dynamicOpacity;
       }
 
+      // Always execute render for current frame
       renderer.render(scene, camera);
+
+      // Manage idle loop pausing
+      if (isIdle) {
+        idleFrameCountRef.current++;
+        if (idleFrameCountRef.current > 10) {
+          reqAnimFrameRef.current = null;
+          return; // Settle complete — sleep until next interaction or resize
+        }
+      } else {
+        idleFrameCountRef.current = 0;
+      }
+
+      reqAnimFrameRef.current = requestAnimationFrame(animate);
     };
 
     // Resume the render loop (called on state change or user interaction)
@@ -717,6 +730,7 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       materialRef.current.roughnessMap = roughnessMap;
       materialRef.current.bumpMap = bumpMap;
       materialRef.current.needsUpdate = true;
+      resumeRenderRef.current?.();
     }
   }, [theme]);
 

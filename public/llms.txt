@@ -1,0 +1,78 @@
+# Sachit - Student Software Developer & Tech Builder
+
+> Machine-readable context file providing structured information about Sachit's software projects, technical skills, philosophy, education, and contact details for Large Language Models (LLMs) and AI assistants.
+
+## About Sachit
+- **Role**: Student Software Developer & Tech Builder
+- **Education**: Class 12 (PCMB - Physics, Chemistry, Mathematics, Biology)
+- **Status**: Active building & open-source developer
+- **Location/Mode**: Remote building mode
+- **Core Philosophy**: "Learn by Building", "Keep It Simple", "Design Matters", "Continuous Iteration"
+
+## Core Engineering Philosophy
+1. **Learn by Building**: Gaining deep understanding by creating real, working software rather than studying isolated theory.
+2. **Keep It Simple**: Preferring clean, maintainable architecture over over-engineered solutions.
+3. **Design & UX First**: Prioritizing intuitive, highly responsive, and tactile user interfaces.
+4. **Continuous Learning**: Constantly exploring modern AI SDKs, low-level protocols, and cross-framework tools.
+
+## Technical Skills & Stack
+- **Programming Languages**: TypeScript, JavaScript, Python, Go, Rust, Kotlin, HTML5, CSS3
+- **Frontend & Interactive**: React 18, Next.js, Vite, Tailwind CSS, Three.js (WebGL), GSAP, Framer Motion
+- **Backend & Database**: Node.js, Express, Go, Supabase (PostgreSQL), Redis, REST APIs
+- **AI / ML & Automation**: Gemini API (@google/genai SDK), Claude API, Model Context Protocol (MCP), Prompt Engineering, Prompt Caching, TensorFlow Lite, Minimax AI Algorithm
+- **DevOps & Tools**: Git, GitHub, Render, Netlify, Vercel, Docker, Vite
+
+## Featured Portfolio Projects
+
+### 1. SKY ROMs (2025)
+- **Description**: Android Custom ROM Discovery & Management Platform.
+- **Key Features**: Device compatibility checks, side-by-side ROM comparisons, download management, and user reviews.
+- **Tech Stack**: React, TypeScript, Vite, Supabase (PostgreSQL), Tailwind CSS.
+- **Live Demo**: https://sky-roms.vercel.app
+
+### 2. AI Chatbot & Assistant (2026)
+- **Description**: Multi-model conversational AI platform with streaming generative UI and chat history persistence.
+- **Key Features**: Multi-model routing (Claude, OpenAI, xAI, DeepSeek) via Vercel AI Gateway, Serverless Neon Postgres storage, and dynamic AI SDK hooks.
+- **Tech Stack**: Next.js, React, TypeScript, Vercel AI SDK, Neon PostgreSQL, Tailwind CSS, Radix UI.
+- **Live Demo**: https://chatbot-seven-dun-evb9u88zkv.vercel.app
+- **GitHub**: https://github.com/sachit1751-art/chatbot
+
+### 3. Claude Document Summarizer (2025)
+- **Description**: High-speed AI document summarization engine.
+- **Key Features**: Fast document breakdown, Anthropic prompt caching for cost/speed optimization, clean Markdown formatting.
+- **Tech Stack**: Python, Anthropic Claude API, Prompt Engineering.
+
+### 3. Schedule Planner (2025)
+- **Description**: Automated task scheduling and alert engine.
+- **Key Features**: Recurring event triggers, automated email/push notifications, RESTful API backend.
+- **Tech Stack**: Python, Node.js, Express, REST APIs.
+
+### 4. Tic-Tac-Toe Mini Game (2025)
+- **Description**: Interactive browser game with an unbeatable Minimax AI decision algorithm.
+- **Key Features**: Easy/Hard difficulty modes, turn locking, instant state evaluation.
+- **Tech Stack**: JavaScript, HTML5, CSS3.
+
+### 5. MCP Integration Tool (2025)
+- **Description**: Model Context Protocol client implementation based on Anthropic developer curriculum.
+- **Key Features**: Dynamic context sharing between AI models and host execution environments.
+- **Tech Stack**: Python, Claude API, MCP Specification.
+
+### 6. Nexus Core (2024)
+- **Description**: Collaborative ERP system engineered for distributed teams.
+- **Key Features**: Real-time CRDT state synchronization, automated resource allocation, role-based controls.
+- **Tech Stack**: Next.js, Go, PostgreSQL, Redis, Socket.io.
+
+### 7. Sentience OS
+- **Description**: Custom Android distribution integrated with local LLM models.
+- **Key Features**: On-device AI inference via TensorFlow Lite, offline privacy-first execution.
+- **Tech Stack**: AOSP, Kotlin, TensorFlow Lite.
+
+### 8. Ghost Protocol
+- **Description**: End-to-end encrypted messaging protocol.
+- **Key Features**: Zero-knowledge encryption, low-latency mobile client synchronization.
+- **Tech Stack**: Rust, React Native.
+
+## Online Profiles & Contact
+- **GitHub**: https://github.com/sachit1751-art
+- **Portfolio**: https://sachit-portfolio.vercel.app
+- **llms.txt URL**: https://sachit-portfolio.vercel.app/llms.txt
