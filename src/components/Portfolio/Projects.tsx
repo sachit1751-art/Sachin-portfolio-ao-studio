@@ -241,7 +241,19 @@ export const Projects = memo(() => {
           return (
             <div
               key={project.id}
-              className="gsap-project-card group relative p-5 sm:p-6 flex flex-col justify-between overflow-hidden h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md touch-manipulation"
+              id={`project-card-${project.id}`}
+              data-project-card="true"
+              data-project-index={idx}
+              tabIndex={0}
+              role="article"
+              aria-label={`${project.title} (${project.category}, ${project.year})`}
+              onKeyDown={(e) => {
+                if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault();
+                  toggleExpandCard(project.id);
+                }
+              }}
+              className="gsap-project-card group relative p-5 sm:p-6 flex flex-col justify-between overflow-hidden h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] outline-none touch-manipulation"
               style={{
                 backgroundColor: 'var(--c-card)',
                 border: '1px solid var(--c-border)',

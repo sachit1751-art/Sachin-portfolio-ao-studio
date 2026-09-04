@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react';
 // ​provenance:sachit-2026-original​
 import { PaperTheme } from '../../types';
-import { RotateCcw, ArrowUpRight, FileText, Sparkles, Compass } from 'lucide-react';
+import { RotateCcw, ArrowUpRight, FileText, Sparkles, Compass, Volume2, VolumeX, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AnimatedMenuIcon } from '../UI/AnimatedMenuIcon';
+import { useSound } from '../../utils/soundManager';
 
 interface HeaderProps {
   theme: PaperTheme;
@@ -12,6 +13,7 @@ interface HeaderProps {
   onViewResume?: () => void;
   isViewingResume?: boolean;
   onNavigateSection?: (id: string) => void;
+  onOpenSiteMap?: () => void;
 }
 
 const THEMES: { id: PaperTheme; label: string; color: string }[] = [
@@ -54,7 +56,9 @@ export const Header = memo<HeaderProps>(({
   onViewResume,
   isViewingResume = false,
   onNavigateSection,
+  onOpenSiteMap,
 }) => {
+  const { isMuted, toggleMute } = useSound();
   const [activeSection, setActiveSection] = useState('hero');
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -328,6 +332,8 @@ export const Header = memo<HeaderProps>(({
           WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
           borderBottom: scrolled ? '1px solid var(--c-header-border)' : '1px solid transparent',
           boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
+          transform: 'translateZ(0)',
+          willChange: 'transform',
         }}
       >
         <div className="max-w-[calc(100%-24px)] sm:max-w-[min(88vw,1100px)] md:max-w-[min(82vw,1100px)] mx-auto px-3 sm:px-10 md:px-14 flex items-center justify-between h-[60px] sm:h-[68px]">
@@ -432,6 +438,48 @@ export const Header = memo<HeaderProps>(({
               </span>
             </div>
 
+            {/* Site Map & Search Button (Cmd+K) */}
+            <button
+              id="header-sitemap-btn"
+              type="button"
+              onClick={onOpenSiteMap}
+              className="px-2.5 py-1.5 text-xs font-mono flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
+              style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)' }}
+              title="Site Map & Command Palette (Cmd+K)"
+              aria-label="Open Site Map and Command Palette"
+            >
+              <Search className="w-3.5 h-3.5 opacity-75" />
+              <span className="hidden xl:inline">Search</span>
+              <kbd className="hidden sm:inline-block px-1 py-0.2 text-[10px] font-mono rounded bg-[var(--c-input-bg)] border border-[var(--c-border)] opacity-70">
+                ⌘K
+              </kbd>
+            </button>
+
+            {/* Sound Toggle Button */}
+            <button
+              id="header-sound-btn"
+              type="button"
+              onClick={toggleMute}
+              className="px-2.5 py-1.5 font-handwriting text-base flex items-center gap-1.5 transition-all hover:border-[var(--c-border-focus)] hover:bg-[var(--c-input-bg)] active:scale-95 cursor-pointer rounded-[var(--radius-md)]"
+              style={{
+                color: isMuted ? 'var(--c-muted)' : 'var(--c-heading)',
+                border: `1px solid ${isMuted ? 'var(--c-border)' : 'var(--c-border-focus)'}`,
+                backgroundColor: isMuted ? 'transparent' : 'var(--c-input-bg)',
+              }}
+              title={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
+              aria-label={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
+              aria-pressed={!isMuted}
+            >
+              {isMuted ? (
+                <VolumeX className="w-3.5 h-3.5 opacity-60" />
+              ) : (
+                <Volume2 className="w-3.5 h-3.5" />
+              )}
+              <span className="hidden lg:inline text-xs font-mono uppercase tracking-wider">
+                {isMuted ? 'Muted' : 'Sound'}
+              </span>
+            </button>
+
             {/* Resume Button */}
             <button
               id="header-resume-btn"
@@ -458,7 +506,7 @@ export const Header = memo<HeaderProps>(({
             </button>
           </div>
 
-          {/* Mobile Right Controls: Theme Dots + Resume + Fold + Hamburger */}
+          {/* Mobile Right Controls: Theme Dots + Search + Sound + Resume + Fold + Hamburger */}
           <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
             {/* Theme Dots */}
             <div
@@ -485,15 +533,39 @@ export const Header = memo<HeaderProps>(({
               ))}
             </div>
 
-            {/* Resume Button */}
+            {/* Mobile Search / Site Map Button */}
             <button
-              onClick={onViewResume}
+              id="mobile-header-sitemap-btn"
+              type="button"
+              onClick={onOpenSiteMap}
               className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
               style={{ color: 'var(--c-heading)', border: '1px solid var(--c-border)', backgroundColor: 'var(--c-input-bg)' }}
-              title="View Resume"
-              aria-label="View Resume"
+              title="Site Map & Search (Cmd+K)"
+              aria-label="Open Site Map and Search"
             >
-              <FileText className="w-4 h-4" />
+              <Search className="w-4 h-4" />
+            </button>
+
+            {/* Sound Button */}
+            <button
+              id="mobile-header-sound-btn"
+              type="button"
+              onClick={toggleMute}
+              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
+              style={{
+                color: isMuted ? 'var(--c-muted)' : 'var(--c-heading)',
+                border: `1px solid ${isMuted ? 'var(--c-border)' : 'var(--c-border-focus)'}`,
+                backgroundColor: isMuted ? 'transparent' : 'var(--c-input-bg)',
+              }}
+              title={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
+              aria-label={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
+              aria-pressed={!isMuted}
+            >
+              {isMuted ? (
+                <VolumeX className="w-4 h-4 opacity-60" />
+              ) : (
+                <Volume2 className="w-4 h-4" />
+              )}
             </button>
 
             {/* Fold Button */}
@@ -583,6 +655,33 @@ export const Header = memo<HeaderProps>(({
 
           {/* Scrollable Navigation Body */}
           <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            {/* Quick Command Palette / Search Trigger */}
+            {onOpenSiteMap && (
+              <button
+                type="button"
+                onClick={() => {
+                  closeMobile();
+                  onOpenSiteMap();
+                }}
+                className="w-full p-3.5 rounded-xl flex items-center justify-between transition-all cursor-pointer active:scale-[0.98]"
+                style={{
+                  backgroundColor: 'var(--c-card)',
+                  border: '1px solid var(--c-border)',
+                }}
+                aria-label="Open Site Map & Search"
+              >
+                <div className="flex items-center gap-3">
+                  <Search className="w-4 h-4 opacity-75" style={{ color: 'var(--c-heading)' }} />
+                  <span className="font-mono text-xs uppercase tracking-wider font-bold" style={{ color: 'var(--c-heading)' }}>
+                    Search & Site Map
+                  </span>
+                </div>
+                <kbd className="px-2 py-0.5 text-[10px] font-mono rounded bg-[var(--c-input-bg)] border border-[var(--c-border)] opacity-70">
+                  ⌘K
+                </kbd>
+              </button>
+            )}
+
             {/* Section Links */}
             <div>
               <div className="flex items-center justify-between mb-3 px-1">
@@ -690,6 +789,54 @@ export const Header = memo<HeaderProps>(({
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Sound Effects Toggle Row */}
+            <div className="pt-2">
+              <p className="text-[11px] font-mono uppercase tracking-widest font-bold mb-3 px-1" style={{ color: 'var(--c-subtle)' }}>
+                AUDIO & EFFECTS
+              </p>
+              <button
+                type="button"
+                onClick={toggleMute}
+                className="w-full p-3.5 rounded-xl text-left flex items-center justify-between transition-all cursor-pointer active:scale-[0.98]"
+                style={{
+                  backgroundColor: 'var(--c-input-bg)',
+                  border: `1px solid ${isMuted ? 'var(--c-border)' : 'var(--c-border-focus)'}`,
+                }}
+                aria-label={isMuted ? 'Unmute audio effects' : 'Mute audio effects'}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{
+                      backgroundColor: isMuted ? 'transparent' : 'var(--c-card)',
+                      color: isMuted ? 'var(--c-muted)' : 'var(--c-heading)',
+                      border: '1px solid var(--c-border)',
+                    }}
+                  >
+                    {isMuted ? <VolumeX className="w-4 h-4 opacity-60" /> : <Volume2 className="w-4 h-4" />}
+                  </div>
+                  <div>
+                    <div className="text-sm font-sans font-bold" style={{ color: 'var(--c-heading)' }}>
+                      {isMuted ? 'Audio Effects Muted' : 'Audio Effects Active'}
+                    </div>
+                    <div className="text-xs font-body opacity-70" style={{ color: 'var(--c-muted)' }}>
+                      {isMuted ? 'Transitions, folding, and gameplay muted' : 'Tactile paper and arcade procedural audio'}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider"
+                  style={{
+                    backgroundColor: isMuted ? 'transparent' : 'var(--c-heading)',
+                    color: isMuted ? 'var(--c-muted)' : 'var(--c-bg)',
+                    border: `1px solid ${isMuted ? 'var(--c-border)' : 'var(--c-heading)'}`,
+                  }}
+                >
+                  {isMuted ? 'MUTED' : 'ON'}
+                </div>
+              </button>
             </div>
 
             {/* Paper Fold Action */}

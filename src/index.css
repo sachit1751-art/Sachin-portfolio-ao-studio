@@ -365,6 +365,8 @@
   /* Ink on paper — text blends with paper texture (light themes only) */
   #physical-paper-sheet {
     mix-blend-mode: multiply;
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   [data-theme="blueprint"] #physical-paper-sheet,
@@ -411,6 +413,10 @@
 #terms-scroll-container {
   scrollbar-width: thin;
   scrollbar-color: var(--c-muted) transparent;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 #content-scroll-container::-webkit-scrollbar,

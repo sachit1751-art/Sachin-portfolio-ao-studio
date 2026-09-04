@@ -69,6 +69,8 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
   });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -95,13 +97,13 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
   }, [messages]);
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || isStreaming) {
       scrollToBottom();
     }
-  }, [isLoading]);
+  }, [isLoading, isStreaming]);
 
   const sendMessage = async (content: string) => {
-    if (!content.trim() || isLoading) return;
+    if (!content.trim() || isLoading || isStreaming) return;
 
     const userMessage = content.trim();
     const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
@@ -135,8 +137,11 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
         // Add model placeholder message to stream into
         setMessages([...newMessages, { role: 'model', content: '' }]);
         setIsLoading(false);
+        setIsStreaming(true);
 
-        while (true) {
+        let streamFinished = false;
+
+        while (!streamFinished) {
           const { done, value } = await reader.read();
           if (done) break;
 
@@ -148,7 +153,10 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
             const trimmed = line.trim();
             if (!trimmed.startsWith('data: ')) continue;
             const dataStr = trimmed.slice(6);
-            if (dataStr === '[DONE]') break;
+            if (dataStr === '[DONE]') {
+              streamFinished = true;
+              break;
+            }
 
             try {
               const parsed = JSON.parse(dataStr);
@@ -166,6 +174,7 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                   updated[updated.length - 1] = { role: 'model', content: accumulatedText };
                   return updated;
                 });
+                scrollToBottom();
               }
             } catch {
               // Ignore single token parsing errors
@@ -186,31 +195,36 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
         }
       } else {
         const data = await response.json();
-        setMessages([...newMessages, { role: 'model', content: data.text }]);
+        setMessages([...newMessages, { role: 'model', content: data.text || "Hello! How can I assist you?" }]);
       }
     } catch (error: any) {
       console.error('Chat error:', error);
       setMessages([...newMessages, { 
         role: 'model', 
-        content: `**Error:** ${error.message || "I'm having trouble connecting right now."} Please make sure the Gemini API key is configured correctly.` 
+        content: `**Notice:** ${error.message || "I'm having trouble connecting right now."}\n\nFeel free to explore Sachit's projects above or ask about his tech stack!` 
       }]);
     } finally {
       setIsLoading(false);
+      setIsStreaming(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || isStreaming) return;
     const content = input;
     setInput('');
     await sendMessage(content);
   };
 
-  const clearChat = () => {
-    if (window.confirm('Are you sure you want to clear the conversation history?')) {
+  const handleClearChat = () => {
+    if (confirmClear) {
       setMessages([INITIAL_MESSAGE]);
       localStorage.removeItem('portfolio-chat-history');
+      setConfirmClear(false);
+    } else {
+      setConfirmClear(true);
+      setTimeout(() => setConfirmClear(false), 4000);
     }
   };
 
@@ -286,11 +300,15 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
           </div>
           <div className="flex items-center gap-1">
             <button 
-              onClick={clearChat}
-              className="p-1 rounded transition-colors opacity-50 hover:opacity-100 hover:text-red-500 cursor-pointer"
-              title="Clear Conversation"
+              onClick={handleClearChat}
+              className={`p-1 rounded text-[10px] font-mono transition-colors ${
+                confirmClear 
+                  ? 'bg-red-500/20 text-red-500 font-bold border border-red-500/40' 
+                  : 'opacity-50 hover:opacity-100 hover:text-red-500 cursor-pointer'
+              }`}
+              title={confirmClear ? "Click again to confirm reset" : "Clear conversation"}
             >
-              <RotateCcw size={13} />
+              {confirmClear ? "Reset?" : <RotateCcw size={13} />}
             </button>
             <button 
               onClick={() => setIsMinimized(true)}
@@ -345,11 +363,15 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                       lineHeight: '1.6'
                     }}
                   >
-                    <div className="markdown-body prose prose-xs max-w-none prose-neutral dark:prose-invert text-xs">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {m.content}
-                      </ReactMarkdown>
-                    </div>
+                    {m.role === 'user' ? (
+                      <p className="whitespace-pre-wrap break-words">{m.content}</p>
+                    ) : (
+                      <div className="markdown-body prose prose-xs max-w-none prose-neutral dark:prose-invert text-xs">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {m.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -379,7 +401,7 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                   border: '1px solid var(--c-border)',
                   color: 'var(--c-muted)'
                 }}
-                disabled={isLoading}
+                disabled={isLoading || isStreaming}
               >
                 {suggestion}
               </button>
@@ -405,18 +427,18 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                 borderColor: 'var(--c-border)',
                 color: 'var(--c-body)'
               }}
-              disabled={isLoading}
+              disabled={isLoading || isStreaming}
             />
             <button
               type="submit"
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim() || isLoading || isStreaming}
               className="absolute right-1.5 p-1.5 rounded-md transition-all active:scale-95 disabled:opacity-30 cursor-pointer"
               style={{ 
                 backgroundColor: 'var(--c-btn-bg)',
                 color: 'var(--c-btn-text)'
               }}
             >
-              {isLoading ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
+              {isLoading || isStreaming ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
             </button>
           </div>
         </form>
@@ -471,11 +493,15 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
               </a>
             </div>
             <button 
-              onClick={clearChat}
-              className="p-1.5 rounded-lg transition-colors opacity-40 hover:opacity-100 hover:bg-red-500/10 hover:text-red-500"
-              title="Clear Conversation"
+              onClick={handleClearChat}
+              className={`px-2 py-1 rounded text-xs font-mono transition-colors ${
+                confirmClear 
+                  ? 'bg-red-500/20 text-red-500 font-bold border border-red-500/40' 
+                  : 'opacity-40 hover:opacity-100 hover:bg-red-500/10 hover:text-red-500'
+              }`}
+              title={confirmClear ? "Click again to confirm reset" : "Clear conversation"}
             >
-              <RotateCcw size={14} />
+              {confirmClear ? "Confirm Reset?" : <RotateCcw size={14} />}
             </button>
           </div>
 
@@ -530,11 +556,15 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                         lineHeight: '1.7'
                       }}
                     >
-                      <div className="markdown-body prose prose-sm max-w-none prose-neutral dark:prose-invert">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {m.content}
-                        </ReactMarkdown>
-                      </div>
+                      {m.role === 'user' ? (
+                        <p className="whitespace-pre-wrap break-words">{m.content}</p>
+                      ) : (
+                        <div className="markdown-body prose prose-sm max-w-none prose-neutral dark:prose-invert">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {m.content}
+                          </ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -608,7 +638,7 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                       border: '1px solid var(--c-border)',
                       color: 'var(--c-muted)'
                     }}
-                    disabled={isLoading}
+                    disabled={isLoading || isStreaming}
                   >
                     {suggestion}
                   </motion.button>
@@ -636,11 +666,11 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                   color: 'var(--c-body)',
                   boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)'
                 }}
-                disabled={isLoading}
+                disabled={isLoading || isStreaming}
               />
               <button
                 type="submit"
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || isStreaming}
                 className="absolute right-2 p-2.5 rounded-full transition-all active:scale-95 disabled:opacity-30 disabled:grayscale"
                 style={{ 
                   backgroundColor: 'var(--c-btn-bg)',
@@ -648,12 +678,12 @@ export const ChatAboutMe = memo<ChatAboutMeProps>(({
                   boxShadow: '0 4px 12px -2px rgba(0,0,0,0.15)'
                 }}
               >
-                {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
+                {isLoading || isStreaming ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
               </button>
             </div>
             <div className="mt-3 text-center">
               <span className="text-[9px] font-mono uppercase tracking-[0.2em] opacity-30 flex items-center justify-center gap-2">
-                <MessageSquare size={10} /> GEMINI 3.8 FLASH • REAL-TIME STREAMING
+                <MessageSquare size={10} /> GEMINI FLASH • REAL-TIME STREAMING
               </span>
             </div>
           </form>

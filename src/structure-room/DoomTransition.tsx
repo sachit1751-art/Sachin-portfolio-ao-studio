@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { playTerminalBlip, playCheckmarkChime, playGlitchSound } from '../utils/soundManager';
 
 interface DoomTransitionProps {
   onComplete: () => void;
@@ -28,7 +29,10 @@ export const DoomTransition: React.FC<DoomTransitionProps> = ({ onComplete }) =>
 
     LINES.forEach((line, i) => {
       timers.push(
-        setTimeout(() => setVisibleLines(i + 1), line.delay)
+        setTimeout(() => {
+          setVisibleLines(i + 1);
+          playTerminalBlip(750 + i * 80);
+        }, line.delay)
       );
     });
 
@@ -36,12 +40,19 @@ export const DoomTransition: React.FC<DoomTransitionProps> = ({ onComplete }) =>
       timers.push(
         setTimeout(() => {
           setShowCheck((prev) => new Set(prev).add(index));
+          playCheckmarkChime();
         }, delay)
       );
     });
 
-    timers.push(setTimeout(() => setShowWelcome(true), 2400));
-    timers.push(setTimeout(() => setShowGlitch(true), 2800));
+    timers.push(setTimeout(() => {
+      setShowWelcome(true);
+      playTerminalBlip(1100, 0.08);
+    }, 2400));
+    timers.push(setTimeout(() => {
+      setShowGlitch(true);
+      playGlitchSound();
+    }, 2800));
     timers.push(setTimeout(() => onComplete(), 3200));
 
     return () => timers.forEach(clearTimeout);

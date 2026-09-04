@@ -1,4 +1,6 @@
 import React from 'react';
+import { Volume2, VolumeX } from 'lucide-react';
+import { useSound } from '../../utils/soundManager';
 
 interface GameHUDProps {
   paperHealth: number;
@@ -8,6 +10,8 @@ interface GameHUDProps {
 }
 
 export const GameHUD: React.FC<GameHUDProps> = ({ paperHealth, isGameOver, gameResult, onExit }) => {
+  const { isMuted, toggleMute } = useSound();
+
   return (
     <div className="mood-hud">
       {/* Health Bar */}
@@ -26,11 +30,23 @@ export const GameHUD: React.FC<GameHUDProps> = ({ paperHealth, isGameOver, gameR
           <div className="mood-health-value">{Math.max(0, Math.round(paperHealth))}%</div>
         </div>
 
-        {/* Exit Button */}
+        {/* HUD Controls (Sound + Exit) */}
         {!isGameOver && (
-          <button className="mood-exit-btn" onClick={onExit}>
-            ✕ EXIT
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="mood-exit-btn flex items-center gap-1.5 px-2.5 py-1"
+              onClick={toggleMute}
+              title={isMuted ? 'Unmute Game Audio' : 'Mute Game Audio'}
+              aria-label={isMuted ? 'Unmute game audio' : 'Mute game audio'}
+              style={{ opacity: isMuted ? 0.6 : 1 }}
+            >
+              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              <span className="text-[10px]">{isMuted ? 'MUTED' : 'SFX'}</span>
+            </button>
+            <button className="mood-exit-btn" onClick={onExit}>
+              ✕ EXIT
+            </button>
+          </div>
         )}
       </div>
 

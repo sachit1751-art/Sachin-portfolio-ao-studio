@@ -1,16 +1,22 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 // ​‌‍sachit-portfolio-2026-original-author‍‌​
-import { PaperState } from './types';
+import { PaperState, PaperTheme } from './types';
 import { Header } from './components/Portfolio/Header';
 import { NotFound } from './components/Portfolio/NotFound';
 import { HoneycombLoader } from './components/UI/HoneycombLoader';
 import { SEOHead } from './components/SEO/SEOHead';
 import { StickyMobileCTA } from './components/UI/StickyMobileCTA';
+import { SiteMapModal } from './components/Portfolio/SiteMapModal';
+import { ShortcutHUD } from './components/UI/ShortcutHUD';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
+import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
+import { useScrollContainerArrowNav } from './hooks/useScrollContainerArrowNav';
 import { initSecurity } from './utils/security';
 import { initFontLoader } from './utils/fontLoader';
 import { resetSharedObservers } from './utils/observer';
+
+const SESSION_CACHE_KEY = 'portfolio_intro_unfolded_cache';
 
 // Lazy-load heavy components not needed on initial render
 const PortfolioContainer = lazy(() => import('./components/Portfolio/PortfolioContainer').then(m => ({ default: m.PortfolioContainer })));
@@ -148,11 +154,18 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return 'opened';
       }
+      try {
+        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
+          return 'opened';
+        }
+      } catch {}
     }
     return 'crumpled';
   });
 
-  const [theme, setTheme] = useState<'cotton' | 'kraft' | 'blueprint' | 'slate'>('kraft');
+  const [theme, setTheme] = useState<PaperTheme>('kraft');
+  const [isSiteMapOpen, setIsSiteMapOpen] = useState(false);
+  const [siteMapInitialTab, setSiteMapInitialTab] = useState<'all' | 'sections' | 'projects' | 'actions' | 'shortcuts'>('all');
 
   const [introCompleted, setIntroCompleted] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -160,6 +173,11 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
+      try {
+        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
+          return true;
+        }
+      } catch {}
     }
     return false;
   });
@@ -170,6 +188,11 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
+      try {
+        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
+          return true;
+        }
+      } catch {}
     }
     return false;
   });
@@ -180,6 +203,11 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
+      try {
+        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
+          return true;
+        }
+      } catch {}
     }
     return false;
   });
@@ -222,6 +250,34 @@ export default function App() {
     try {
       if (window.location.pathname === '/resume') {
         window.history.pushState({}, '', '/');
+      }
+    } catch {}
+  }, []);
+
+  const handleOpenPrivacy = useCallback(() => {
+    setIsViewingPrivacy(true);
+    setIsViewingResume(false);
+    setIsViewingTerms(false);
+    setShowContent(true);
+    setIntroCompleted(true);
+    setPaperState('opened');
+    try {
+      if (window.location.pathname !== '/privacy') {
+        window.history.pushState({}, '', '/privacy');
+      }
+    } catch {}
+  }, []);
+
+  const handleOpenTerms = useCallback(() => {
+    setIsViewingTerms(true);
+    setIsViewingResume(false);
+    setIsViewingPrivacy(false);
+    setShowContent(true);
+    setIntroCompleted(true);
+    setPaperState('opened');
+    try {
+      if (window.location.pathname !== '/terms') {
+        window.history.pushState({}, '', '/terms');
       }
     } catch {}
   }, []);
@@ -308,6 +364,9 @@ export default function App() {
 
   const handleRecrumple = useCallback(() => {
     console.log('[App] handleRecrumple: Resetting session and states');
+    try {
+      sessionStorage.removeItem(SESSION_CACHE_KEY);
+    } catch {}
     resetSharedObservers();
     if (window.location.hash) {
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -323,19 +382,7 @@ export default function App() {
     moodTransitionFiredRef.current = false;
   }, []);
 
-  useEffect(() => {
-    if (doomUnlocked && paperState === 'crumpled') {
-      setShowTransition(true);
-    }
-  }, [doomUnlocked, paperState]);
-
-  const handleMoodUnlocked = useCallback(() => {
-    if (moodTransitionFiredRef.current) return;
-    moodTransitionFiredRef.current = true;
-    setShowMoodTransition(true);
-  }, []);
-
-  const handleThemeChange = useCallback((newTheme: 'cotton' | 'kraft' | 'blueprint' | 'slate', event?: React.MouseEvent | MouseEvent) => {
+  const handleThemeChange = useCallback((newTheme: PaperTheme, event?: React.MouseEvent | MouseEvent) => {
     // If browser doesn't support View Transitions or it's a reduced motion user, just switch
     if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setTheme(newTheme);
@@ -358,6 +405,65 @@ export default function App() {
     transition.finished.finally(() => {
       document.documentElement.removeAttribute('data-theme-transition');
     });
+  }, []);
+
+  // Global keyboard shortcuts manager
+  useGlobalShortcuts({
+    isSiteMapOpen,
+    onOpenSiteMap: (tab) => {
+      if (tab) setSiteMapInitialTab(tab);
+      setIsSiteMapOpen(true);
+    },
+    onCloseSiteMap: () => setIsSiteMapOpen(false),
+    onToggleSiteMap: () => setIsSiteMapOpen((prev) => !prev),
+    isViewingResume,
+    onOpenResume: handleOpenResume,
+    onCloseResume: handleCloseResume,
+    isViewingPrivacy,
+    onClosePrivacy: () => {
+      setIsViewingPrivacy(false);
+      try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+    },
+    isViewingTerms,
+    onCloseTerms: () => {
+      setIsViewingTerms(false);
+      try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+    },
+    is404,
+    onClose404: () => {
+      setIs404(false);
+      try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
+      setShowContent(true);
+      setIntroCompleted(true);
+      setPaperState('opened');
+    },
+    showStructureRoom,
+    onExitStructureRoom: () => {
+      exitStructureRoom();
+      setShowStructureRoom(false);
+    },
+    theme,
+    setTheme: handleThemeChange,
+    onNavigateSection: handleNavigateSection,
+    introCompleted,
+  });
+
+  // Arrow key navigation between sections and project cards
+  useScrollContainerArrowNav({
+    enabled: showContent && introCompleted && !isViewingResume && !isViewingPrivacy && !isViewingTerms && !is404 && !isSiteMapOpen,
+    onNavigateSection: handleNavigateSection,
+  });
+
+  useEffect(() => {
+    if (doomUnlocked && paperState === 'crumpled') {
+      setShowTransition(true);
+    }
+  }, [doomUnlocked, paperState]);
+
+  const handleMoodUnlocked = useCallback(() => {
+    if (moodTransitionFiredRef.current) return;
+    moodTransitionFiredRef.current = true;
+    setShowMoodTransition(true);
   }, []);
 
   return (
@@ -447,6 +553,9 @@ export default function App() {
             theme={theme}
             setTheme={handleThemeChange}
             onOpenComplete={() => {
+              try {
+                sessionStorage.setItem(SESSION_CACHE_KEY, 'true');
+              } catch {}
               setIntroCompleted(true);
               setShowContent(true);
               setHeaderReady(true);
@@ -476,6 +585,10 @@ export default function App() {
               onViewResume={handleOpenResume}
               isViewingResume={isViewingResume}
               onNavigateSection={handleNavigateSection}
+              onOpenSiteMap={() => {
+                setSiteMapInitialTab('all');
+                setIsSiteMapOpen(true);
+              }}
             />
           )}
           {/* Main Portfolio Scroll Container - kept mounted to preserve scroll position and eliminate remount lag */}
@@ -486,6 +599,12 @@ export default function App() {
                 ? 'invisible pointer-events-none'
                 : 'visible pointer-events-auto'
             }`}
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehaviorY: 'contain',
+              transform: 'translateZ(0)',
+              willChange: 'transform',
+            }}
             aria-hidden={isViewingResume || isViewingPrivacy || isViewingTerms}
             tabIndex={isViewingResume || isViewingPrivacy || isViewingTerms ? -1 : undefined}
           >
@@ -598,6 +717,23 @@ export default function App() {
           />
         </Suspense>
       )}
+
+      {/* Global Shortcut HUD Toast Feedback */}
+      <ShortcutHUD />
+
+      {/* Global Site Map & Command Palette Modal (Cmd+K) */}
+      <SiteMapModal
+        isOpen={isSiteMapOpen}
+        onClose={() => setIsSiteMapOpen(false)}
+        onNavigateSection={handleNavigateSection}
+        onOpenResume={handleOpenResume}
+        onOpenPrivacy={handleOpenPrivacy}
+        onOpenTerms={handleOpenTerms}
+        onRecrumple={handleRecrumple}
+        theme={theme}
+        setTheme={handleThemeChange}
+        initialCategory={siteMapInitialTab}
+      />
     </div>
   );
 }

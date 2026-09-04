@@ -31,16 +31,26 @@ Communication Style & Instructions:
 - Use clean formatting (bullet points or bolding) when listing multiple items.
 - If asked about something not covered in his professional/academic profile, politely mention that you focus on Sachit's software, skills, and portfolio work.`;
 
-// Initialize Gemini
+// Initialize Gemini client lazily
 // ﻿author-fingerprint:sachit-2026﻿
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
+let aiClient: GoogleGenAI | null = null;
+function getAi(): GoogleGenAI {
+  if (!aiClient) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY environment variable is required');
     }
+    aiClient = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
   }
-});
+  return aiClient;
+}
 
 interface ContributionDay {
   date: string;
@@ -171,46 +181,60 @@ function generatePortfolioGroundedFallback(contents: any[]): string {
 }
 
 const CANDIDATE_MODELS = [
-  "gemini-3.8-flash",
-  "gemini-3.1-flash-lite",
   "gemini-flash-latest",
+  "gemini-3.1-flash-lite",
+  "gemini-3.8-flash",
 ];
+
+function getModelConfig(modelName: string, contextualInstruction: string) {
+  const isGemini3 = modelName.startsWith("gemini-3");
+  const config: any = {
+    systemInstruction: contextualInstruction,
+  };
+  if (isGemini3) {
+    config.thinkingConfig = { thinkingLevel: ThinkingLevel.LOW };
+  }
+  return config;
+}
 
 async function generateContentStreamWithFallback(
   validContents: any[],
   contextualInstruction: string,
   onChunk: (text: string) => void
 ) {
-  let streamSucceeded = false;
+  let hasEmittedChunk = false;
 
   for (const modelName of CANDIDATE_MODELS) {
     try {
+      const ai = getAi();
       const responseStream = await ai.models.generateContentStream({
         model: modelName,
         contents: validContents,
-        config: {
-          systemInstruction: contextualInstruction,
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-        },
+        config: getModelConfig(modelName, contextualInstruction),
       });
 
       for await (const chunk of responseStream) {
         if (chunk.text) {
-          streamSucceeded = true;
+          hasEmittedChunk = true;
           onChunk(chunk.text);
         }
       }
 
-      if (streamSucceeded) {
-        return; // Successfully streamed entire response
+      if (hasEmittedChunk) {
+        return; // Successfully streamed
       }
     } catch (err: any) {
       console.warn(`Streaming attempt failed with model ${modelName}:`, err?.message || err);
-      // Try next candidate model
+      // If chunks were already partially sent to the client, do not restart with another model
+      // to avoid double-text or duplicated stream output
+      if (hasEmittedChunk) {
+        return;
+      }
+      // Otherwise try next candidate model
     }
   }
 
-  // If all models failed or threw 503 / high demand, yield grounded fallback
+  // If all models failed before emitting any chunks, yield grounded portfolio fallback
   const fallback = generatePortfolioGroundedFallback(validContents);
   onChunk(fallback);
 }
@@ -221,13 +245,11 @@ async function generateContentWithFallback(
 ): Promise<string> {
   for (const modelName of CANDIDATE_MODELS) {
     try {
+      const ai = getAi();
       const response = await ai.models.generateContent({
         model: modelName,
         contents: validContents,
-        config: {
-          systemInstruction: contextualInstruction,
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-        },
+        config: getModelConfig(modelName, contextualInstruction),
       });
       if (response.text) {
         return response.text;
@@ -312,12 +334,22 @@ async function startServer() {
       const fallback = generatePortfolioGroundedFallback(validContents);
       
       if (stream) {
-        res.write(`data: ${JSON.stringify({ text: fallback })}\n\n`);
-        res.write(`data: [DONE]\n\n`);
-        return res.end();
+        if (!res.headersSent) {
+          res.setHeader('Content-Type', 'text/event-stream');
+          res.setHeader('Cache-Control', 'no-cache, no-transform');
+          res.setHeader('Connection', 'keep-alive');
+        }
+        if (!res.writableEnded) {
+          res.write(`data: ${JSON.stringify({ text: fallback })}\n\n`);
+          res.write(`data: [DONE]\n\n`);
+          res.end();
+        }
+        return;
       }
 
-      res.json({ text: fallback });
+      if (!res.headersSent) {
+        res.json({ text: fallback });
+      }
     }
   });
 

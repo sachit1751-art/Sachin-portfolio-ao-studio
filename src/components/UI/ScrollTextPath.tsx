@@ -133,7 +133,11 @@ export const ScrollTextPath = memo(({ text, className = '' }: ScrollTextPathProp
       ref={containerRef}
       aria-hidden="true"
       className={`w-full overflow-hidden flex items-center justify-center py-2 sm:py-4 pointer-events-none select-none ${className}`}
-      style={{ opacity: 0.8 }}
+      style={{
+        opacity: 0.8,
+        transform: 'translateZ(0)',
+        willChange: 'transform',
+      }}
     >
       <svg
         viewBox="0 0 1200 130"

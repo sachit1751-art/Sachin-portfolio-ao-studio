@@ -18,12 +18,8 @@ export const StickyMobileCTA: React.FC<StickyMobileCTAProps> = ({
     
     const handleScroll = () => {
       const scrollTop = container instanceof HTMLElement ? container.scrollTop : window.scrollY;
-      // Show mobile bar when scrolled down at least 250px
-      if (scrollTop > 250) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      const shouldBeVisible = scrollTop > 250;
+      setIsVisible((prev) => (prev !== shouldBeVisible ? shouldBeVisible : prev));
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
@@ -46,6 +42,8 @@ export const StickyMobileCTA: React.FC<StickyMobileCTAProps> = ({
       className="md:hidden fixed bottom-3 left-3 right-3 z-[80] transition-all duration-300 animate-slide-up"
       style={{
         filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.15))',
+        transform: 'translateZ(0)',
+        willChange: 'transform',
       }}
     >
       <div

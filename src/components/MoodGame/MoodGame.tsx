@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 // ​sachit-2026-original-authored-code‌​
 import { PaperSceneAPI } from '../PaperIntro/PaperScene';
 import { GameHUD } from './GameHUD';
+import { isSoundMuted } from '../../utils/soundManager';
 
 interface MoodGameProps {
   paperRef: React.RefObject<PaperSceneAPI | null>;
@@ -74,6 +75,7 @@ function getAudioCtx(): AudioContext {
 }
 
 function playShootSound() {
+  if (isSoundMuted()) return;
   try {
     const ctx = getAudioCtx();
     const t = ctx.currentTime;
@@ -118,6 +120,7 @@ function playShootSound() {
 }
 
 function playHitSound() {
+  if (isSoundMuted()) return;
   try {
     const ctx = getAudioCtx();
     const t = ctx.currentTime;
@@ -160,6 +163,7 @@ function playHitSound() {
 }
 
 function playExplosionSound() {
+  if (isSoundMuted()) return;
   try {
     const ctx = getAudioCtx();
     const t = ctx.currentTime;
@@ -207,6 +211,7 @@ function playExplosionSound() {
 }
 
 function playJetDeathSound() {
+  if (isSoundMuted()) return;
   try {
     const ctx = getAudioCtx();
     const t = ctx.currentTime;

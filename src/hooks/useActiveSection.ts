@@ -17,58 +17,53 @@ const ALL_SECTIONS = [
 
 export function useActiveSection() {
   const [activeSection, setActiveSection] = useState('hero');
-  const isScrollingRef = useRef(false);
+  const sectionRatios = useRef<Record<string, number>>({});
 
   useEffect(() => {
     const container = document.getElementById('content-scroll-container');
     if (!container) return;
 
-    let ticking = false;
-    let cachedPositions: { id: string; top: number }[] = [];
-    let lastCacheTime = 0;
-
-    const cachePositions = () => {
-      const now = Date.now();
-      if (now - lastCacheTime < 500 && cachedPositions.length > 0) return;
-      lastCacheTime = now;
-      const containerRect = container.getBoundingClientRect();
-      cachedPositions = ALL_SECTIONS.map(id => {
-        const el = document.getElementById(id);
-        if (!el) return { id, top: Infinity };
-        const rect = el.getBoundingClientRect();
-        return { id, top: rect.top - containerRect.top + container.scrollTop };
+    // Use passive IntersectionObserver - offloads visibility calculations from the main JS scroll thread
+    // Completely eliminates synchronous layout reflows (getBoundingClientRect layout thrashing)
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        sectionRatios.current[entry.target.id] = entry.isIntersecting ? entry.intersectionRatio : 0;
       });
-    };
 
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
+      let bestSection = 'hero';
+      let maxRatio = 0;
 
-      requestAnimationFrame(() => {
-        const scrollTop = container.scrollTop;
-
-        if (!isScrollingRef.current) {
-          cachePositions();
-          const midpoint = scrollTop + 150;
-          let found = 'hero';
-
-          for (const pos of cachedPositions) {
-            if (pos.top <= midpoint) {
-              found = pos.id;
-            }
-          }
-
-          setActiveSection(prev => prev !== found ? found : prev);
+      ALL_SECTIONS.forEach((id) => {
+        const ratio = sectionRatios.current[id] || 0;
+        if (ratio > maxRatio) {
+          maxRatio = ratio;
+          bestSection = id;
         }
-        
-        ticking = false;
       });
+
+      if (maxRatio > 0.05) {
+        setActiveSection((prev) => (prev !== bestSection ? bestSection : prev));
+      } else if (container.scrollTop < 100) {
+        setActiveSection('hero');
+      }
     };
 
-    container.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => container.removeEventListener('scroll', onScroll);
+    const observer = new IntersectionObserver(observerCallback, {
+      root: container,
+      threshold: [0, 0.1, 0.25, 0.5, 0.75, 1.0],
+      rootMargin: '-10% 0px -40% 0px',
+    });
+
+    ALL_SECTIONS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   return activeSection;
 }
+

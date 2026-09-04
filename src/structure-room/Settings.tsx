@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings as SettingsIcon, Palette, Zap, Clock } from 'lucide-react';
+import { Settings as SettingsIcon, Palette, Zap, Clock, Volume2, VolumeX } from 'lucide-react';
 import { PaperTheme } from '../types';
+import { useSound } from '../utils/soundManager';
 
 interface SettingsProps {
   theme: PaperTheme;
@@ -15,6 +16,7 @@ const THEMES: { id: PaperTheme; label: string; color: string; desc: string }[] =
 ];
 
 export const Settings: React.FC<SettingsProps> = ({ theme, setTheme }) => {
+  const { isMuted, toggleMute } = useSound();
   const [transitionProgress, setTransitionProgress] = useState(100);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const prevThemeRef = useRef<PaperTheme>(theme);
@@ -86,6 +88,48 @@ export const Settings: React.FC<SettingsProps> = ({ theme, setTheme }) => {
               </button>
             ))}
           </div>
+
+          <h3 className="sr-subsection-title mt-8">Global Audio Engine</h3>
+          <button
+            onClick={toggleMute}
+            className="w-full text-left p-4 border-2 transition-all cursor-pointer rounded bg-black/20 hover:bg-black/30 active:scale-[0.99]"
+            style={{
+              borderColor: isMuted ? '#3a3a3a' : '#28c840',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-9 h-9 rounded flex items-center justify-center border"
+                  style={{
+                    backgroundColor: isMuted ? '#1a1a1a' : '#14331e',
+                    borderColor: isMuted ? '#3a3a3a' : '#28c840',
+                    color: isMuted ? '#706e69' : '#28c840',
+                  }}
+                >
+                  {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                </div>
+                <div>
+                  <div className="font-mono text-sm font-bold uppercase tracking-wider text-[#e8e7e4]">
+                    {isMuted ? 'Sound Effects Muted' : 'Sound Effects Active'}
+                  </div>
+                  <div className="text-xs text-[#a09e99] mt-0.5">
+                    Controls paper unfolding, crumple sounds, terminal transitions, and MOOD game procedural audio.
+                  </div>
+                </div>
+              </div>
+              <span
+                className="font-mono text-xs px-2.5 py-1 rounded border uppercase tracking-widest"
+                style={{
+                  backgroundColor: isMuted ? '#1a1a1a' : '#14331e',
+                  borderColor: isMuted ? '#3a3a3a' : '#28c840',
+                  color: isMuted ? '#706e69' : '#28c840',
+                }}
+              >
+                {isMuted ? 'MUTED' : 'ENABLED'}
+              </span>
+            </div>
+          </button>
 
           <div className="mt-12 p-6 border-2 border-[#3a3a3a] bg-black/20">
             <div className="flex items-center justify-between mb-4">
