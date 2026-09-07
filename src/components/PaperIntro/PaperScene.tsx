@@ -418,17 +418,30 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         const idleRotY = Math.cos(time * 0.9) * 0.035 * idleWobble;
         const idlePosY = Math.sin(time * 1.6) * 0.04 * idleWobble;
 
-        // Mouse tilt — skip when fully open and idle
-        const hoverTiltX = skipHover ? 0 : -mouseRef.current.y * 0.15 * (1.0 - t * 0.8);
-        const hoverTiltY = skipHover ? 0 : mouseRef.current.x * 0.18 * (1.0 - t * 0.8);
+        // Interactive hover deformation & rotation towards cursor for initial paper ball state
+        const isCrumpledState = currentState === 'crumpled' || t < 0.15;
+        const cursorDist = Math.hypot(mouseRef.current.x, mouseRef.current.y);
+        const hoverProximity = isCrumpledState ? Math.max(0, 1.0 - cursorDist * 0.65) : 0;
+
+        const hoverTiltFactorX = isCrumpledState ? 0.52 : 0.15;
+        const hoverTiltFactorY = isCrumpledState ? 0.58 : 0.18;
+        const hoverTiltX = skipHover ? 0 : -mouseRef.current.y * hoverTiltFactorX * (1.0 - t * 0.8);
+        const hoverTiltY = skipHover ? 0 : mouseRef.current.x * hoverTiltFactorY * (1.0 - t * 0.8);
+
+        // Gentle magnetic pull and elastic deformation toward cursor in crumpled ball state
+        const hoverPullX = isCrumpledState ? mouseRef.current.x * 0.28 * hoverProximity : 0;
+        const hoverPullY = isCrumpledState ? mouseRef.current.y * 0.28 * hoverProximity : 0;
+        const hoverPullZ = isCrumpledState ? hoverProximity * 0.22 : 0;
+        const hoverScaleBulge = isCrumpledState ? (1.0 + hoverProximity * 0.08) : 1.0;
 
         paperMesh.rotation.x = ctrl.rotationX + idleRotX + hoverTiltX + inter.rotX;
         paperMesh.rotation.y = ctrl.rotationY + idleRotY + hoverTiltY + inter.rotY;
         paperMesh.rotation.z = ctrl.rotationZ;
 
-        paperMesh.position.y = ctrl.positionY + idlePosY;
-        paperMesh.position.z = ctrl.positionZ;
-        paperMesh.scale.setScalar(ctrl.paperScale);
+        paperMesh.position.x = hoverPullX;
+        paperMesh.position.y = ctrl.positionY + idlePosY + hoverPullY;
+        paperMesh.position.z = ctrl.positionZ + hoverPullZ;
+        paperMesh.scale.setScalar(ctrl.paperScale * hoverScaleBulge);
       }
 
       // Camera zoom

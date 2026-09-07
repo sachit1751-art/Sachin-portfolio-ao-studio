@@ -190,8 +190,89 @@ export function playCheckmarkChime(): void {
 }
 
 /**
- * Glitch noise burst for transition completion
+ * Gentle, low-pass filtered unfolding ambient sound generated via Web Audio API.
+ * Simulates soft paper expanding with warm frequency sweeps and subtle rustle textures.
  */
+export function playUnfoldingAmbientSound(): void {
+  if (isSoundMuted()) return;
+  try {
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
+
+    const t = ctx.currentTime;
+    const duration = 2.4;
+
+    // Create noise buffer for organic paper rustle texture
+    const sampleRate = ctx.sampleRate;
+    const bufferSize = Math.floor(sampleRate * duration);
+    const buffer = ctx.createBuffer(1, bufferSize, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    // Filtered pink/brown noise algorithm
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.035;
+      b6 = white * 0.115926;
+    }
+
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = buffer;
+
+    // Low-pass biquad filter with exponential frequency sweep for unfolding expansion
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.Q.value = 1.1;
+    lowpass.frequency.setValueAtTime(140, t);
+    lowpass.frequency.exponentialRampToValueAtTime(620, t + 0.9);
+    lowpass.frequency.exponentialRampToValueAtTime(210, t + duration);
+
+    // Warm gain envelope
+    const gainNode = ctx.createGain();
+    gainNode.gain.setValueAtTime(0.001, t);
+    gainNode.gain.exponentialRampToValueAtTime(0.12, t + 0.25);
+    gainNode.gain.linearRampToValueAtTime(0.08, t + 1.2);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+    noiseSource.connect(lowpass);
+    lowpass.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    // Soft resonant sine layer for paper unfolding depth
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(95, t);
+    subOsc.frequency.exponentialRampToValueAtTime(145, t + 0.7);
+    subOsc.frequency.exponentialRampToValueAtTime(70, t + duration);
+
+    subGain.gain.setValueAtTime(0.001, t);
+    subGain.gain.linearRampToValueAtTime(0.032, t + 0.3);
+    subGain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+
+    noiseSource.start(t);
+    noiseSource.stop(t + duration);
+    subOsc.start(t);
+    subOsc.stop(t + duration);
+
+    const stopper = () => {
+      try {
+        noiseSource.stop();
+        subOsc.stop();
+      } catch {}
+    };
+    registerSoundStopper(stopper);
+  } catch {}
+}
 export function playGlitchSound(): void {
   if (isSoundMuted()) return;
   try {

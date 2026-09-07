@@ -13,9 +13,9 @@ export interface SEOMetadataProps {
 
 const SECTION_SEO_MAP: Record<string, { title: string; description: string; keywords: string[] }> = {
   hero: {
-    title: 'Sachit — Software Developer & Prompt Engineer',
-    description: 'Portfolio of Sachit, Software Developer and Prompt Engineer building full-stack web applications, custom Android platforms, and AI systems.',
-    keywords: ['Sachit', 'Software Developer', 'Prompt Engineer', 'React', 'TypeScript', 'Full-stack', 'Android AOSP'],
+    title: 'Sachit',
+    description: "Explore Sachit's software engineering portfolio featuring Android custom ROM development, proactive AI privacy, full-stack web applications, AOSP platforms, and automated systems.",
+    keywords: ['Sachit', 'Android custom ROM development', 'proactive AI privacy', 'Software Developer', 'Prompt Engineer', 'React', 'TypeScript', 'Full-stack', 'Android AOSP'],
   },
   about: {
     title: 'About Sachit — Background & Engineering Philosophy',
@@ -76,11 +76,11 @@ export const SEOMetadata = ({
       description = description || sectionInfo.description;
       keywords = [...keywords, ...sectionInfo.keywords];
     } else {
-      title = title || 'Sachit — Software Developer & Prompt Engineer';
-      description = description || 'Official portfolio of Sachit, featuring full-stack applications, AI platforms, and developer tooling.';
+      title = title || 'Sachit';
+      description = description || "Explore Sachit's software development portfolio featuring full-stack web applications, custom Android platforms (AOSP), AI integration, and automated workflows.";
     }
 
-    const fullTitle = title.includes('Sachit') ? title : `${title} — Sachit`;
+    const fullTitle = title;
     document.title = fullTitle;
 
     // 1. Meta Description

@@ -7,9 +7,9 @@ import { HoneycombLoader } from './components/UI/HoneycombLoader';
 import { SEOHead } from './components/SEO/SEOHead';
 import { SEOMetadata } from './components/SEO/SEOMetadata';
 import { TelemetryTracker } from './components/SEO/TelemetryTracker';
-import { StickyMobileCTA } from './components/UI/StickyMobileCTA';
 import { SiteMapModal } from './components/Portfolio/SiteMapModal';
 import { ShortcutHUD } from './components/UI/ShortcutHUD';
+import { SwipeableOverlay } from './components/UI/SwipeableOverlay';
 import { useDoomSequence } from './hooks/useDoomSequence';
 import { usePerformance } from './hooks/usePerformance';
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
@@ -92,7 +92,11 @@ export default function App() {
         setIsViewingPrivacy(false);
         setIsViewingTerms(false);
         setIs404(false);
-        // Root path always presents the intro animation on fresh load/reload
+        // Root path always presents the paper ball intro animation on fresh load or reload
+        setShowContent(false);
+        setIntroCompleted(false);
+        setHeaderReady(false);
+        setPaperState('crumpled');
       }
     };
 
@@ -162,17 +166,28 @@ export default function App() {
       initSecurity();
     }
   }, []);
+
+  // Inject randomized CSS custom properties on initial mount for a unique procedural paper texture every session
+  useEffect(() => {
+    try {
+      const randomFoldAngle = `${Math.floor(Math.random() * 360)}deg`;
+      const randomFoldOpacity = (0.025 + Math.random() * 0.035).toFixed(3);
+      const randomGrainX = `${Math.floor(15 + Math.random() * 70)}%`;
+      const randomGrainY = `${Math.floor(15 + Math.random() * 70)}%`;
+
+      const root = document.documentElement;
+      root.style.setProperty('--fold-angle', randomFoldAngle);
+      root.style.setProperty('--fold-opacity', randomFoldOpacity);
+      root.style.setProperty('--grain-x', randomGrainX);
+      root.style.setProperty('--grain-y', randomGrainY);
+    } catch {}
+  }, []);
   const [paperState, setPaperState] = useState<PaperState>(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return 'opened';
       }
-      try {
-        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
-          return 'opened';
-        }
-      } catch {}
     }
     return 'crumpled';
   });
@@ -187,11 +202,6 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
-      try {
-        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
-          return true;
-        }
-      } catch {}
     }
     return false;
   });
@@ -202,11 +212,6 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
-      try {
-        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
-          return true;
-        }
-      } catch {}
     }
     return false;
   });
@@ -217,11 +222,6 @@ export default function App() {
       if (path === '/resume' || path === '/resume/' || path === '/resume.html' || path === '/privacy' || path === '/privacy/' || path === '/terms' || path === '/terms/') {
         return true;
       }
-      try {
-        if (sessionStorage.getItem(SESSION_CACHE_KEY) === 'true') {
-          return true;
-        }
-      } catch {}
     }
     return false;
   });
@@ -263,6 +263,24 @@ export default function App() {
     setIsViewingResume(false);
     try {
       if (window.location.pathname === '/resume') {
+        window.history.pushState({}, '', '/');
+      }
+    } catch {}
+  }, []);
+
+  const handleClosePrivacy = useCallback(() => {
+    setIsViewingPrivacy(false);
+    try {
+      if (window.location.pathname === '/privacy' || window.location.pathname !== '/') {
+        window.history.pushState({}, '', '/');
+      }
+    } catch {}
+  }, []);
+
+  const handleCloseTerms = useCallback(() => {
+    setIsViewingTerms(false);
+    try {
+      if (window.location.pathname === '/terms' || window.location.pathname !== '/') {
         window.history.pushState({}, '', '/');
       }
     } catch {}
@@ -434,15 +452,9 @@ export default function App() {
     onOpenResume: handleOpenResume,
     onCloseResume: handleCloseResume,
     isViewingPrivacy,
-    onClosePrivacy: () => {
-      setIsViewingPrivacy(false);
-      try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-    },
+    onClosePrivacy: handleClosePrivacy,
     isViewingTerms,
-    onCloseTerms: () => {
-      setIsViewingTerms(false);
-      try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-    },
+    onCloseTerms: handleCloseTerms,
     is404,
     onClose404: () => {
       setIs404(false);
@@ -482,6 +494,9 @@ export default function App() {
 
   return (
     <div data-theme={theme} className="relative min-h-screen bg-[var(--c-bg)] font-sans antialiased overflow-x-hidden transition-colors duration-500">
+      {/* Procedural Randomized Fixed Paper Texture Layer */}
+      <div className="paper-texture-fixed-layer pointer-events-none" aria-hidden="true" />
+
       {/* Route-Aware & Crawler-Optimized SEO Metadata */}
       <SEOMetadata
         pageType={
@@ -625,9 +640,11 @@ export default function App() {
 
           {/* Dedicated Resume Overlay Container */}
           {isViewingResume && (
-            <div
+            <SwipeableOverlay
               id="resume-scroll-container"
               className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden bg-transparent"
+              onClose={handleCloseResume}
+              ariaLabel="Resume View Modal"
             >
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="PREPARING CV CANVAS..." color="var(--c-heading)" /></div>}>
                 <LazyResumeViewer
@@ -635,55 +652,45 @@ export default function App() {
                   onBack={handleCloseResume}
                 />
               </Suspense>
-            </div>
+            </SwipeableOverlay>
           )}
 
           {/* Dedicated Privacy Policy Overlay */}
           {isViewingPrivacy && (
-            <div
+            <SwipeableOverlay
               id="privacy-scroll-container"
               data-theme={theme}
               className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden"
               style={{ backgroundColor: 'var(--c-bg)' }}
+              onClose={handleClosePrivacy}
+              ariaLabel="Privacy Policy Modal"
             >
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING PRIVACY POLICY..." color="var(--c-heading)" /></div>}>
                 <LazyPrivacyPolicy
                   theme={theme}
-                  onBack={() => {
-                    setIsViewingPrivacy(false);
-                    try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-                  }}
+                  onBack={handleClosePrivacy}
                 />
               </Suspense>
-            </div>
+            </SwipeableOverlay>
           )}
 
           {/* Dedicated Terms of Service Overlay */}
           {isViewingTerms && (
-            <div
+            <SwipeableOverlay
               id="terms-scroll-container"
               data-theme={theme}
               className="fixed inset-0 top-0 pt-[72px] z-20 w-full h-full overflow-y-auto overflow-x-hidden"
               style={{ backgroundColor: 'var(--c-bg)' }}
+              onClose={handleCloseTerms}
+              ariaLabel="Terms of Service Modal"
             >
               <Suspense fallback={<div className="flex items-center justify-center py-24"><HoneycombLoader size="md" label="LOADING TERMS..." color="var(--c-heading)" /></div>}>
                 <LazyTermsOfService
                   theme={theme}
-                  onBack={() => {
-                    setIsViewingTerms(false);
-                    try { if (window.location.pathname !== '/') window.history.pushState({}, '', '/'); } catch {}
-                  }}
+                  onBack={handleCloseTerms}
                 />
               </Suspense>
-            </div>
-          )}
-
-          {/* Sticky Mobile CTA */}
-          {!isViewingResume && !isViewingPrivacy && !isViewingTerms && (
-            <StickyMobileCTA
-              onNavigate={handleNavigateSection}
-              onViewResume={handleOpenResume}
-            />
+            </SwipeableOverlay>
           )}
         </div>
       )}

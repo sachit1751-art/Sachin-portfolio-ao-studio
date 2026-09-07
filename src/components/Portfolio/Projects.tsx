@@ -149,82 +149,282 @@ const projects: Project[] = [
     featured: false,
   },
   {
-    id: 'nexus-core',
-    title: 'Nexus Core',
-    category: 'Enterprise Web',
-    filterCategories: ['WEB', 'AUTOMATION'],
-    year: '2024',
+    id: 'moneypal',
+    title: 'MoneyPal',
+    category: 'Android App',
+    filterCategories: ['ANDROID', 'MOBILE'],
+    year: '2025',
     description:
-      'Next-generation ERP system for distributed teams, featuring real-time collaborative state management and automated resource allocation.',
+      'An easy-to-use Android budget tracker: calculator-style expense entry, budget periods, recurring expenses, widgets, and a Wear OS companion app.',
     longDescription:
-      'Nexus Core is a highly scalable enterprise resource planning system designed for the modern distributed workforce. It leverages CRDTs for seamless real-time collaboration and includes a robust automation engine for resource management.\n\nKey Features: Real-time multi-user editing, automated billing workflows, predictive resource scaling, comprehensive analytics dashboard.\n\nTech Stack: Next.js, Go, PostgreSQL, Redis, Socket.io.',
-    tags: ['Next.js', 'Go', 'PostgreSQL', 'Redis'],
+      'MoneyPal is a simple and intuitive Android money management app designed to track spending, manage custom budget periods, and build financial habits with zero complexity.\n\nKey Features: Calculator-style rapid expense entry, custom budget periods (weekly, monthly, custom), recurring expense logging with daily notification reminders, interactive category analysis, device-only local privacy storage, home screen widgets, and a Wear OS smartwatch companion app.\n\nTech Stack: Android, Kotlin, Jetpack Compose, Room Database, FlashList, Wear OS SDK.',
+    tags: ['Android', 'Kotlin', 'Jetpack Compose', 'Wear OS', 'Room DB'],
+    githubUrl: 'https://github.com/sachit1751-art/MoneyPal',
     featured: true,
   },
 ];
 
 
 // ﻿author:sachit-2026-original﻿
-export const Projects = memo(() => {
-  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-  const cardsGridRef = useRef<HTMLDivElement>(null);
+interface ProjectCardProps {
+  project: Project;
+  idx: number;
+  isExpanded: boolean;
+  onToggleExpand: (id: string, e?: React.MouseEvent | React.KeyboardEvent) => void;
+}
+
+const ProjectCard = memo<ProjectCardProps>(({ project, idx, isExpanded, onToggleExpand }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
   const { simplify } = usePerformance();
 
-  const toggleExpandCard = (id: string, e?: React.MouseEvent | React.KeyboardEvent) => {
-    if (e) e.stopPropagation();
-    setExpandedCardId((prev) => (prev === id ? null : id));
-  };
-
   useEffect(() => {
-    if (!cardsGridRef.current) return;
-
-    const cards = gsap.utils.toArray<HTMLElement>('.gsap-project-card');
-    if (!cards.length) return;
-
     if (simplify) {
-      gsap.set(cards, { opacity: 1, y: 0, scale: 1 });
+      setIsVisible(true);
       return;
     }
 
-    // Set initial animated state
-    gsap.set(cards, { opacity: 0, y: 28, scale: 0.98 });
+    const el = cardRef.current;
+    if (!el) return;
 
-    const animateIn = () => {
-      gsap.to(cards, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.65,
-        stagger: 0.1,
-        ease: 'power3.out',
-        overwrite: 'auto',
-      });
-    };
+    if (!('IntersectionObserver' in window)) {
+      setIsVisible(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            animateIn();
-            observer.disconnect();
+            setIsVisible(true);
+            observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.05, rootMargin: '100px' }
+      { threshold: 0.08, rootMargin: '50px' }
     );
 
-    observer.observe(cardsGridRef.current);
-
-    // Safety fallback: guarantee visibility after 300ms if observer missed
-    const timeoutId = setTimeout(() => {
-      animateIn();
-    }, 300);
+    observer.observe(el);
 
     return () => {
       observer.disconnect();
-      clearTimeout(timeoutId);
     };
   }, [simplify]);
+
+  return (
+    <div
+      ref={cardRef}
+      id={`project-card-${project.id}`}
+      data-project-card="true"
+      data-project-index={idx}
+      tabIndex={0}
+      role="article"
+      aria-label={`${project.title} (${project.category}, ${project.year})`}
+      onKeyDown={(e) => {
+        if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onToggleExpand(project.id);
+        }
+      }}
+      className={`project-card-item ${
+        isVisible ? 'is-visible' : ''
+      } group relative p-5 sm:p-6 flex flex-col justify-between overflow-hidden h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] outline-none touch-manipulation`}
+      style={{
+        backgroundColor: 'var(--c-card)',
+        border: '1px solid var(--c-border)',
+      }}
+    >
+      <div>
+        {/* Header Meta: Category + Index */}
+        <div className="flex items-center justify-between text-xs font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
+          <span
+            className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-[var(--radius-sm)]"
+            style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
+          >
+            {project.category}
+          </span>
+          <span className="text-[10px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
+            {String(idx + 1).padStart(2, '0')}
+          </span>
+        </div>
+
+        {/* Project Title & Short Description */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={(e) => onToggleExpand(project.id, e)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onToggleExpand(project.id);
+            }
+          }}
+          className="cursor-pointer outline-none group/title focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded-md py-1 select-none"
+          aria-label={`Toggle quick details for ${project.title}`}
+        >
+          <h3 className="font-sans text-xl sm:text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
+            <span className="line-clamp-1">{project.title}</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider opacity-60 ml-2" style={{ color: 'var(--c-muted)' }}>
+              {project.year}
+            </span>
+          </h3>
+
+          <PretextText
+            text={project.description}
+            font="15px sans-serif"
+            lineHeight={22}
+            mode="balanced"
+            className="text-sm sm:text-base leading-relaxed mb-4 font-body opacity-85"
+            style={{ color: 'var(--c-body)' }}
+          />
+        </div>
+
+        {/* Print-only Full Details (Always visible on paper) */}
+        <div className="hidden print:block mt-4 text-xs leading-relaxed space-y-2 border-t border-gray-100 pt-3">
+          <p className="whitespace-pre-line font-body text-gray-700">
+            {project.longDescription || project.description}
+          </p>
+        </div>
+
+        {/* Inline Quick Details Dropdown (UI Only) */}
+        {isExpanded && (
+          <div
+            className="my-3 p-4 rounded-[var(--radius-md)] text-xs font-body leading-relaxed space-y-3 transition-all duration-200 print:hidden"
+            style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
+          >
+            <div>
+              <p className="whitespace-pre-line leading-relaxed" style={{ color: 'var(--c-body)' }}>
+                {project.longDescription || project.description}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5" style={{ borderTop: '1px solid var(--c-border)' }}>
+              <span className="font-mono text-[10px] uppercase tracking-wider opacity-70" style={{ color: 'var(--c-muted)' }}>
+                YEAR: {project.year}
+              </span>
+              <div className="flex items-center gap-3">
+                {project.githubUrl && (
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline"
+                    style={{ color: 'var(--c-heading)' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <GitHubIcon className="w-3 h-3" />
+                    <span>Source Code</span>
+                  </a>
+                )}
+                {project.demoUrl && (
+                  <a
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline text-emerald-600 dark:text-emerald-400"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span>Open Live Demo</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Tech Tags & Quick Action Strip */}
+      <div className="space-y-3 pt-3 mt-auto" style={{ borderTop: '1px solid var(--c-border)' }}>
+        {/* Tech Badges with Small Icons (AOSP, Kotlin, React, Python, etc.) */}
+        <div className="flex flex-wrap gap-1.5">
+          {project.tags.map((tag) => {
+            const TagIcon = getTagIcon(tag);
+            return (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono tracking-wider rounded-[var(--radius-sm)] transition-colors"
+                style={{
+                  border: '1px solid var(--c-border)',
+                  color: 'var(--c-body)',
+                  backgroundColor: 'var(--c-input-bg)',
+                }}
+              >
+                <TagIcon className="w-3 h-3 opacity-70 flex-shrink-0" style={{ color: 'var(--c-heading)' }} />
+                <span>{tag}</span>
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Quick Details Action Strip */}
+        <div className="flex items-center justify-between gap-2 pt-1">
+          <button
+            type="button"
+            onClick={(e) => onToggleExpand(project.id, e)}
+            className="flex-1 min-h-[38px] px-3 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 hover:border-[var(--c-border-focus)]"
+            style={{
+              border: '1px solid var(--c-border)',
+              backgroundColor: 'var(--c-input-bg)',
+              color: 'var(--c-heading)',
+            }}
+            aria-expanded={isExpanded}
+          >
+            <span>{isExpanded ? 'Hide Details' : 'Quick Details'}</span>
+            <AnimatedMenuIcon isOpen={isExpanded} variant="chevron" size={14} />
+          </button>
+
+          {project.githubUrl && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="min-h-[38px] px-3 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:border-[var(--c-border-focus)] active:scale-95"
+              style={{
+                border: '1px solid var(--c-border)',
+                backgroundColor: 'var(--c-input-bg)',
+                color: 'var(--c-heading)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+              title="View GitHub Repository"
+              aria-label="View GitHub Repository"
+            >
+              <GitHubIcon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Code</span>
+            </a>
+          )}
+
+          {project.demoUrl && (
+            <a
+              href={project.demoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="min-h-[38px] px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:brightness-105 active:scale-95"
+              style={{
+                backgroundColor: 'var(--c-btn-bg)',
+                color: 'var(--c-btn-text)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span>Live Demo</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+ProjectCard.displayName = 'ProjectCard';
+
+export const Projects = memo(() => {
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+
+  const toggleExpandCard = (id: string, e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.stopPropagation();
+    setExpandedCardId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <ScrollReveal>
@@ -238,211 +438,16 @@ export const Projects = memo(() => {
         </div>
       </div>
 
-      <div ref={cardsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project, idx) => {
-          const isExpanded = expandedCardId === project.id;
-          return (
-            <div
-              key={project.id}
-              id={`project-card-${project.id}`}
-              data-project-card="true"
-              data-project-index={idx}
-              tabIndex={0}
-              role="article"
-              aria-label={`${project.title} (${project.category}, ${project.year})`}
-              onKeyDown={(e) => {
-                if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
-                  e.preventDefault();
-                  toggleExpandCard(project.id);
-                }
-              }}
-              className="gsap-project-card group relative p-5 sm:p-6 flex flex-col justify-between overflow-hidden h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] outline-none touch-manipulation"
-              style={{
-                backgroundColor: 'var(--c-card)',
-                border: '1px solid var(--c-border)',
-              }}
-            >
-              <div>
-                {/* Header Meta: Category + Index */}
-                <div className="flex items-center justify-between text-xs font-handwriting mb-3" style={{ color: 'var(--c-subtle)' }}>
-                  <span
-                    className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-[var(--radius-sm)]"
-                    style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
-                  >
-                    {project.category}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-widest font-mono font-bold" style={{ color: 'var(--c-faint)' }}>
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                </div>
-
-                {/* Project Title & Short Description */}
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => toggleExpandCard(project.id, e)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      toggleExpandCard(project.id);
-                    }
-                  }}
-                  className="cursor-pointer outline-none group/title focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] rounded-md py-1 select-none"
-                  aria-label={`Toggle quick details for ${project.title}`}
-                >
-                  <h3 className="font-sans text-xl sm:text-2xl font-bold transition-colors mb-2 flex items-center justify-between tracking-tight" style={{ color: 'var(--c-heading)' }}>
-                    <span className="line-clamp-1">{project.title}</span>
-                    <span className="font-mono text-[10px] uppercase tracking-wider opacity-60 ml-2" style={{ color: 'var(--c-muted)' }}>
-                      {project.year}
-                    </span>
-                  </h3>
-
-                  <PretextText
-                    text={project.description}
-                    font="15px sans-serif"
-                    lineHeight={22}
-                    mode="balanced"
-                    className="text-sm sm:text-base leading-relaxed mb-4 font-body opacity-85"
-                    style={{ color: 'var(--c-body)' }}
-                  />
-                </div>
-
-                {/* Print-only Full Details (Always visible on paper) */}
-                <div className="hidden print:block mt-4 text-xs leading-relaxed space-y-2 border-t border-gray-100 pt-3">
-                  <p className="whitespace-pre-line font-body text-gray-700">
-                    {project.longDescription || project.description}
-                  </p>
-                </div>
-
-                {/* Inline Quick Details Dropdown (UI Only) */}
-                {isExpanded && (
-                  <div
-                    className="my-3 p-4 rounded-[var(--radius-md)] text-xs font-body leading-relaxed space-y-3 transition-all duration-200 print:hidden"
-                    style={{ backgroundColor: 'var(--c-input-bg)', border: '1px solid var(--c-border)' }}
-                  >
-                    <div>
-                      <p className="whitespace-pre-line leading-relaxed" style={{ color: 'var(--c-body)' }}>
-                        {project.longDescription || project.description}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5" style={{ borderTop: '1px solid var(--c-border)' }}>
-                      <span className="font-mono text-[10px] uppercase tracking-wider opacity-70" style={{ color: 'var(--c-muted)' }}>
-                        YEAR: {project.year}
-                      </span>
-                      <div className="flex items-center gap-3">
-                        {project.githubUrl && (
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline"
-                            style={{ color: 'var(--c-heading)' }}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <GitHubIcon className="w-3 h-3" />
-                            <span>Source Code</span>
-                          </a>
-                        )}
-                        {project.demoUrl && (
-                          <a
-                            href={project.demoUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-mono text-[11px] font-bold inline-flex items-center gap-1 hover:underline text-emerald-600 dark:text-emerald-400"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <span>Open Live Demo</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom Tech Tags & Quick Action Strip */}
-              <div className="space-y-3 pt-3 mt-auto" style={{ borderTop: '1px solid var(--c-border)' }}>
-                {/* Tech Badges with Small Icons (AOSP, Kotlin, React, Python, etc.) */}
-                <div className="flex flex-wrap gap-1.5">
-                  {project.tags.map((tag) => {
-                    const TagIcon = getTagIcon(tag);
-                    return (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono tracking-wider rounded-[var(--radius-sm)] transition-colors"
-                        style={{
-                          border: '1px solid var(--c-border)',
-                          color: 'var(--c-body)',
-                          backgroundColor: 'var(--c-input-bg)',
-                        }}
-                      >
-                        <TagIcon className="w-3 h-3 opacity-70 flex-shrink-0" style={{ color: 'var(--c-heading)' }} />
-                        <span>{tag}</span>
-                      </span>
-                    );
-                  })}
-                </div>
-
-                {/* Quick Details Action Strip */}
-                <div className="flex items-center justify-between gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={(e) => toggleExpandCard(project.id, e)}
-                    className="flex-1 min-h-[38px] px-3 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 hover:border-[var(--c-border-focus)]"
-                    style={{
-                      border: '1px solid var(--c-border)',
-                      backgroundColor: 'var(--c-input-bg)',
-                      color: 'var(--c-heading)',
-                    }}
-                    aria-expanded={isExpanded}
-                  >
-                    <span>{isExpanded ? 'Hide Details' : 'Quick Details'}</span>
-                    <AnimatedMenuIcon isOpen={isExpanded} variant="chevron" size={14} />
-                  </button>
-
-                  {project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="min-h-[38px] px-3 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:border-[var(--c-border-focus)] active:scale-95"
-                      style={{
-                        border: '1px solid var(--c-border)',
-                        backgroundColor: 'var(--c-input-bg)',
-                        color: 'var(--c-heading)',
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      title="View GitHub Repository"
-                      aria-label="View GitHub Repository"
-                    >
-                      <GitHubIcon className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Code</span>
-                    </a>
-                  )}
-
-                  {project.demoUrl && (
-                    <a
-                      href={project.demoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="min-h-[38px] px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-[var(--radius-md)] flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:brightness-105 active:scale-95"
-                      style={{
-                        backgroundColor: 'var(--c-btn-bg)',
-                        color: 'var(--c-btn-text)',
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <span>Live Demo</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project, idx) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            idx={idx}
+            isExpanded={expandedCardId === project.id}
+            onToggleExpand={toggleExpandCard}
+          />
+        ))}
       </div>
     </section>
     </ScrollReveal>

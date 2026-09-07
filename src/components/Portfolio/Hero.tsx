@@ -32,59 +32,11 @@ export const Hero = memo<HeroProps>(({
   useEffect(() => {
     if (!heroRef.current) return;
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-      tl.fromTo(
-        '.gsap-hero-header',
-        { opacity: 0, y: -12 },
-        { opacity: 1, y: 0, duration: 0.55, stagger: 0.1 }
-      )
-        .fromTo(
-          '.gsap-hero-status',
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.45 },
-          '-=0.3'
-        )
-        .fromTo(
-          '.gsap-hero-subtitle',
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.45 },
-          '-=0.35'
-        )
-        .fromTo(
-          '.gsap-hero-title',
-          { opacity: 0, y: 16, scale: 0.98 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.65 },
-          '-=0.35'
-        )
-        .fromTo(
-          '.gsap-hero-desc',
-          { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.55 },
-          '-=0.4'
-        )
-        .fromTo(
-          '.gsap-hero-btn',
-          { opacity: 0, y: 12, scale: 0.96 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.08 },
-          '-=0.35'
-        )
-        .fromTo(
-          '.gsap-hero-social',
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.45, stagger: 0.06 },
-          '-=0.3'
-        )
-        .fromTo(
-          '.gsap-hero-card',
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.55, stagger: 0.1 },
-          '-=0.3'
-        );
-    }, heroRef);
-
-    return () => ctx.revert();
+    // Instantly ensure all hero elements are fully visible without fade-in delays
+    const elements = heroRef.current.querySelectorAll(
+      '.gsap-hero-header, .gsap-hero-status, .gsap-hero-subtitle, .gsap-hero-title, .gsap-hero-desc, .gsap-hero-btn, .gsap-hero-social, .gsap-hero-card'
+    );
+    gsap.set(elements, { opacity: 1, y: 0, scale: 1 });
   }, []);
 
   return (
@@ -111,7 +63,7 @@ export const Hero = memo<HeroProps>(({
           Independent Developer
         </p>
         <h1 className="gsap-hero-title text-[2.2rem] xs:text-[2.8rem] sm:text-6xl md:text-[72px] lg:text-[88px] leading-[1.1] font-sans font-extrabold tracking-tight my-4 py-2" style={{ color: 'var(--c-heading)' }}>
-          <span className="block min-h-[1.1em]">
+          <span className="hero-span-smooth-reveal block min-h-[1.1em]">
             <DepthFlipText
               phrases={[
                 "AI & Web Developer",

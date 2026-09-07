@@ -1,6 +1,6 @@
 {
-  "name": "Sachit — Software Developer Portfolio",
-  "description": "Explore the portfolio of Sachit, a Software Developer and Prompt Engineer specializing in full-stack applications, AI integration, and automated workflows.",
+  "name": "Sachit",
+  "description": "Explore Sachit's software engineering portfolio featuring Android custom ROM development, proactive AI privacy, full-stack web applications, AOSP platforms, and automated systems.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

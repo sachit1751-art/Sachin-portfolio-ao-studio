@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { isSoundMuted, registerSoundStopper } from '../utils/soundManager';
+import { isSoundMuted, registerSoundStopper, playUnfoldingAmbientSound } from '../utils/soundManager';
 
 export function usePaperSound() {
   const unfoldRef = useRef<HTMLAudioElement | null>(null);
@@ -37,6 +37,7 @@ export function usePaperSound() {
 
   const playUnfold = useCallback(() => {
     if (isSoundMuted()) return;
+    playUnfoldingAmbientSound();
     const audio = getAudio(unfoldRef, '/paper-crumple.mp3');
     audio.currentTime = 0;
     audio.play().catch(() => {});

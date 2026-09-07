@@ -242,19 +242,6 @@ export const SiteMapModal: React.FC<SiteMapModalProps> = ({
         },
       },
       {
-        id: 'section-experience',
-        title: 'Experience & Milestones',
-        subtitle: 'Development track record, engineering roles & community impact',
-        category: 'section',
-        categoryLabel: 'Section',
-        icon: Briefcase,
-        keywords: ['work', 'career', 'timeline', 'jobs', 'history'],
-        action: () => {
-          onNavigateSection('experience');
-          onClose();
-        },
-      },
-      {
         id: 'section-education',
         title: 'Education & Academics',
         subtitle: 'Secondary school education, physics, chemistry, math & biology',
@@ -264,19 +251,6 @@ export const SiteMapModal: React.FC<SiteMapModalProps> = ({
         keywords: ['school', 'degree', 'studies', 'high school', 'pcmb'],
         action: () => {
           onNavigateSection('education');
-          onClose();
-        },
-      },
-      {
-        id: 'section-strengths',
-        title: 'Core Strengths',
-        subtitle: 'Rapid system prototyping, UI fidelity & algorithmic foundations',
-        category: 'section',
-        categoryLabel: 'Section',
-        icon: Award,
-        keywords: ['skills', 'talents', 'capabilities', 'advantages'],
-        action: () => {
-          onNavigateSection('strengths');
           onClose();
         },
       },

@@ -41,9 +41,7 @@ const ALL_SECTIONS = [
   'skills',
   'currently-building',
   'github',
-  'experience',
   'education',
-  'strengths',
   'building-in-public',
   'contact',
 ];
@@ -86,8 +84,65 @@ export const Header = memo<HeaderProps>(({
     });
   }, [currentActive]);
 
+  // ── Lock body scroll when mobile menu is active ──────────────────────
+  useEffect(() => {
+    const body = document.body;
+    const docEl = document.documentElement;
+    const scrollContainer = document.getElementById('content-scroll-container');
+
+    if (mobileOpen) {
+      const originalBodyOverflow = body.style.overflow;
+      const originalDocOverflow = docEl.style.overflow;
+      const originalContainerOverflow = scrollContainer ? scrollContainer.style.overflow : '';
+
+      body.style.overflow = 'hidden';
+      docEl.style.overflow = 'hidden';
+      if (scrollContainer) {
+        scrollContainer.style.overflow = 'hidden';
+      }
+
+      return () => {
+        body.style.overflow = originalBodyOverflow;
+        docEl.style.overflow = originalDocOverflow;
+        if (scrollContainer) {
+          scrollContainer.style.overflow = originalContainerOverflow;
+        }
+      };
+    }
+  }, [mobileOpen]);
+
+  // ── Set tabindex=-1 on external links when mobile menu is active ─────
+  useEffect(() => {
+    if (mobileOpen) {
+      const externalLinks = document.querySelectorAll<HTMLAnchorElement | HTMLButtonElement>(
+        'a:not(#mobile-fullscreen-menu a), button:not(#mobile-fullscreen-menu button)'
+      );
+      const originalTabIndices: Array<{ el: HTMLElement; val: string | null }> = [];
+
+      externalLinks.forEach((el) => {
+        originalTabIndices.push({ el, val: el.getAttribute('tabindex') });
+        el.setAttribute('tabindex', '-1');
+      });
+
+      return () => {
+        originalTabIndices.forEach(({ el, val }) => {
+          if (val === null) {
+            el.removeAttribute('tabindex');
+          } else {
+            el.setAttribute('tabindex', val);
+          }
+        });
+      };
+    }
+  }, [mobileOpen]);
+
   const openMobile = useCallback(() => {
     lastFocusedRef.current = document.activeElement as HTMLElement;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    const scrollContainer = document.getElementById('content-scroll-container');
+    if (scrollContainer) scrollContainer.style.overflow = 'hidden';
+
     setMobileOpen(true);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -99,6 +154,11 @@ export const Header = memo<HeaderProps>(({
   const closeMobile = useCallback(() => {
     setDrawerVisible(false);
     setTimeout(() => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      const scrollContainer = document.getElementById('content-scroll-container');
+      if (scrollContainer) scrollContainer.style.overflow = '';
+
       setMobileOpen(false);
       lastFocusedRef.current?.focus();
     }, 300); // Match transition duration
@@ -281,8 +341,7 @@ export const Header = memo<HeaderProps>(({
       }
     };
 
-    const scrollContainer = document.getElementById('content-scroll-container');
-    if (scrollContainer) scrollContainer.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleKey);
     document.body.style.overflow = 'hidden';
 
     // Focus first element in drawer
@@ -294,7 +353,6 @@ export const Header = memo<HeaderProps>(({
     return () => {
       document.removeEventListener('keydown', handleKey);
       document.body.style.overflow = '';
-      if (scrollContainer) scrollContainer.style.overflow = '';
     };
   }, [mobileOpen]);
 
@@ -443,6 +501,22 @@ export const Header = memo<HeaderProps>(({
 
           {/* Mobile Right Controls */}
           <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
+            {/* Fold Paper Button */}
+            <button
+              type="button"
+              className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
+              style={{
+                color: 'var(--c-heading)',
+                border: '1px solid var(--c-border)',
+                backgroundColor: 'var(--c-input-bg)',
+              }}
+              onClick={onRecrumple}
+              title="Fold paper back to origami ball"
+              aria-label="Fold paper back to origami ball"
+            >
+              <RotateCcw size={16} />
+            </button>
+
             {/* Hamburger Button */}
             <button
               className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
@@ -467,13 +541,14 @@ export const Header = memo<HeaderProps>(({
         <div
           ref={drawerRef}
           id="mobile-fullscreen-menu"
-          data-theme={theme}
-          className="fixed inset-x-0 top-[60px] sm:top-[68px] bottom-0 z-[100] md:hidden w-full h-[calc(100dvh-60px)] sm:h-[calc(100dvh-68px)] flex flex-col overflow-hidden transition-colors duration-300"
+          className="fixed inset-x-0 top-[64px] bottom-0 z-[100] md:hidden w-full h-[calc(100dvh-64px)] flex flex-col overflow-hidden backdrop-blur-xl"
           style={{
-            backgroundColor: 'var(--c-bg)',
+            backgroundColor: (theme === 'blueprint' || theme === 'slate') ? 'rgba(26, 35, 50, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             opacity: drawerVisible ? 1 : 0,
-            transform: drawerVisible ? 'translateY(0)' : 'translateY(8px)',
-            transition: 'opacity 220ms cubic-bezier(0.16, 1, 0.3, 1), transform 220ms cubic-bezier(0.16, 1, 0.3, 1)',
+            transform: drawerVisible ? 'translateY(0)' : 'translateY(-100%)',
+            transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms cubic-bezier(0.16, 1, 0.3, 1)',
           }}
           role="dialog"
           aria-modal="true"
@@ -481,10 +556,10 @@ export const Header = memo<HeaderProps>(({
         >
           {/* Top Bar inside Fullscreen Menu */}
           <div
-            className="flex items-center justify-between h-[60px] sm:h-[68px] px-4 sm:px-6 border-b flex-shrink-0"
+            className="flex items-center justify-between h-[64px] px-6 border-b flex-shrink-0"
             style={{
               borderColor: 'var(--c-header-border)',
-              backgroundColor: 'var(--c-header-bg)',
+              backgroundColor: 'transparent',
             }}
           >
             <div className="flex items-center gap-3">
@@ -519,7 +594,13 @@ export const Header = memo<HeaderProps>(({
           </div>
 
           {/* Scrollable Navigation Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+          <div
+            className="mobile-menu-inner flex-1 space-y-6"
+            style={{
+              overflowY: 'auto',
+              padding: '40px 20px',
+            }}
+          >
             {/* Quick Command Palette / Search Trigger */}
             {onOpenSiteMap && (
               <button
