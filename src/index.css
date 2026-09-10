@@ -144,6 +144,46 @@
   }
   /* Scroll text path is now driven by a high-performance RAF loop + IntersectionObserver */
 
+  /* Hardware acceleration on main scroll container */
+  #content-scroll-container {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    contain: layout paint;
+  }
+
+  /* GPU-efficient CSS filter-based shadow approximations to reduce composition layer pressure */
+  .filter-shadow-sm {
+    box-shadow: none !important;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.06));
+  }
+
+  .filter-shadow-md {
+    box-shadow: none !important;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.07));
+  }
+
+  .filter-shadow-lg {
+    box-shadow: none !important;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.09));
+  }
+
+  /* Optimize cards with lightweight filter shadows over multi-layered box-shadows */
+  .project-card-item,
+  .hero-card,
+  [data-project-card="true"] {
+    box-shadow: none !important;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.04));
+    will-change: transform;
+  }
+
+  .project-card-item:hover,
+  .hero-card:hover {
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.08));
+  }
+
   /* Optimize off-screen section rendering */
   section {
     contain: layout style;
@@ -488,18 +528,45 @@
 }
 
 /* ═══════════════════════════════════════════════
-   PROJECT CARD VIEWPORT ENTRY (INTERSECTION OBSERVER)
+   3D PAPER SCENE & CANVAS STABILITY
+   ═══════════════════════════════════════════════ */
+#paper-3d-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  contain: strict;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
+#paper-3d-scene > canvas {
+  display: block !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  inset: 0 !important;
+  touch-action: none;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  outline: none;
+}
+
+/* ═══════════════════════════════════════════════
+   PROJECT CARD VIEWPORT ENTRY (GSAP & INTERSECTION OBSERVER)
    ═══════════════════════════════════════════════ */
 .project-card-item {
   opacity: 0;
-  transform: translate3d(0, 24px, 0) scale(0.98);
-  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 
 .project-card-item.is-visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
 }
 
 @media (prefers-reduced-motion: reduce) {

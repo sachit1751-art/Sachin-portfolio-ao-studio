@@ -4,7 +4,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=1a1917&height=230&section=header&text=Hey%2C%20I'm%20Sachit%20%F0%9F%91%8B&fontSize=44&fontColor=f5f1eb&fontAlignY=38&desc=%E2%9A%A1%20AI%20%26%20Web%20Developer%20%C2%B7%20Full-Stack%20Architect%20%C2%B7%20Tech%20Builder&descSize=16&descAlignY=60&descAlign=50" width="100%" alt="Sachit Profile Header" />
 
 <!-- Dynamic Animated Terminal Typing SVG -->
-<a href="https://sachit-portfolio.vercel.app">
+<a href="https://sachin-portfoli.vercel.app">
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=3000&pause=1200&color=D97706&center=true&vCenter=true&width=650&height=55&lines=%3E+building+practical+software+that+scales.;%3E+AI+%26+Full-Stack+Architect;%3E+Student+Developer+(Class+12+%E2%80%94+PCMB);%3E+Prompt+Engineering+%26+Agentic+Workflows;%3E+Learn+by+building+%E2%86%92+Ship+%E2%86%92+Iterate." alt="Animated Typing Subtitle" />
 </a>
 
@@ -12,8 +12,8 @@
 
 <!-- Interactive Quick Links & Social Badges -->
 <p align="center">
-  <a href="https://sachit-portfolio.vercel.app" target="_blank">
-    <img src="https://img.shields.io/badge/🌐_Interactive_Portfolio-sachit--portfolio.vercel.app-1a1917?style=for-the-badge&logo=vercel&logoColor=white&labelColor=11100f" alt="Portfolio" />
+  <a href="https://sachin-portfoli.vercel.app" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_Interactive_Portfolio-sachin--portfoli.vercel.app-1a1917?style=for-the-badge&logo=vercel&logoColor=white&labelColor=11100f" alt="Portfolio" />
   </a>
   &nbsp;
   <a href="https://github.com/sachit1751-art" target="_blank">
@@ -222,7 +222,7 @@ const developer = {
 
 <div align="center">
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-1a1917?style=for-the-badge&logo=vercel&logoColor=white)](https://sachit-portfolio.vercel.app)
+[![Portfolio](https://img.shields.io/badge/Portfolio-1a1917?style=for-the-badge&logo=vercel&logoColor=white)](https://sachin-portfoli.vercel.app)
 &nbsp;
 [![GitHub](https://img.shields.io/badge/GitHub-1a1917?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sachit1751-art)
 &nbsp;

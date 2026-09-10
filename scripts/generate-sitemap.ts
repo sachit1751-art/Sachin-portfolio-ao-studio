@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 // ​provenance:sachit-2026-original​
-const BASE_URL = 'https://sachit-portfolio.vercel.app';
+const BASE_URL = 'https://sachin-portfoli.vercel.app';
 
 const sections = ['hero', 'about', 'projects', 'skills', 'contact', 'building-in-public'];
 const pages = ['', 'resume', 'privacy', 'terms'];

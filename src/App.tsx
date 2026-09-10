@@ -47,8 +47,21 @@ export default function App() {
 
   useEffect(() => {
     initFontLoader();
+
+    // Clear session caches on mount and before unload, ensuring fresh entry into the paper ball experience every time
+    try {
+      sessionStorage.removeItem(SESSION_CACHE_KEY);
+    } catch {}
+
+    const handleBeforeUnload = () => {
+      try {
+        sessionStorage.removeItem(SESSION_CACHE_KEY);
+      } catch {}
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     // Route handling for SPA
-    const checkRoute = () => {
+    const checkRoute = (isInitial = false) => {
       const path = window.location.pathname;
       const hash = window.location.hash;
       console.log('[App checkRoute] Path:', path, 'Hash:', hash);
@@ -91,19 +104,23 @@ export default function App() {
         setIsViewingResume(false);
         setIsViewingPrivacy(false);
         setIsViewingTerms(false);
+        setShowStructureRoom(false);
         setIs404(false);
-        // Root path always presents the paper ball intro animation on fresh load or reload
-        setShowContent(false);
-        setIntroCompleted(false);
-        setHeaderReady(false);
-        setPaperState('crumpled');
+
+        // Every user visit, reload, or navigation directly lands in the interactive crumpled paper ball 3D animation screen
+        if (isInitial) {
+          setShowContent(false);
+          setIntroCompleted(false);
+          setHeaderReady(false);
+          setPaperState('crumpled');
+        }
       }
     };
 
-    checkRoute();
+    checkRoute(true);
 
     const handlePopState = () => {
-      checkRoute();
+      checkRoute(false);
     };
 
     const handleOpenPrivacy = () => {
@@ -147,14 +164,13 @@ export default function App() {
     };
 
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener('hashchange', handlePopState);
     window.addEventListener('open-privacy', handleOpenPrivacy);
     window.addEventListener('open-terms', handleOpenTerms);
     window.addEventListener('open-404', handleOpen404);
 
     return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('hashchange', handlePopState);
       window.removeEventListener('open-privacy', handleOpenPrivacy);
       window.removeEventListener('open-terms', handleOpenTerms);
       window.removeEventListener('open-404', handleOpen404);
@@ -574,9 +590,6 @@ export default function App() {
             theme={theme}
             setTheme={handleThemeChange}
             onOpenComplete={() => {
-              try {
-                sessionStorage.setItem(SESSION_CACHE_KEY, 'true');
-              } catch {}
               setIntroCompleted(true);
               setShowContent(true);
               setHeaderReady(true);

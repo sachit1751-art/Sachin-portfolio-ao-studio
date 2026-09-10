@@ -5,6 +5,7 @@ import { RotateCcw, ArrowUpRight, Sparkles, Compass, Volume2, VolumeX, Search } 
 import { motion, AnimatePresence } from 'motion/react';
 import { AnimatedMenuIcon } from '../UI/AnimatedMenuIcon';
 import { useSound } from '../../utils/soundManager';
+import { rafThrottle } from '../../utils/throttle';
 
 interface HeaderProps {
   theme: PaperTheme;
@@ -221,16 +222,6 @@ export const Header = memo<HeaderProps>(({
 
     const updateHashAndSection = (sectionId: string) => {
       setActiveSection(sectionId);
-      if (!isScrollingRef.current && !isViewingResume) {
-        const targetHash = sectionId === 'hero' ? '' : `#${sectionId}`;
-        const currentHash = window.location.hash;
-        if (currentHash !== targetHash && !(sectionId === 'hero' && !currentHash)) {
-          const newUrl = sectionId === 'hero'
-            ? window.location.pathname + window.location.search
-            : `${window.location.pathname}${window.location.search}#${sectionId}`;
-          window.history.replaceState(null, '', newUrl);
-        }
-      }
     };
 
     const observerCallback: IntersectionObserverCallback = (entries) => {
@@ -271,10 +262,10 @@ export const Header = memo<HeaderProps>(({
     });
 
     // Handle background blur on scroll > 20px
-    const handleScroll = () => {
+    const handleScroll = rafThrottle(() => {
       const isScrolled = container.scrollTop > 20;
       setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
-    };
+    });
 
     container.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
@@ -285,37 +276,39 @@ export const Header = memo<HeaderProps>(({
     };
   }, [isViewingResume]);
 
-  // ── Initial hash navigation & hashchange listener ────────────────────────
+  // ── Initial hash navigation on load ──────────────────────────────────────
   useEffect(() => {
-    const handleHashChange = () => {
+    if (window.location.hash) {
       const hash = window.location.hash.replace('#', '');
       if (hash && ALL_SECTIONS.includes(hash)) {
-        if (onNavigateSection) {
-          onNavigateSection(hash);
-        } else {
-          const container = document.getElementById('content-scroll-container');
-          const target = document.getElementById(hash);
-          if (container && target) {
-            const containerRect = container.getBoundingClientRect();
-            const targetRect = target.getBoundingClientRect();
-            const offset = targetRect.top - containerRect.top + container.scrollTop - 72;
-            container.scrollTo({ top: offset, behavior: 'smooth' });
+        const timer = setTimeout(() => {
+          if (onNavigateSection) {
+            onNavigateSection(hash);
           }
-        }
+        }, 400);
+        return () => clearTimeout(timer);
       }
-    };
-
-    if (window.location.hash) {
-      const timer = setTimeout(handleHashChange, 350);
-      return () => clearTimeout(timer);
     }
-
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
   }, [onNavigateSection]);
 
-  // ── Mobile menu: focus trap + escape ───────────────────────────────
+  // ── Mobile menu: focus trap + escape + background scroll lock ─────────────
   useEffect(() => {
+    const scrollContainer = document.getElementById('content-scroll-container');
+
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      if (scrollContainer) {
+        scrollContainer.style.overflow = 'hidden';
+      }
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      if (scrollContainer) {
+        scrollContainer.style.overflow = '';
+      }
+    }
+
     if (!mobileOpen) return;
 
     const handleKey = (e: KeyboardEvent) => {
@@ -342,7 +335,6 @@ export const Header = memo<HeaderProps>(({
     };
 
     document.addEventListener('keydown', handleKey);
-    document.body.style.overflow = 'hidden';
 
     // Focus first element in drawer
     requestAnimationFrame(() => {
@@ -353,6 +345,10 @@ export const Header = memo<HeaderProps>(({
     return () => {
       document.removeEventListener('keydown', handleKey);
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      if (scrollContainer) {
+        scrollContainer.style.overflow = '';
+      }
     };
   }, [mobileOpen]);
 
@@ -519,6 +515,7 @@ export const Header = memo<HeaderProps>(({
 
             {/* Hamburger Button */}
             <button
+              id="mobile-menu-trigger"
               className="w-9 h-9 rounded-[var(--radius-md)] cursor-pointer transition-all active:scale-95 flex items-center justify-center"
               style={{
                 color: 'var(--c-heading)',

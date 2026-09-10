@@ -14,8 +14,8 @@ export interface SEOMetadataProps {
 const SECTION_SEO_MAP: Record<string, { title: string; description: string; keywords: string[] }> = {
   hero: {
     title: 'Sachit',
-    description: "Explore Sachit's software engineering portfolio featuring Android custom ROM development, proactive AI privacy, full-stack web applications, AOSP platforms, and automated systems.",
-    keywords: ['Sachit', 'Android custom ROM development', 'proactive AI privacy', 'Software Developer', 'Prompt Engineer', 'React', 'TypeScript', 'Full-stack', 'Android AOSP'],
+    description: 'Official portfolio of Sachit — Software Developer & Prompt Engineer specializing in full-stack web applications, AI integrations, custom Android platforms (AOSP), and automated systems.',
+    keywords: ['Sachit', 'sachit', 'Sachit developer', 'Sachit portfolio', 'Sachit software engineer', 'Android custom ROM development', 'proactive AI privacy', 'Software Developer', 'Prompt Engineer', 'React', 'TypeScript', 'Full-stack', 'Android AOSP'],
   },
   about: {
     title: 'About Sachit — Background & Engineering Philosophy',
@@ -77,7 +77,7 @@ export const SEOMetadata = ({
       keywords = [...keywords, ...sectionInfo.keywords];
     } else {
       title = title || 'Sachit';
-      description = description || "Explore Sachit's software development portfolio featuring full-stack web applications, custom Android platforms (AOSP), AI integration, and automated workflows.";
+      description = description || 'Official portfolio of Sachit — Software Developer & Prompt Engineer specializing in full-stack web applications, AI integrations, custom Android platforms (AOSP), and automated systems.';
     }
 
     const fullTitle = title;
@@ -124,7 +124,7 @@ export const SEOMetadata = ({
     setOgTag('og:title', fullTitle);
     setOgTag('og:description', description);
     setOgTag('og:type', pageType === 'home' && activeSection === 'hero' ? 'website' : 'article');
-    setOgTag('og:url', `https://sachit-portfolio.vercel.app${canonicalPath}`);
+    setOgTag('og:url', `https://sachin-portfoli.vercel.app${canonicalPath}`);
     setOgTag('og:site_name', 'Sachit Portfolio');
 
     // 5. Twitter Card Meta Tags
@@ -149,7 +149,7 @@ export const SEOMetadata = ({
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', `https://sachit-portfolio.vercel.app${canonicalPath}`);
+    canonical.setAttribute('href', `https://sachin-portfoli.vercel.app${canonicalPath}`);
 
     // 7. Schema.org JSON-LD Structured Data for Google Search Console & Knowledge Graph
     let jsonLdScript = document.querySelector('#seo-json-ld');
@@ -167,7 +167,7 @@ export const SEOMetadata = ({
         '@type': 'Person',
         name: 'Sachit',
         jobTitle: 'Software Developer & Prompt Engineer',
-        url: 'https://sachit-portfolio.vercel.app/',
+        url: 'https://sachin-portfoli.vercel.app/',
         sameAs: [
           'https://github.com/sachit1751-art',
           'https://linkedin.com/in/sachit',

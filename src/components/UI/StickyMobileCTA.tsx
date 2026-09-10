@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layers, FileText, Send, ChevronUp } from 'lucide-react';
 import { trackEvent } from '../../utils/analytics';
+import { rafThrottle } from '../../utils/throttle';
 
 interface StickyMobileCTAProps {
   onNavigate: (sectionId: string) => void;
@@ -16,11 +17,11 @@ export const StickyMobileCTA: React.FC<StickyMobileCTAProps> = ({
   useEffect(() => {
     const container = document.getElementById('content-scroll-container') || window;
     
-    const handleScroll = () => {
+    const handleScroll = rafThrottle(() => {
       const scrollTop = container instanceof HTMLElement ? container.scrollTop : window.scrollY;
       const shouldBeVisible = scrollTop > 250;
       setIsVisible((prev) => (prev !== shouldBeVisible ? shouldBeVisible : prev));
-    };
+    });
 
     container.addEventListener('scroll', handleScroll, { passive: true });
     return () => container.removeEventListener('scroll', handleScroll);

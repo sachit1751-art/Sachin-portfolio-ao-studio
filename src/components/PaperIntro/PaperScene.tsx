@@ -5,6 +5,7 @@ import { PaperState, PaperTheme } from '../../types';
 import { calculatePaperVertex } from '../../utils/paperMath';
 import { getProceduralPaperTextures } from '../../utils/paperTexture';
 import { usePerformance } from '../../hooks/usePerformance';
+import { rafThrottle } from '../../utils/throttle';
 import {
   createPaperUnfoldTimeline,
   createPaperCrumpleTimeline,
@@ -40,7 +41,7 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animTimelineRef = useRef<gsap.core.Timeline | null>(null);
-  const { simplify } = usePerformance();
+  const { simplify, segmentsScale, pixelRatio, enable3DShadows, antialias } = usePerformance();
 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -96,9 +97,9 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
 
   const width = 3.8;
   const height = 5.1;
-  // Optimized segments density — maintains tactile paper crumple folds while reducing vertex array overhead
-  const segmentsX = simplify ? 18 : 32;
-  const segmentsY = simplify ? 24 : 44;
+  // Dynamically scaled segments density based on real-time hardware tier and frame rates
+  const segmentsX = segmentsScale.x;
+  const segmentsY = segmentsScale.y;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -115,18 +116,39 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     cameraRef.current = camera;
 
     const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || widthPx < 768;
+    // Dynamic adaptive subdivisions:
+    // Low-power / mobile: 10x14 grid (165 vertices), cutting vertex math by >90% compared to 40x56 (2,337 vertices)
+    // Standard desktop: 20x28 grid (609 vertices), cutting overhead by >73.9% while preserving crisp fold creases
+    const effSegmentsX = isMobile ? Math.min(segmentsX, 10) : segmentsX;
+    const effSegmentsY = isMobile ? Math.min(segmentsY, 14) : segmentsY;
+
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !simplify && !isMobile,
+      antialias: antialias && !isMobile,
       powerPreference: 'high-performance',
       preserveDrawingBuffer: true,
     });
     renderer.setSize(widthPx, heightPx);
-    // Cap pixel ratio to 1.25 for mobile, 1.5 for desktop to avoid high-DPI fragment shader fill-rate lag
-    const maxPixelRatio = simplify ? 1.0 : (isMobile ? 1.25 : 1.5);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
+    renderer.setPixelRatio(pixelRatio);
     
-    if (!simplify) {
+    // Explicit styling on canvas to prevent layout collapses or disappearance
+    renderer.domElement.style.display = 'block';
+    renderer.domElement.style.visibility = 'visible';
+    renderer.domElement.style.opacity = '1';
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.top = '0';
+    renderer.domElement.style.left = '0';
+    renderer.domElement.style.pointerEvents = 'auto';
+    renderer.domElement.style.touchAction = 'none';
+    renderer.domElement.style.outline = 'none';
+    renderer.domElement.style.transform = 'translateZ(0)';
+    renderer.domElement.style.willChange = 'transform';
+    renderer.domElement.style.backfaceVisibility = 'hidden';
+    renderer.domElement.setAttribute('aria-hidden', 'true');
+    
+    if (enable3DShadows) {
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.05;
       renderer.shadowMap.enabled = true;
@@ -174,7 +196,7 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     });
     materialRef.current = material;
 
-    const geometry = new THREE.PlaneGeometry(width, height, segmentsX, segmentsY);
+    const geometry = new THREE.PlaneGeometry(width, height, effSegmentsX, effSegmentsY);
     const positionAttr = geometry.attributes.position;
     const vertexCount = positionAttr.count;
 
@@ -220,6 +242,7 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     const paperMesh = new THREE.Mesh(geometry, material);
     paperMesh.castShadow = true;
     paperMesh.receiveShadow = true;
+    paperMesh.frustumCulled = false; // Prevent bounding box clipping from ever dropping or hiding the mesh
     paperMesh.rotation.set(
       animControllerRef.current.rotationX,
       animControllerRef.current.rotationY,
@@ -230,10 +253,10 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     paperMeshRef.current = paperMesh;
 
     // Shadow
-    const shadowGeo = new THREE.PlaneGeometry(3.0, 3.0, simplify ? 4 : 16, simplify ? 4 : 16);
+    const shadowGeo = new THREE.PlaneGeometry(3.0, 3.0, simplify || isMobile ? 2 : 6, simplify || isMobile ? 2 : 6);
     const shadowCanvas = document.createElement('canvas');
-    shadowCanvas.width = simplify ? 32 : 128;
-    shadowCanvas.height = simplify ? 32 : 128;
+    shadowCanvas.width = simplify || isMobile ? 32 : 128;
+    shadowCanvas.height = simplify || isMobile ? 32 : 128;
     const sCtx = shadowCanvas.getContext('2d')!;
     const sSize = simplify ? 32 : 128;
     const sMid = sSize / 2;
@@ -253,6 +276,7 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       depthWrite: false,
     });
     const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowMesh.frustumCulled = false;
     shadowMesh.position.set(0, -0.4, -0.6);
     scene.add(shadowMesh);
     shadowMeshRef.current = shadowMesh;
@@ -264,11 +288,15 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-      // Restart render loop after resize so the frame isn't skipped
+      renderer.render(scene, camera);
       resumeRenderRef.current?.();
     };
 
     window.addEventListener('resize', handleResize);
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    resizeObserver.observe(container);
     handleResize();
 
     const handlePointerDown = (e: PointerEvent) => {
@@ -322,25 +350,38 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     window.addEventListener('pointerup', handlePointerUp);
     window.addEventListener('pointercancel', handlePointerUp);
 
-    // Restart render loop on scroll only if paper is still transitioning or in interactive mood game
-    const handleScroll = () => {
-      if (paperStateRef.current !== 'opened' || moodGameActiveRef.current) {
-        resumeRenderRef.current?.();
-      }
-    };
+    // Restart render loop on scroll
+    const handleScroll = rafThrottle(() => {
+      resumeRenderRef.current?.();
+    });
     window.addEventListener('scroll', handleScroll, { passive: true });
+    const contentScrollContainer = document.getElementById('content-scroll-container');
+    contentScrollContainer?.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Tab visibility — pause render loop when hidden
+    // WebGL Context Loss / Restoration recovery
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      console.warn('[PaperScene] WebGL context lost - preventing permanent drop');
+    };
+    const handleContextRestored = () => {
+      console.info('[PaperScene] WebGL context restored - re-rendering scene');
+      renderer.render(scene, camera);
+      resumeRenderRef.current?.();
+    };
+    renderer.domElement.addEventListener('webglcontextlost', handleContextLost);
+    renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored);
+
+    // Tab visibility — pause/resume render loop when hidden
     let tabHidden = false;
     const handleVisibility = () => {
       tabHidden = document.hidden;
-      if (!tabHidden && (paperStateRef.current !== 'opened' || moodGameActiveRef.current)) {
+      if (!tabHidden) {
         resumeRender();
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Animation loop — renders frames smoothly, settles on opened flat sheet, pauses when idle
+    // Animation loop — renders frames smoothly, maintains persistent presence
     const animate = () => {
       if (tabHidden) {
         reqAnimFrameRef.current = null;
@@ -352,8 +393,6 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       const currentState = paperStateRef.current;
       const ctrl = animControllerRef.current;
       const isFullyOpen = ctrl.progress >= 0.999 && Math.abs(ctrl.paperScale - 4.0) < 0.05;
-      const isAnimating = animTimelineRef.current && animTimelineRef.current.isActive();
-      const isIdle = currentState === 'opened' && isFullyOpen && !isAnimating && !moodGameActiveRef.current;
 
       mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.06;
       mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.06;
@@ -464,19 +503,8 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
         (shadowMeshRef.current.material as THREE.MeshBasicMaterial).opacity = dynamicOpacity;
       }
 
-      // Always execute render for current frame
+      // Render for current frame
       renderer.render(scene, camera);
-
-      // Manage idle loop pausing
-      if (isIdle) {
-        idleFrameCountRef.current++;
-        if (idleFrameCountRef.current > 10) {
-          reqAnimFrameRef.current = null;
-          return; // Settle complete — sleep until next interaction or resize
-        }
-      } else {
-        idleFrameCountRef.current = 0;
-      }
 
       reqAnimFrameRef.current = requestAnimationFrame(animate);
     };
@@ -484,7 +512,6 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     // Resume the render loop (called on state change or user interaction)
     const resumeRender = () => {
       if (!reqAnimFrameRef.current) {
-        idleFrameCountRef.current = 0;
         animate();
       }
     };
@@ -493,13 +520,17 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     animate();
 
     return () => {
+      resizeObserver.disconnect();
       window.removeEventListener('resize', handleResize);
       container.removeEventListener('pointerdown', handlePointerDown);
       container.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
       window.removeEventListener('pointercancel', handlePointerUp);
       window.removeEventListener('scroll', handleScroll);
+      contentScrollContainer?.removeEventListener('scroll', handleScroll);
       document.removeEventListener('visibilitychange', handleVisibility);
+      renderer.domElement.removeEventListener('webglcontextlost', handleContextLost);
+      renderer.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
 
       if (reqAnimFrameRef.current) {
         cancelAnimationFrame(reqAnimFrameRef.current);
@@ -518,7 +549,7 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
       shadowTexture.dispose();
       renderer.dispose();
     };
-  }, [theme, simplify]);
+  }, [simplify]);
 
   // Mood Game API
   useImperativeHandle(ref, () => ({
@@ -751,7 +782,8 @@ export const PaperScene = forwardRef<PaperSceneAPI, PaperSceneProps>(({
     <div
       ref={containerRef}
       id="paper-3d-scene"
-      className="w-full h-full cursor-pointer select-none"
+      className="w-full h-full cursor-pointer select-none visible pointer-events-auto"
+      style={{ visibility: 'visible', pointerEvents: 'auto', opacity: 1 }}
       aria-label="3D Crumpled Paper Canvas"
     />
   );

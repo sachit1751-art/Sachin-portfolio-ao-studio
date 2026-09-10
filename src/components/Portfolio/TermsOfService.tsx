@@ -26,7 +26,7 @@ export const TermsOfService: React.FC<TermsOfServiceProps> = ({ theme = 'cotton'
       <SEOHead
         title="Terms of Service — Sachit"
         description="Terms of service and usage conditions for Sachit's developer portfolio website and interactive components."
-        canonicalUrl="https://sachit-portfolio.vercel.app/terms"
+        canonicalUrl="https://sachin-portfoli.vercel.app/terms"
       />
 
       <div

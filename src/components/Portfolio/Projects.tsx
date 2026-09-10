@@ -35,8 +35,18 @@ import { CharReveal } from '../UI/TextReveal';
 import { usePerformance } from '../../hooks/usePerformance';
 import { ScrollReveal } from '../UI/ScrollReveal';
 import { PretextText } from '../UI/PretextText';
+import { observeVisibility, observeElement } from '../../utils/observer';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Streamline ScrollTrigger to reduce layout reflows and batch callbacks
+if (typeof window !== 'undefined') {
+  ScrollTrigger.config({
+    limitCallbacks: true,
+    autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load',
+    syncInterval: 120,
+  });
+}
 
 // Helper to get small tech icons for stack tags like AOSP, Kotlin, React, etc.
 const getTagIcon = (tag: string) => {
@@ -176,40 +186,117 @@ interface ProjectCardProps {
 const ProjectCard = memo<ProjectCardProps>(({ project, idx, isExpanded, onToggleExpand }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(false);
   const { simplify } = usePerformance();
 
   useEffect(() => {
     if (simplify) {
       setIsVisible(true);
+      setIsInViewport(true);
       return;
     }
 
     const el = cardRef.current;
     if (!el) return;
 
-    if (!('IntersectionObserver' in window)) {
-      setIsVisible(true);
-      return;
-    }
+    const scroller = document.getElementById('content-scroll-container');
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
+    // Set initial 3D perspective mapping
+    gsap.set(el, { transformPerspective: 1000, transformStyle: 'preserve-3d' });
+
+    // GSAP Scroll-Triggered Card Entry scoped to active scroll container (#content-scroll-container)
+    const ctx = gsap.context(() => {
+      // Column-staggered delay (0s, 0.08s, 0.16s for 3-column grid)
+      const columnDelay = (idx % 3) * 0.08;
+
+      gsap.set(el, {
+        opacity: 0,
+        y: 32,
+      });
+
+      ScrollTrigger.create({
+        trigger: el,
+        scroller: scroller || window,
+        start: 'top 90%',
+        once: true,
+        onEnter: () => {
+          setIsVisible(true);
+          setIsInViewport(true);
+          gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            duration: 0.65,
+            delay: columnDelay,
+            ease: 'power3.out',
+            clearProps: 'opacity,y',
+            onComplete: () => {
+              gsap.set(el, {
+                transformPerspective: 1000,
+                transformStyle: 'preserve-3d',
+              });
+            },
+          });
+        },
+      });
+    }, el);
+
+    // Centralized observer to pause parallax math when outside viewport
+    const cleanupObserver = observeVisibility(
+      el,
+      (isIntersecting) => {
+        setIsInViewport(isIntersecting);
+        if (isIntersecting) {
+          setIsVisible(true);
+        }
       },
-      { threshold: 0.08, rootMargin: '50px' }
+      { threshold: 0.05, rootMargin: '60px 0px 60px 0px' }
     );
 
-    observer.observe(el);
-
     return () => {
-      observer.disconnect();
+      ctx.revert();
+      cleanupObserver();
     };
-  }, [simplify]);
+  }, [idx, simplify]);
+
+  // GSAP Project Card Mouse Parallax: subtle (x,y) shift + 3D tilt (rotationX, rotationY, transformPerspective: 1000)
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (simplify || !isInViewport || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = (e.clientX - centerX) / (rect.width / 2);
+    const deltaY = (e.clientY - centerY) / (rect.height / 2);
+
+    gsap.to(cardRef.current, {
+      x: deltaX * 4,
+      y: deltaY * 3 - 5,
+      rotationX: -deltaY * 6,
+      rotationY: deltaX * 6,
+      transformPerspective: 1000,
+      duration: 0.25,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
+  };
+
+  const handleCardMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (simplify || !isInViewport || !cardRef.current) return;
+    handleCardMouseMove(e);
+  };
+
+  const handleCardMouseLeave = () => {
+    if (simplify || !cardRef.current) return;
+    // Smoothly reset to origin on mouse leave
+    gsap.to(cardRef.current, {
+      x: 0,
+      y: 0,
+      rotationX: 0,
+      rotationY: 0,
+      duration: 0.4,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
+  };
 
   return (
     <div
@@ -220,6 +307,9 @@ const ProjectCard = memo<ProjectCardProps>(({ project, idx, isExpanded, onToggle
       tabIndex={0}
       role="article"
       aria-label={`${project.title} (${project.category}, ${project.year})`}
+      onMouseEnter={handleCardMouseEnter}
+      onMouseMove={handleCardMouseMove}
+      onMouseLeave={handleCardMouseLeave}
       onKeyDown={(e) => {
         if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
           e.preventDefault();
@@ -228,10 +318,11 @@ const ProjectCard = memo<ProjectCardProps>(({ project, idx, isExpanded, onToggle
       }}
       className={`project-card-item ${
         isVisible ? 'is-visible' : ''
-      } group relative p-5 sm:p-6 flex flex-col justify-between overflow-hidden h-full rounded-[var(--radius-lg)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] outline-none touch-manipulation`}
+      } group relative p-5 sm:p-6 flex flex-col justify-between overflow-hidden h-full rounded-[var(--radius-lg)] transition-colors duration-200 hover:shadow-md hover:border-[var(--c-border-focus)] focus-visible:ring-2 focus-visible:ring-[var(--c-border-focus)] outline-none touch-manipulation`}
       style={{
         backgroundColor: 'var(--c-card)',
         border: '1px solid var(--c-border)',
+        willChange: isVisible && !simplify ? 'transform, opacity' : 'auto',
       }}
     >
       <div>

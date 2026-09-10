@@ -1,5 +1,6 @@
 import React, { memo, useRef, useEffect, useMemo, useCallback } from 'react';
 import { usePerformance } from '../../hooks/usePerformance';
+import { observeVisibility } from '../../utils/observer';
 import { measureTextWidth } from '../../utils/pretext';
 
 interface ScrollTextPathProps {
@@ -94,33 +95,32 @@ export const ScrollTextPath = memo(({ text, className = '' }: ScrollTextPathProp
       animFrameRef.current = requestAnimationFrame(tick);
     };
 
-    // IntersectionObserver: Only animate when element is visible in viewport
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const isIntersecting = entry.isIntersecting;
-        isVisibleRef.current = isIntersecting;
-
-        if (isIntersecting) {
-          lastTimeRef.current = null;
-          if (animFrameRef.current === null) {
-            animFrameRef.current = requestAnimationFrame(tick);
-          }
-        } else {
-          if (animFrameRef.current !== null) {
-            cancelAnimationFrame(animFrameRef.current);
-            animFrameRef.current = null;
-          }
-        }
-      },
-      { threshold: 0 }
-    );
-
+    // Centralized IntersectionObserver: Only animate when element is visible in viewport
+    let cleanupObserver: (() => void) | undefined;
     if (containerRef.current) {
-      observer.observe(containerRef.current);
+      cleanupObserver = observeVisibility(
+        containerRef.current,
+        (isIntersecting) => {
+          isVisibleRef.current = isIntersecting;
+
+          if (isIntersecting) {
+            lastTimeRef.current = null;
+            if (animFrameRef.current === null) {
+              animFrameRef.current = requestAnimationFrame(tick);
+            }
+          } else {
+            if (animFrameRef.current !== null) {
+              cancelAnimationFrame(animFrameRef.current);
+              animFrameRef.current = null;
+            }
+          }
+        },
+        { threshold: 0 }
+      );
     }
 
     return () => {
-      observer.disconnect();
+      if (cleanupObserver) cleanupObserver();
       if (animFrameRef.current !== null) {
         cancelAnimationFrame(animFrameRef.current);
         animFrameRef.current = null;

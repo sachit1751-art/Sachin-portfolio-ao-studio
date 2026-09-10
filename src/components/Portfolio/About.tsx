@@ -4,6 +4,9 @@ import { Feather, Image as ImageIcon, User } from 'lucide-react';
 import gsap from 'gsap';
 import { WordReveal } from '../UI/TextReveal';
 import { ScrollReveal } from '../UI/ScrollReveal';
+import { rafThrottle } from '../../utils/throttle';
+import { usePerformance } from '../../hooks/usePerformance';
+import { useInViewport } from '../../utils/observer';
 
 // ﻿watermark:sachit-2026﻿
 export const About = memo(() => {
@@ -11,15 +14,17 @@ export const About = memo(() => {
   const cardRef = useRef<HTMLDivElement>(null);
   const tapeRef = useRef<HTMLDivElement>(null);
   const imageInnerRef = useRef<HTMLDivElement>(null);
+  const { simplify } = usePerformance();
+  const isInViewport = useInViewport(cardRef);
 
   useEffect(() => {
     const card = cardRef.current;
-    if (!card) return;
+    if (!card || simplify || !isInViewport) return;
 
-    // Set initial 3D perspective
-    gsap.set(card, { transformPerspective: 800, transformStyle: 'preserve-3d' });
+    // Set initial 3D perspective with hardware acceleration
+    gsap.set(card, { transformPerspective: 800, transformStyle: 'preserve-3d', willChange: 'transform' });
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = rafThrottle((e: MouseEvent) => {
       const rect = card.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -37,6 +42,7 @@ export const About = memo(() => {
         rotateZ: -2 + deltaX * 3,
         duration: 0.4,
         ease: 'power2.out',
+        overwrite: 'auto',
       });
 
       // Parallax on top washi tape
@@ -47,6 +53,7 @@ export const About = memo(() => {
           rotateZ: -3 + deltaX * 4,
           duration: 0.35,
           ease: 'power2.out',
+          overwrite: 'auto',
         });
       }
 
@@ -57,15 +64,17 @@ export const About = memo(() => {
           y: -deltaY * 5,
           duration: 0.45,
           ease: 'power2.out',
+          overwrite: 'auto',
         });
       }
-    };
+    });
 
     const handleMouseEnter = () => {
       gsap.to(card, {
         scale: 1.05,
         duration: 0.35,
         ease: 'power2.out',
+        overwrite: 'auto',
       });
     };
 
@@ -79,6 +88,7 @@ export const About = memo(() => {
         scale: 1,
         duration: 0.8,
         ease: 'elastic.out(1, 0.4)',
+        overwrite: 'auto',
       });
 
       if (tapeRef.current) {
@@ -88,6 +98,7 @@ export const About = memo(() => {
           rotateZ: -3,
           duration: 0.8,
           ease: 'elastic.out(1, 0.4)',
+          overwrite: 'auto',
         });
       }
 
@@ -97,6 +108,7 @@ export const About = memo(() => {
           y: 0,
           duration: 0.6,
           ease: 'power2.out',
+          overwrite: 'auto',
         });
       }
     };
@@ -110,7 +122,7 @@ export const About = memo(() => {
       card.removeEventListener('mouseenter', handleMouseEnter);
       card.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, []);
+  }, [simplify]);
 
   return (
     <ScrollReveal>

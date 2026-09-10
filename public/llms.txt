@@ -74,5 +74,5 @@
 
 ## Online Profiles & Contact
 - **GitHub**: https://github.com/sachit1751-art
-- **Portfolio**: https://sachit-portfolio.vercel.app
-- **llms.txt URL**: https://sachit-portfolio.vercel.app/llms.txt
+- **Portfolio**: https://sachin-portfoli.vercel.app
+- **llms.txt URL**: https://sachin-portfoli.vercel.app/llms.txt

@@ -1,6 +1,9 @@
-// Shared IntersectionObserver to reduce overhead across the app
-let sharedObservers = new Map<string, IntersectionObserver>();
-const observerCallbacks = new Map<Element, (isIntersecting: boolean) => void>();
+import { useEffect, useState, RefObject } from 'react';
+
+// Shared IntersectionObserver map to deduplicate observers across the application
+const sharedObservers = new Map<string, IntersectionObserver>();
+const singleShotCallbacks = new Map<Element, (isIntersecting: boolean) => void>();
+const continuousCallbacks = new Map<Element, Set<(isIntersecting: boolean, entry: IntersectionObserverEntry) => void>>();
 
 export function resetSharedObservers() {
   sharedObservers.forEach((obs) => {
@@ -9,19 +12,28 @@ export function resetSharedObservers() {
     } catch {}
   });
   sharedObservers.clear();
-  observerCallbacks.clear();
+  singleShotCallbacks.clear();
+  continuousCallbacks.clear();
 }
 
-export function getSharedObserver(options: IntersectionObserverInit = {}) {
-  const { root, rootMargin, threshold } = options;
+/**
+ * Get or create a deduplicated shared IntersectionObserver instance
+ */
+export function getSharedObserver(options: IntersectionObserverInit = {}): IntersectionObserver {
+  const { root, rootMargin = '0px', threshold = 0 } = options;
   
-  // Use root id or fallback if it's an element
-  const rootPart = root instanceof Element ? (root.id || 'custom-root') : 'viewport';
-  const key = `${rootPart}|${rootMargin || '0px'}|${JSON.stringify(threshold || 0)}`;
+  // Resolve root container (falls back to content-scroll-container if not specified and available)
+  let effectiveRoot = root;
+  if (!effectiveRoot && typeof document !== 'undefined') {
+    effectiveRoot = document.getElementById('content-scroll-container') || null;
+  }
+
+  const rootId = effectiveRoot instanceof Element ? (effectiveRoot.id || 'custom-root') : 'viewport';
+  const threshKey = Array.isArray(threshold) ? threshold.join(',') : threshold.toString();
+  const key = `${rootId}|${rootMargin}|${threshKey}`;
 
   const existing = sharedObservers.get(key);
   if (existing) {
-    // Validate that the existing observer's root is still connected to the DOM
     if (existing.root instanceof Element && !existing.root.isConnected) {
       try {
         existing.disconnect();
@@ -35,41 +47,47 @@ export function getSharedObserver(options: IntersectionObserverInit = {}) {
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        const callback = observerCallbacks.get(entry.target);
-        if (callback && entry.isIntersecting) {
-          callback(true);
+        const target = entry.target;
+
+        // 1. Check one-shot callbacks
+        const singleCb = singleShotCallbacks.get(target);
+        if (singleCb && entry.isIntersecting) {
+          singleCb(true);
+        }
+
+        // 2. Check continuous visibility callbacks
+        const contSet = continuousCallbacks.get(target);
+        if (contSet) {
+          contSet.forEach((cb) => cb(entry.isIntersecting, entry));
         }
       });
     },
-    options
+    {
+      ...options,
+      root: effectiveRoot,
+      rootMargin,
+      threshold,
+    }
   );
 
   sharedObservers.set(key, observer);
   return observer;
 }
 
+/**
+ * One-shot element observation (unobserves once triggered)
+ */
 export function observeElement(
   el: Element,
   callback: (isIntersecting: boolean) => void,
   options: IntersectionObserverInit = {}
-) {
+): () => void {
   if (typeof IntersectionObserver === 'undefined') {
     callback(true);
     return () => {};
   }
 
-  // Ensure root is currently connected; if detached, attempt to resolve fresh root element by id
-  let resolvedOptions = { ...options };
-  if (options.root instanceof Element && !options.root.isConnected && options.root.id) {
-    const currentRoot = document.getElementById(options.root.id);
-    if (currentRoot) {
-      resolvedOptions.root = currentRoot;
-    } else {
-      resolvedOptions.root = null;
-    }
-  }
-
-  const observer = getSharedObserver(resolvedOptions);
+  const observer = getSharedObserver(options);
   let isTriggered = false;
 
   const wrappedCallback = (isIntersecting: boolean) => {
@@ -79,18 +97,18 @@ export function observeElement(
       try {
         observer.unobserve(el);
       } catch {}
-      observerCallbacks.delete(el);
+      singleShotCallbacks.delete(el);
     }
   };
 
-  observerCallbacks.set(el, wrappedCallback);
+  singleShotCallbacks.set(el, wrappedCallback);
   try {
     observer.observe(el);
   } catch {
     wrappedCallback(true);
   }
 
-  // Safety fallback: ensure text/content is never stuck hidden if intersection is missed
+  // Safety fallback
   const fallbackTimer = setTimeout(() => {
     if (!isTriggered && el.isConnected) {
       const rect = el.getBoundingClientRect();
@@ -106,7 +124,76 @@ export function observeElement(
     try {
       observer.unobserve(el);
     } catch {}
-    observerCallbacks.delete(el);
+    singleShotCallbacks.delete(el);
   };
 }
+
+/**
+ * Continuous element observation (triggers on every enter/exit)
+ * Useful for pausing GPU animations, 3D renderers, or tilt handlers when offscreen
+ */
+export function observeVisibility(
+  el: Element,
+  callback: (isIntersecting: boolean, entry: IntersectionObserverEntry) => void,
+  options: IntersectionObserverInit = {}
+): () => void {
+  if (typeof IntersectionObserver === 'undefined') {
+    callback(true, {} as IntersectionObserverEntry);
+    return () => {};
+  }
+
+  const observer = getSharedObserver(options);
+
+  if (!continuousCallbacks.has(el)) {
+    continuousCallbacks.set(el, new Set());
+    try {
+      observer.observe(el);
+    } catch {
+      callback(true, {} as IntersectionObserverEntry);
+    }
+  }
+
+  continuousCallbacks.get(el)!.add(callback);
+
+  return () => {
+    const set = continuousCallbacks.get(el);
+    if (set) {
+      set.delete(callback);
+      if (set.size === 0) {
+        continuousCallbacks.delete(el);
+        try {
+          observer.unobserve(el);
+        } catch {}
+      }
+    }
+  };
+}
+
+/**
+ * React hook to track whether a component/card is inside the viewport
+ */
+export function useInViewport<T extends HTMLElement = HTMLElement>(
+  ref: RefObject<T | null>,
+  options: IntersectionObserverInit = { rootMargin: '100px 0px 100px 0px', threshold: 0.05 }
+): boolean {
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const cleanup = observeVisibility(
+      el,
+      (isIntersecting) => {
+        setIsInView(isIntersecting);
+      },
+      options
+    );
+
+    return cleanup;
+  }, [ref, options.rootMargin, options.threshold]);
+
+  return isInView;
+}
+
 

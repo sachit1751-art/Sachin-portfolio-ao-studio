@@ -11,7 +11,7 @@ interface SEOHeadProps {
 export const SEOHead = ({
   title,
   description,
-  canonicalUrl = 'https://sachit-portfolio.vercel.app/',
+  canonicalUrl = 'https://sachin-portfoli.vercel.app/',
   ogType = 'website',
 }: SEOHeadProps) => {
   useEffect(() => {

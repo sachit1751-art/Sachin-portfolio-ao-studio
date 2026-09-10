@@ -26,7 +26,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ theme = 'cotton', 
       <SEOHead
         title="Privacy Policy — Sachit"
         description="Privacy policy and data transparency statement for Sachit's developer portfolio. Learn how local storage and privacy-respecting analytics are handled."
-        canonicalUrl="https://sachit-portfolio.vercel.app/privacy"
+        canonicalUrl="https://sachin-portfoli.vercel.app/privacy"
       />
 
       <div
